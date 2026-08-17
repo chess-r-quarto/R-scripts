@@ -1,0 +1,225 @@
+---
+title: "ポアソン分布と到着間隔（指数分布）の基礎と実践"
+subtitle: "概念の直感理解・理論計算・シミュレーションから可視化まで"
+author: "Antigravity Pair Programming"
+date: "2026-08-18"
+format:
+  html:
+    theme: simplex
+    toc: true
+    toc-depth: 3
+    toc-title: "目次"
+    number-sections: true
+    code-fold: show
+    code-tools: true
+    highlight-style: github
+    embed-resources: true
+    fig-width: 9
+    fig-height: 6
+---
+
+```{r setup, include=FALSE}
+library(reticulate)
+use_python("/opt/homebrew/Caskroom/miniconda/base/bin/python3", required = TRUE)
+```
+
+## はじめに：ポアソン分布とは？
+
+
+**ポアソン分布（Poisson Distribution）**は、**「ある一定の時間や空間の中で、平均して $\lambda$（ラムダ）回起こるランダムな事象が、ちょうど $k$ 回起こる確率」**を表す離散型確率分布です。
+
+### 確率質量関数（PMF）
+
+$$P(X = k) = \frac{\lambda^k e^{-\lambda}}{k!} \quad (k = 0, 1, 2, \dots)$$
+
+- $\lambda > 0$ : 単位時間（または単位空間）あたりの平均発生回数
+- $k \ge 0$ : 実際に観測される発生回数
+- $e$ : 自然対数の底（ネイピア数 $\approx 2.71828$）
+
+### 最も重要な統計的性質
+
+ポアソン分布の最大の特徴は、**「期待値（平均）と分散が完全に一致する」**という点です。
+
+$$\text{E}[X] = \lambda$$
+$$\text{Var}(X) = \lambda$$
+
+---
+
+## ポアソン分布が成立するための前提条件
+
+ポアソン分布が適用できるのは、**「事象同士に互いに因果関係（連鎖や反発）がなく、完全に独立してランダムに生じる現象」**に限られます。この確率モデルを**ポアソン過程**と呼び、以下の3条件を満たす必要があります。
+
+1. **独立性（無記憶性）**
+   - ある時間帯に事象が発生したかどうかが、他の時間帯で発生する確率に全く影響を与えない。
+2. **定常性（斉時性）**
+   - 単位時間あたりに事象が起きる平均ペース $\lambda$ は、どの時間帯でも一定である。
+3. **希少性（非集積性）**
+   - ごくわずかな微小時間 $\Delta t$ の間に、事象が同時に2回以上重なって起きる確率は無視できるほど小さい。
+
+::: {.callout-note appearance="simple"}
+### 具体例：平日のコンビニでトイレを借りる客
+- **なぜ当てはまるか？**: トイレの利用は個人の生理現象や行動に依存しており、「前の客が使ったから次の客も行きたくなる」といった客同士の連鎖（因果）はありません。
+- **母数と確率**: 来店客や通行人という膨大な母数（$n$）の中で、偶発的にトイレを借りる確率（$p$）はごくわずかであり、二項分布の極限（$n \to \infty, p \to 0, np = \lambda$）としてのポアソン分布に綺麗に従います。
+:::
+
+---
+
+## Python による理論計算と乱数シミュレーション
+
+まずは Python (`scipy.stats` と `numpy`) を用いて、1時間に平均 3 人 ($\lambda = 3.0$) が訪れるケースの確率計算と乱数シミュレーションを実行します。
+
+```{python}
+import numpy as np
+from scipy.stats import poisson
+
+lam = 3.0
+k_vals = np.arange(0, 11)
+
+# 1. 理論確率の計算 (PMF)
+probs = poisson.pmf(k_vals, lam)
+
+print(f"=== 平均発生件数 λ = {lam} の場合の確率 ===")
+for k, p in zip(k_vals, probs):
+    bar = "■" * int(p * 40)
+    print(f"{k:2d} 回 : {p:8.4f} ({p*100:5.1f}%) | {bar}")
+
+# 2. 乱数シミュレーション (10,000時間分)
+np.random.seed(42)
+samples = np.random.poisson(lam, size=10000)
+
+print("\n=== 10,000回シミュレーション結果 ===")
+print(f"標本平均 : {np.mean(samples):.4f} (理論値 λ = {lam})")
+print(f"標本分散 : {np.var(samples):.4f} (理論値 λ = {lam})")
+```
+
+---
+
+## R (ggplot2) による多角的可視化
+
+R では `dpois`（確率密度）、`ppois`（累積分布）、`rpois`（乱数）が標準で提供されています。`ggplot2` と `patchwork` を用いて、ポアソン分布の振る舞いを多角的にプロットします。
+
+```{r}
+#| message: false
+#| warning: false
+#| fig-width: 11
+#| fig-height: 8
+
+library(ggplot2)
+library(patchwork)
+library(dplyr)
+
+font_family <- "Hiragino Sans"
+lam <- 3.0
+
+# 1. λ の違いによる形状変化
+df_lambda <- expand.grid(k = 0:25, lambda = c(1, 3, 7, 15)) %>%
+  mutate(
+    prob = dpois(k, lambda = lambda),
+    lambda_label = factor(paste0("λ = ", lambda), levels = paste0("λ = ", c(1, 3, 7, 15)))
+  )
+
+p1 <- ggplot(df_lambda, aes(x = k, y = prob, color = lambda_label, fill = lambda_label)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  geom_area(alpha = 0.15, position = "identity") +
+  scale_color_brewer(palette = "Set1", name = "平均発生率") +
+  scale_fill_brewer(palette = "Set1", name = "平均発生率") +
+  labs(
+    title = "① 平均発生率 λ による形状変化",
+    subtitle = "λ が大きくなると正規分布に近づく",
+    x = "1時間の発生回数 k",
+    y = "発生確率 P(X = k)"
+  ) +
+  theme_minimal(base_family = font_family) +
+  theme(plot.title = element_text(face = "bold", size = 12))
+
+# 2. 理論値 vs シミュレーション
+set.seed(42)
+samples_r <- rpois(10000, lambda = lam)
+df_sim <- data.frame(k = samples_r)
+df_theory <- data.frame(k = 0:max(samples_r), prob = dpois(0:max(samples_r), lambda = lam))
+
+p2 <- ggplot() +
+  geom_histogram(data = df_sim, aes(x = k, y = after_stat(density)),
+                 binwidth = 1, center = 0, fill = "#3498db", color = "white", alpha = 0.6) +
+  geom_line(data = df_theory, aes(x = k, y = prob), color = "#e74c3c", linewidth = 1.1) +
+  geom_point(data = df_theory, aes(x = k, y = prob), color = "#e74c3c", size = 2.5) +
+  labs(
+    title = paste0("② 理論値 vs シミュレーション (λ = ", lam, ")"),
+    subtitle = "10,000回のサンプリング結果と理論式の一致",
+    x = "1時間の発生回数 k",
+    y = "相対度数 / 確率"
+  ) +
+  theme_minimal(base_family = font_family) +
+  theme(plot.title = element_text(face = "bold", size = 12))
+
+# 3. 累積確率分布 (CDF)
+df_cdf <- data.frame(k = 0:15, cdf = ppois(0:15, lambda = lam))
+
+p3 <- ggplot(df_cdf, aes(x = k, y = cdf)) +
+  geom_step(color = "#e67e22", linewidth = 1.2, direction = "hv") +
+  geom_point(color = "#d35400", size = 2) +
+  geom_hline(yintercept = 0.5, linetype = "dotted", color = "gray40") +
+  geom_hline(yintercept = 0.95, linetype = "dashed", color = "red") +
+  annotate("text", x = 12, y = 0.92, label = "95% 信頼ライン", color = "red", family = font_family, size = 3.5) +
+  labs(
+    title = paste0("③ 累積確率分布 CDF (λ = ", lam, ")"),
+    subtitle = "k 回以下で収まる確率 P(X ≤ k)",
+    x = "発生回数 k",
+    y = "累積確率 P(X ≤ k)"
+  ) +
+  theme_minimal(base_family = font_family) +
+  theme(plot.title = element_text(face = "bold", size = 12))
+
+# 4. 到着間隔 (指数分布)
+rate_per_min <- lam / 60
+interval_sim <- rexp(10000, rate = rate_per_min)
+df_intervals <- data.frame(interval = interval_sim)
+df_exp_theory <- data.frame(t = seq(0, 80, length.out = 200)) %>%
+  mutate(density = dexp(t, rate = rate_per_min))
+
+p4 <- ggplot() +
+  geom_histogram(data = df_intervals, aes(x = interval, y = after_stat(density)),
+                 binwidth = 3, boundary = 0, fill = "#1abc9c", color = "white", alpha = 0.6) +
+  geom_line(data = df_exp_theory, aes(x = t, y = density), color = "#16a085", linewidth = 1.2) +
+  coord_cartesian(xlim = c(0, 80)) +
+  labs(
+    title = "④ 表裏一体: 到着間隔 (指数分布)",
+    subtitle = "平均間隔: 20分 (直後に来る確率が最も高い)",
+    x = "次の事象までの待ち時間 (分)",
+    y = "確率密度"
+  ) +
+  theme_minimal(base_family = font_family) +
+  theme(plot.title = element_text(face = "bold", size = 12))
+
+# 2x2 に統合
+(p1 + p2) / (p3 + p4)
+```
+
+---
+
+## 表裏一体の関係：「ポアソン分布」と「指数分布」
+
+ポアソン過程を観測するとき、**着目する視点（回数か時間か）**によって従う確率分布が切り替わります。
+
+| 視点 | 問い | 確率分布 | 特徴 |
+| :--- | :--- | :--- | :--- |
+| **回数を見る** | 一定時間内に**何回**起きるか？ | **ポアソン分布** | 離散型（0, 1, 2, ... 回） |
+| **時間を見る** | 事象が起きてから**何分後**に次が起きるか？ | **指数分布** | 連続型（0分以上） |
+
+1時間に平均 $\lambda = 3$ 回起きる場合、平均待ち時間は $\frac{1}{\lambda} = \frac{1}{3}\text{時間} = 20\text{分}$ となり、待ち時間は $\text{Exp}(\text{rate} = 3/\text{hour})$ に従います。
+
+---
+
+## 発展：実務データへの応用
+
+現実のデータでは、厳密なポアソン過程の前提が崩れるケースがあります。その場合は以下の手法へと拡張します。
+
+1. **時間帯による平均発生率の変化 $\lambda(t)$**
+   - 例: 昼食後の 14:00〜15:00 に利用客が集中する
+   - ➔ **非斉次ポアソン過程（Inhomogeneous Poisson Process）**
+2. **外部要因（気温・曜日・イベント）による影響**
+   - ➔ **ポアソン回帰分析（GLM: 一般化線形モデル）**: $\log(\lambda) = \beta_0 + \beta_1 X_1 + \dots$
+3. **事象が連鎖して発生する（過分散: 分散 > 平均）**
+   - 感染症や口コミの拡散など
+   - ➔ **負の二項分布（Negative Binomial Distribution）**

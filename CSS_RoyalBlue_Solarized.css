@@ -1,0 +1,22 @@
+/* Solarized Light の背景色 + Royal Blue の文字色 */
+:root {
+  --text-color: #002366;   /* Royal Blue */
+  --bg-color:   #fdf6e3;   /* Solarized Light 背景 */
+}
+
+body {
+  color: var(--text-color);
+  background-color: var(--bg-color);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-color);
+}
+
+a {
+  color: var(--text-color);
+}
+
+figcaption, caption {
+  color: var(--text-color);
+}
