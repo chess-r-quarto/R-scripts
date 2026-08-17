@@ -6,6 +6,7 @@ date: "2026-08-18"
 format:
   html:
     theme: simplex
+    css: CSS_RoyalBlue_Solarized.css
     toc: true
     toc-depth: 3
     toc-title: "目次"
