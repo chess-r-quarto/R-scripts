@@ -38,10 +38,12 @@ jobs:
             cp poisson_guide.html _site/index.html
             cp poisson_guide.html _site/poisson_guide.html
           fi
-          # 画像や動画、CSSファイルもコピー
+          # 画像や動画、CSS、Rスクリプト、QMDファイルもコピー
           cp *.gif _site/ 2>/dev/null || true
           cp *.mp4 _site/ 2>/dev/null || true
           cp *.css _site/ 2>/dev/null || true
+          cp *.R _site/ 2>/dev/null || true
+          cp *.qmd _site/ 2>/dev/null || true
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
