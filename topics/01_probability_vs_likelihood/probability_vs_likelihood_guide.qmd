@@ -3,20 +3,6 @@ title: "「確率（Probability）」と「尤度（Likelihood）」の決定的
 subtitle: "直感的な意味・数学的定義・gganimateによる動的可視化から最尤推定まで"
 author: "Antigravity Pair Programming"
 date: "2026-08-19"
-format:
-  html:
-    theme: simplex
-    css: CSS_RoyalBlue_Solarized.css
-    toc: true
-    toc-depth: 3
-    toc-title: "目次"
-    number-sections: true
-    code-fold: show
-    code-tools: true
-    highlight-style: github
-    embed-resources: true
-    fig-width: 10
-    fig-height: 6
 ---
 
 ```{r setup, include=FALSE}

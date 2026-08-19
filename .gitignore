@@ -19,3 +19,7 @@ node_modules/
 # Posit / RStudio
 .Rproj.user/
 .posit/
+
+/.quarto/
+_site/
+**/*.quarto_ipynb

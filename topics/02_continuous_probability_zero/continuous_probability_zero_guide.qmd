@@ -3,20 +3,6 @@ title: "「身長がピッタリ170cmである確率」はなぜ 0 なのか？"
 subtitle: "連続型確率変数における「確率ゼロのパラドックス」・確率密度と極限の直感理解"
 author: "Antigravity Pair Programming"
 date: "2026-08-19"
-format:
-  html:
-    theme: simplex
-    css: CSS_RoyalBlue_Solarized.css
-    toc: true
-    toc-depth: 3
-    toc-title: "目次"
-    number-sections: true
-    code-fold: show
-    code-tools: true
-    highlight-style: github
-    embed-resources: true
-    fig-width: 10
-    fig-height: 6
 ---
 
 ```{r setup, include=FALSE}

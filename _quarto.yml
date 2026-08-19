@@ -1,0 +1,41 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "StatQuest Visual Companion"
+  description: "StatQuest の名講義を R と gganimate で直感的に深掘りするインタラクティブ教材集"
+  navbar:
+    background: "#002366"
+    foreground: "#ffffff"
+    search: true
+    left:
+      - text: "🏠 ホーム"
+        href: index.qmd
+      - text: "📚 基礎概念"
+        menu:
+          - text: "① 確率 vs 尤度"
+            href: topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.qmd
+          - text: "② 連続変数の確率ゼロ (P(X=x)=0)"
+            href: topics/02_continuous_probability_zero/continuous_probability_zero_guide.qmd
+      - text: "📊 確率分布"
+        menu:
+          - text: "③ ポアソン分布 & 指数分布"
+            href: topics/03_poisson_distribution/poisson_guide.qmd
+    right:
+      - icon: github
+        href: https://github.com/chess-r-quarto/R-scripts
+
+format:
+  html:
+    theme: simplex
+    css: CSS_RoyalBlue_Solarized.css
+    toc: true
+    toc-depth: 3
+    toc-title: "目次"
+    number-sections: true
+    code-fold: show
+    code-tools: true
+    highlight-style: github
+    fig-width: 10
+    fig-height: 6
