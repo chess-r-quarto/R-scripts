@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Antigravity Pair Programming">
+<meta name="dcterms.date" content="2026-08-19">
+
+<title>「確率（Probability）」と「尤度（Likelihood）」の決定的な違い – StatQuest Visual Companion</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-bb62276ab45c84d9efd712f51ff97b5a.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-9f5bcaa82ba071dd3281774c33d04d20.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../CSS_RoyalBlue_Solarized.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">StatQuest Visual Companion</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">🏠 ホーム</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">📚 基礎概念</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-">    
+        <li>
+    <a class="dropdown-item" href="../../topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html">
+ <span class="dropdown-text">① 確率 vs 尤度</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../topics/02_continuous_probability_zero/continuous_probability_zero_guide.html">
+ <span class="dropdown-text">② 連続変数の確率ゼロ (P(X=x)=0)</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu--1" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">📊 確率分布</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu--1">    
+        <li>
+    <a class="dropdown-item" href="../../topics/03_poisson_distribution/poisson_guide.html">
+ <span class="dropdown-text">③ ポアソン分布 &amp; 指数分布</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/chess-r-quarto/R-scripts"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目次</h2>
+   
+  <ul>
+  <li><a href="#はじめになぜ確率と尤度は混乱するのか" id="toc-はじめになぜ確率と尤度は混乱するのか" class="nav-link active" data-scroll-target="#はじめになぜ確率と尤度は混乱するのか"><span class="header-section-number">1</span> はじめに：なぜ「確率」と「尤度」は混乱するのか？</a></li>
+  <li><a href="#決定的な違いの比較表" id="toc-決定的な違いの比較表" class="nav-link" data-scroll-target="#決定的な違いの比較表"><span class="header-section-number">2</span> 決定的な違いの比較表</a></li>
+  <li><a href="#動的ビジュアライゼーションgganimate-による直感理解" id="toc-動的ビジュアライゼーションgganimate-による直感理解" class="nav-link" data-scroll-target="#動的ビジュアライゼーションgganimate-による直感理解"><span class="header-section-number">3</span> 動的ビジュアライゼーション（gganimate による直感理解）</a>
+  <ul class="collapse">
+  <li><a href="#離散型モデルコイン投げ二項分布-n10-k7" id="toc-離散型モデルコイン投げ二項分布-n10-k7" class="nav-link" data-scroll-target="#離散型モデルコイン投げ二項分布-n10-k7"><span class="header-section-number">3.1</span> 離散型モデル：コイン投げ（二項分布 <span class="math inline">\(n=10, k=7\)</span>）</a></li>
+  <li><a href="#連続型モデル製品の重量測定正規分布-x-12.0textg-sigma-2.0" id="toc-連続型モデル製品の重量測定正規分布-x-12.0textg-sigma-2.0" class="nav-link" data-scroll-target="#連続型モデル製品の重量測定正規分布-x-12.0textg-sigma-2.0"><span class="header-section-number">3.2</span> 連続型モデル：製品の重量測定（正規分布 <span class="math inline">\(x = 12.0\text{g}, \sigma = 2.0\)</span>）</a></li>
+  </ul></li>
+  <li><a href="#数式と理論計算rコードでの実践" id="toc-数式と理論計算rコードでの実践" class="nav-link" data-scroll-target="#数式と理論計算rコードでの実践"><span class="header-section-number">4</span> 数式と理論計算（Rコードでの実践）</a>
+  <ul class="collapse">
+  <li><a href="#二項分布における計算" id="toc-二項分布における計算" class="nav-link" data-scroll-target="#二項分布における計算"><span class="header-section-number">4.1</span> 1. 二項分布における計算</a></li>
+  </ul></li>
+  <li><a href="#最尤推定法mle-maximum-likelihood-estimation" id="toc-最尤推定法mle-maximum-likelihood-estimation" class="nav-link" data-scroll-target="#最尤推定法mle-maximum-likelihood-estimation"><span class="header-section-number">5</span> 最尤推定法（MLE: Maximum Likelihood Estimation）</a>
+  <ul class="collapse">
+  <li><a href="#なぜ尤度を最大化するのか" id="toc-なぜ尤度を最大化するのか" class="nav-link" data-scroll-target="#なぜ尤度を最大化するのか"><span class="header-section-number">5.1</span> なぜ「尤度」を最大化するのか？</a></li>
+  <li><a href="#なぜ対数尤度log-likelihoodをとるのか" id="toc-なぜ対数尤度log-likelihoodをとるのか" class="nav-link" data-scroll-target="#なぜ対数尤度log-likelihoodをとるのか"><span class="header-section-number">5.2</span> なぜ「対数尤度（Log-Likelihood）」をとるのか？</a></li>
+  <li><a href="#r-による最尤推定の実装例" id="toc-r-による最尤推定の実装例" class="nav-link" data-scroll-target="#r-による最尤推定の実装例"><span class="header-section-number">5.3</span> R による最尤推定の実装例</a></li>
+  </ul></li>
+  <li><a href="#ベイズ統計における架け橋確率と尤度が出会う場所" id="toc-ベイズ統計における架け橋確率と尤度が出会う場所" class="nav-link" data-scroll-target="#ベイズ統計における架け橋確率と尤度が出会う場所"><span class="header-section-number">6</span> ベイズ統計における架け橋（確率と尤度が出会う場所）</a></li>
+  <li><a href="#理解度チェッククイズ" id="toc-理解度チェッククイズ" class="nav-link" data-scroll-target="#理解度チェッククイズ"><span class="header-section-number">7</span> 理解度チェッククイズ</a></li>
+  <li><a href="#まとめ" id="toc-まとめ" class="nav-link" data-scroll-target="#まとめ"><span class="header-section-number">8</span> まとめ</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">「確率（Probability）」と「尤度（Likelihood）」の決定的な違い</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
+<p class="subtitle lead">直感的な意味・数学的定義・gganimateによる動的可視化から最尤推定まで</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Antigravity Pair Programming </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">August 19, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="はじめになぜ確率と尤度は混乱するのか" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="はじめになぜ確率と尤度は混乱するのか"><span class="header-section-number">1</span> はじめに：なぜ「確率」と「尤度」は混乱するのか？</h2>
+<p>統計学や機械学習を学び始めると、必ずぶつかる壁が<strong>「確率（Probability）」と「尤度（Likelihood：ゆうど）」の違い</strong>です。</p>
+<p>日常会話において、この2つの言葉はほぼ同じ意味（「確からしさ」や「可能性」）で使われます。しかし、<strong>統計学の世界では全く異なる数学的対象</strong>であり、視点（アプローチ）が真逆です。</p>
+<div class="callout callout-style-simple callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>🧭 核心となる一言要約
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong>確率（Probability）</strong>: <strong>「前提（パラメータ <span class="math inline">\(\theta\)</span>）が分かっているとき、どんなデータ <span class="math inline">\(x\)</span> が得られるか？」</strong>を語る指標（<strong>順問題 / 未来予測</strong>）</li>
+<li><strong>尤度（Likelihood）</strong>: <strong>「得られたデータ <span class="math inline">\(x\)</span> が分かっているとき、どの前提（パラメータ <span class="math inline">\(\theta\)</span>）がもっともらしいか？」</strong>を語る指標（<strong>逆問題 / 原因推定</strong>）</li>
+</ul>
+</div>
+</div>
+<hr>
+</section>
+<section id="決定的な違いの比較表" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="決定的な違いの比較表"><span class="header-section-number">2</span> 決定的な違いの比較表</h2>
+<p>両者の根本的な違いを一覧表で整理します。</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">比較項目</th>
+<th style="text-align: left;">確率（Probability）</th>
+<th style="text-align: left;">尤度（Likelihood）</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>数式表現</strong></td>
+<td style="text-align: left;"><span class="math inline">\(P(X = x \mid \theta)\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(L(\theta \mid x) = P(X = x \mid \theta)\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>何が固定（既知）か？</strong></td>
+<td style="text-align: left;"><strong>パラメータ <span class="math inline">\(\theta\)</span></strong>（母数・コインの性質など）</td>
+<td style="text-align: left;"><strong>観測データ <span class="math inline">\(x\)</span></strong>（標本・実験結果）</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>何が変数（動くもの）か？</strong></td>
+<td style="text-align: left;"><strong>データ <span class="math inline">\(X\)</span></strong>（起こりうるすべての事象）</td>
+<td style="text-align: left;"><strong>パラメータ <span class="math inline">\(\theta\)</span></strong>（推定したい候補値）</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>合計 / 積分の値</strong></td>
+<td style="text-align: left;">すべての事象を足すと <strong>必ず <span class="math inline">\(1\)</span>（<span class="math inline">\(100\%\)</span>）</strong></td>
+<td style="text-align: left;">全パラメータで積分しても <strong><span class="math inline">\(1\)</span> にはならない</strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>グラフの種類</strong></td>
+<td style="text-align: left;"><strong>確率分布</strong>（横軸: データ <span class="math inline">\(x\)</span>）</td>
+<td style="text-align: left;"><strong>尤度関数</strong>（横軸: パラメータ <span class="math inline">\(\theta\)</span>）</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>時間のイメージ</strong></td>
+<td style="text-align: left;"><strong>未来の予測</strong>（コインを投げる前）</td>
+<td style="text-align: left;"><strong>過去の解釈・原因推定</strong>（コインを投げた後）</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>代表的な問い</strong></td>
+<td style="text-align: left;">「歪みのないコイン（<span class="math inline">\(p=0.5\)</span>）を10回投げたら、表が7回出る確率は？」</td>
+<td style="text-align: left;">「コインを10回投げたら表が7回出た。このコインの表が出る確率 <span class="math inline">\(p\)</span> はいくつか？」</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>⚠️ 尤度は「確率」ではない！
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>数式上は <span class="math inline">\(L(\theta \mid x) = P(X = x \mid \theta)\)</span> と同じ計算式を使いますが、<strong>「何を変数として見ているか」</strong>が異なります。 尤度 <span class="math inline">\(L(\theta \mid x)\)</span> はパラメータ <span class="math inline">\(\theta\)</span> の関数であり、<span class="math inline">\(\int L(\theta \mid x) d\theta = 1\)</span> にはなりません。したがって、<strong>「パラメータが <span class="math inline">\(\theta\)</span> である確率」とは呼べず、「尤もらしさ（Likelihood）」</strong>と呼びます。</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="動的ビジュアライゼーションgganimate-による直感理解" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="動的ビジュアライゼーションgganimate-による直感理解"><span class="header-section-number">3</span> 動的ビジュアライゼーション（gganimate による直感理解）</h2>
+<p>両者の関係性を最も直感的に理解できるのが、<strong>「確率分布の棒の高さが、リアルタイムに尤度曲線を描いていく」</strong>アニメーションです。</p>
+<section id="離散型モデルコイン投げ二項分布-n10-k7" class="level3" data-number="3.1">
+<h3 data-number="3.1" class="anchored" data-anchor-id="離散型モデルコイン投げ二項分布-n10-k7"><span class="header-section-number">3.1</span> 離散型モデル：コイン投げ（二項分布 <span class="math inline">\(n=10, k=7\)</span>）</h3>
+<p>「コインを10回投げたら表が7回出た（<span class="math inline">\(k=7\)</span>）」という状況を考えます。</p>
+<ul>
+<li><strong>左側【確率の視点】</strong>: コインの歪みパラメータ <span class="math inline">\(p\)</span>（表が出る確率）を <span class="math inline">\(0.05 \to 0.95\)</span> へスキャンしたとき、確率分布全体の形が動きます。その中で<strong>「観測された <span class="math inline">\(k=7\)</span>」の赤い棒の高さ</strong>に注目してください。</li>
+<li><strong>右側【尤度の視点】</strong>: 左側で変化する「<span class="math inline">\(k=7\)</span> の棒の高さ」を拾い集め、横軸をパラメータ <span class="math inline">\(p\)</span>、縦軸を尤度としてプロットしたものが右側の赤い曲線です。</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="probability_vs_likelihood.gif" class="img-fluid figure-img"></p>
+<figcaption>【徹底比較】確率（Probability）vs 尤度（Likelihood）のアニメーション</figcaption>
+</figure>
+</div>
+<section id="アニメーションからわかる重要なポイント" class="level4" data-number="3.1.1">
+<h4 data-number="3.1.1" class="anchored" data-anchor-id="アニメーションからわかる重要なポイント"><span class="header-section-number">3.1.1</span> アニメーションからわかる重要なポイント</h4>
+<ol type="1">
+<li><strong>左の赤い棒の高さ ＝ 右の赤い点の高さ</strong>: どの瞬間（どの <span class="math inline">\(p\)</span>）においても、左側の <span class="math inline">\(P(X=7 \mid p)\)</span> の値が、そのまま右側の尤度 <span class="math inline">\(L(p \mid X=7)\)</span> の値になっています。</li>
+<li><strong>最尤推定量（MLE: Maximum Likelihood Estimator）</strong>: パラメータ <span class="math inline">\(p = 0.70\)</span> の瞬間に、左側の <span class="math inline">\(k=7\)</span> の棒が最も高くなり、右側の尤度関数の山頂（最大値 <span class="math inline">\(\approx 0.267\)</span>）に到達します。これが<strong>「最尤法（もっとも観測データを生じやすいパラメータを選ぶ手法）」</strong>です。</li>
+<li><strong>合計値の違い</strong>:
+<ul>
+<li>左側はどの瞬間も、青い棒＋赤い棒の合計は常に <span class="math inline">\(1.0\)</span>（<span class="math inline">\(100\%\)</span>）です。</li>
+<li>右側の赤い曲線の下側の面積（積分値）は <span class="math inline">\(\frac{1}{11} \approx 0.0909\)</span> であり、<span class="math inline">\(1.0\)</span> にはなりません。</li>
+</ul></li>
+</ol>
+<hr>
+</section>
+</section>
+<section id="連続型モデル製品の重量測定正規分布-x-12.0textg-sigma-2.0" class="level3" data-number="3.2">
+<h3 data-number="3.2" class="anchored" data-anchor-id="連続型モデル製品の重量測定正規分布-x-12.0textg-sigma-2.0"><span class="header-section-number">3.2</span> 連続型モデル：製品の重量測定（正規分布 <span class="math inline">\(x = 12.0\text{g}, \sigma = 2.0\)</span>）</h3>
+<p>連続値（身長、体重、測定値など）の場合、特定の一点が得られる確率は数学的に <span class="math inline">\(0\)</span> になります。そのため、確率密度の「高さ（確率密度関数 <span class="math inline">\(f(x)\)</span> の値）」を尤度として用います。</p>
+<ul>
+<li><strong>左側【確率密度の視点】</strong>: 平均パラメータ <span class="math inline">\(\mu\)</span> が動くにつれて、正規分布の釣鐘型が左右に移動します。固定された観測点 <span class="math inline">\(x = 12.0\)</span> における垂線の高さ（密度）が上下します。</li>
+<li><strong>右側【尤度関数の視点】</strong>: その垂線の高さを <span class="math inline">\(\mu\)</span> に対してプロットしたものが右側の尤度曲線です。</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="probability_vs_likelihood_continuous.gif" class="img-fluid figure-img"></p>
+<figcaption>【連続分布版】確率密度（Probability Density）vs 尤度（Likelihood）のアニメーション</figcaption>
+</figure>
+</div>
+<hr>
+</section>
+</section>
+<section id="数式と理論計算rコードでの実践" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="数式と理論計算rコードでの実践"><span class="header-section-number">4</span> 数式と理論計算（Rコードでの実践）</h2>
+<section id="二項分布における計算" class="level3" data-number="4.1">
+<h3 data-number="4.1" class="anchored" data-anchor-id="二項分布における計算"><span class="header-section-number">4.1</span> 1. 二項分布における計算</h3>
+<p>コインを <span class="math inline">\(n = 10\)</span> 回投げて表が <span class="math inline">\(k\)</span> 回出る確率質量関数（PMF）は以下で表されます。</p>
+<p><span class="math display">\[P(X = k \mid p) = \binom{n}{k} p^k (1-p)^{n-k}\]</span></p>
+<section id="確率の計算p-0.5-を固定" class="level4" data-number="4.1.1">
+<h4 data-number="4.1.1" class="anchored" data-anchor-id="確率の計算p-0.5-を固定"><span class="header-section-number">4.1.1</span> 確率の計算（<span class="math inline">\(p = 0.5\)</span> を固定）</h4>
+<p>「公平なコイン（<span class="math inline">\(p=0.5\)</span>）を10回投げて表が7回出る確率」： <span class="math display">\[P(X = 7 \mid p = 0.5) = \binom{10}{7} (0.5)^7 (0.5)^3 = 120 \times \frac{1}{1024} \approx 0.1172\]</span></p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 確率の計算 (p = 0.5 固定)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>prob_k7 <span class="ot">&lt;-</span> <span class="fu">dbinom</span>(<span class="dv">7</span>, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">prob =</span> <span class="fl">0.5</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"P(X = 7 | p = 0.5) = %.4f (約 %.2f%%)</span><span class="sc">\n</span><span class="st">"</span>, prob_k7, prob_k7 <span class="sc">*</span> <span class="dv">100</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>P(X = 7 | p = 0.5) = 0.1172 (約 11.72%)</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 確率の合計は 1 になるか？</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>sum_probs <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">dbinom</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">10</span>, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">prob =</span> <span class="fl">0.5</span>))</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"k=0..10 の確率合計 = %.1f</span><span class="sc">\n</span><span class="st">"</span>, sum_probs))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>k=0..10 の確率合計 = 1.0</code></pre>
+</div>
+</div>
+</section>
+<section id="尤度の計算k-7-を固定" class="level4" data-number="4.1.2">
+<h4 data-number="4.1.2" class="anchored" data-anchor-id="尤度の計算k-7-を固定"><span class="header-section-number">4.1.2</span> 尤度の計算（<span class="math inline">\(k = 7\)</span> を固定）</h4>
+<p>「表が7回出たとき、コインのパラメータが <span class="math inline">\(p = 0.5\)</span> や <span class="math inline">\(p = 0.7\)</span> である尤度」： <span class="math display">\[L(p = 0.5 \mid X = 7) = P(X = 7 \mid p = 0.5) \approx 0.1172\]</span> <span class="math display">\[L(p = 0.7 \mid X = 7) = P(X = 7 \mid p = 0.7) \approx 0.2668\]</span></p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 尤度の計算 (k = 7 固定)</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>lik_p05 <span class="ot">&lt;-</span> <span class="fu">dbinom</span>(<span class="dv">7</span>, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">prob =</span> <span class="fl">0.5</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>lik_p07 <span class="ot">&lt;-</span> <span class="fu">dbinom</span>(<span class="dv">7</span>, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">prob =</span> <span class="fl">0.7</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"L(p = 0.5 | X = 7) = %.4f</span><span class="sc">\n</span><span class="st">"</span>, lik_p05))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>L(p = 0.5 | X = 7) = 0.1172</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"L(p = 0.7 | X = 7) = %.4f</span><span class="sc">\n</span><span class="st">"</span>, lik_p07))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>L(p = 0.7 | X = 7) = 0.2668</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"p=0.7 は p=0.5 に比べて約 %.2f 倍もっともらしい！</span><span class="sc">\n</span><span class="st">"</span>, lik_p07 <span class="sc">/</span> lik_p05))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>p=0.7 は p=0.5 に比べて約 2.28 倍もっともらしい！</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 尤度関数を p ∈ [0, 1] で積分するとどうなるか？</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>lik_integral <span class="ot">&lt;-</span> <span class="fu">integrate</span>(<span class="cf">function</span>(p) <span class="fu">dbinom</span>(<span class="dv">7</span>, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">prob =</span> p), <span class="at">lower =</span> <span class="dv">0</span>, <span class="at">upper =</span> <span class="dv">1</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"尤度関数の積分値 = %.4f (≠ 1.0 なので確率ではない)</span><span class="sc">\n</span><span class="st">"</span>, lik_integral<span class="sc">$</span>value))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>尤度関数の積分値 = 0.0909 (≠ 1.0 なので確率ではない)</code></pre>
+</div>
+</div>
+<hr>
+</section>
+</section>
+</section>
+<section id="最尤推定法mle-maximum-likelihood-estimation" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="最尤推定法mle-maximum-likelihood-estimation"><span class="header-section-number">5</span> 最尤推定法（MLE: Maximum Likelihood Estimation）</h2>
+<section id="なぜ尤度を最大化するのか" class="level3" data-number="5.1">
+<h3 data-number="5.1" class="anchored" data-anchor-id="なぜ尤度を最大化するのか"><span class="header-section-number">5.1</span> なぜ「尤度」を最大化するのか？</h3>
+<p>現実のデータ分析では、<strong>「真のパラメータ <span class="math inline">\(\theta\)</span>」は神様しか知りません</strong>。私たちが手元に持っているのは<strong>「観測されたデータ <span class="math inline">\(x\)</span>」だけ</strong>です。</p>
+<p>そこで、<strong>「手元のデータが得られる確率が最も高くなるようなパラメータを選べば、それが最も真相に近いだろう」</strong>と考えるのが<strong>最尤法（MLE）</strong>です。</p>
+<p><span class="math display">\[\hat{\theta}_{\text{MLE}} = \arg\max_{\theta} L(\theta \mid x)\]</span></p>
+</section>
+<section id="なぜ対数尤度log-likelihoodをとるのか" class="level3" data-number="5.2">
+<h3 data-number="5.2" class="anchored" data-anchor-id="なぜ対数尤度log-likelihoodをとるのか"><span class="header-section-number">5.2</span> なぜ「対数尤度（Log-Likelihood）」をとるのか？</h3>
+<p>独立な <span class="math inline">\(n\)</span> 個のデータ <span class="math inline">\(x_1, x_2, \dots, x_n\)</span> が得られたとき、全体の尤度は各確率密度の<strong>積（掛け算）</strong>になります。</p>
+<p><span class="math display">\[L(\theta \mid x_1, \dots, x_n) = \prod_{i=1}^n f(x_i \mid \theta)\]</span></p>
+<p>このままでは計算が非常に困難（掛け算の微分は複雑、コンピュータ上で <span class="math inline">\(0\)</span> に近くなりすぎてアンダーフローする）なため、自然対数をとった<strong>対数尤度関数 <span class="math inline">\(\ell(\theta)\)</span></strong> を最大化します。</p>
+<p><span class="math display">\[\ell(\theta) = \ln L(\theta \mid x_1, \dots, x_n) = \sum_{i=1}^n \ln f(x_i \mid \theta)\]</span></p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>💡 対数をとっても最大値の位置は変わらない
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>対数関数 <span class="math inline">\(\ln(y)\)</span> は単調増加関数（<span class="math inline">\(y_1 &lt; y_2 \iff \ln y_1 &lt; \ln y_2\)</span>）であるため、<span class="math inline">\(L(\theta)\)</span> を最大化する <span class="math inline">\(\theta\)</span> と、<span class="math inline">\(\ln L(\theta)\)</span> を最大化する <span class="math inline">\(\theta\)</span> は<strong>完全に一致</strong>します。</p>
+</div>
+</div>
+</section>
+<section id="r-による最尤推定の実装例" class="level3" data-number="5.3">
+<h3 data-number="5.3" class="anchored" data-anchor-id="r-による最尤推定の実装例"><span class="header-section-number">5.3</span> R による最尤推定の実装例</h3>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 観測データ: コインを10回投げて表が7回</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="dv">7</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 負の対数尤度関数 (optim は最小化を行うためマイナスをつける)</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>neg_log_lik <span class="ot">&lt;-</span> <span class="cf">function</span>(p) {</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (p <span class="sc">&lt;=</span> <span class="dv">0</span> <span class="sc">||</span> p <span class="sc">&gt;=</span> <span class="dv">1</span>) <span class="fu">return</span>(<span class="cn">Inf</span>)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="sc">-</span><span class="fu">dbinom</span>(k, <span class="at">size =</span> n, <span class="at">prob =</span> p, <span class="at">log =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="co"># 最適化を実行 (初期値 p = 0.5)</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>opt_res <span class="ot">&lt;-</span> <span class="fu">optim</span>(<span class="at">par =</span> <span class="fl">0.5</span>, <span class="at">fn =</span> neg_log_lik, <span class="at">method =</span> <span class="st">"L-BFGS-B"</span>, <span class="at">lower =</span> <span class="fl">0.001</span>, <span class="at">upper =</span> <span class="fl">0.999</span>)</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"=== 最尤推定の結果 ===</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>=== 最尤推定の結果 ===</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"推定されたパラメータ p̂_MLE : %.4f (理論値 k/n = %.1f)</span><span class="sc">\n</span><span class="st">"</span>, opt_res<span class="sc">$</span>par, k <span class="sc">/</span> n))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>推定されたパラメータ p̂_MLE : 0.7000 (理論値 k/n = 0.7)</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"最大対数尤度                 : %.4f</span><span class="sc">\n</span><span class="st">"</span>, <span class="sc">-</span>opt_res<span class="sc">$</span>value))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>最大対数尤度                 : -1.3212</code></pre>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="ベイズ統計における架け橋確率と尤度が出会う場所" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="ベイズ統計における架け橋確率と尤度が出会う場所"><span class="header-section-number">6</span> ベイズ統計における架け橋（確率と尤度が出会う場所）</h2>
+<p>「尤度はパラメータの確率ではない」と述べましたが、<strong>「事前確率（事前知識）」と組み合わせることで、パラメータの確率（事後確率）に変換することができます</strong>。これが<strong>ベイズの定理</strong>です。</p>
+<p><span class="math display">\[\underbrace{P(\theta \mid x)}_{\text{事後確率（パラメータの確率）}} = \frac{\overbrace{P(x \mid \theta)}^{\text{尤度 } L(\theta \mid x)} \times \overbrace{P(\theta)}^{\text{事前確率}}}{\underbrace{P(x)}_{\text{周辺尤度（正規化定数）}}}\]</span></p>
+<p><span class="math display">\[P(\theta \mid x) \propto L(\theta \mid x) \times P(\theta)\]</span></p>
+<div class="callout callout-style-simple callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>🤝 統計学の2大学派における位置づけ
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong>頻度論（古典統計学）</strong>: パラメータ <span class="math inline">\(\theta\)</span> は「固定された1つの未知の真値」。<span class="math inline">\(\theta\)</span> の確率は考えず、<strong>尤度 <span class="math inline">\(L(\theta \mid x)\)</span> を最大化（MLE）</strong>して点推定・区間推定を行う。</li>
+<li><strong>ベイズ統計学</strong>: パラメータ <span class="math inline">\(\theta\)</span> 自体も不確実性を持つ確率変数として扱う。<strong>尤度 <span class="math inline">\(L(\theta \mid x)\)</span> に事前分布 <span class="math inline">\(P(\theta)\)</span> を掛けて正規化</strong>し、事後分布 <span class="math inline">\(P(\theta \mid x)\)</span> を求める。</li>
+</ul>
+</div>
+</div>
+<hr>
+</section>
+<section id="理解度チェッククイズ" class="level2" data-number="7">
+<h2 data-number="7" class="anchored" data-anchor-id="理解度チェッククイズ"><span class="header-section-number">7</span> 理解度チェッククイズ</h2>
+<p>理解度を試すための3つのクイズです。クリックして正解と解説を確認してください。</p>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>❓ 第1問：「サイコロを1回振って 6 が出る確率」と「6 の目が出たときのサイコロがイカサマである尤度」の違いは？
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>【解答】</strong> - <strong>確率</strong>: サイコロの性質（公平: <span class="math inline">\(p=1/6\)</span>）を前提として、未来の結果「6の目」が出る可能性を語る（<span class="math inline">\(= 1/6\)</span>）。 - <strong>尤度</strong>: 現実に「6の目」が出たという結果をもとに、サイコロの性質（イカサマ度合い <span class="math inline">\(p\)</span>）の尤もらしさを評価する。例えば「6が出やすいサイコロ（<span class="math inline">\(p=0.5\)</span>）」の尤度は <span class="math inline">\(0.5\)</span>、「公平なサイコロ（<span class="math inline">\(p=1/6\)</span>）」の尤度は約 <span class="math inline">\(0.167\)</span> となり、前者の方が尤度が高くなります。</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>❓ 第2問：尤度関数 <span class="math inline">\(L(\theta \mid x)\)</span> の最大値が <span class="math inline">\(1\)</span> を超えることはあるか？
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>【解答】</strong> <strong>あります（特に連続型確率変数の場合）</strong>。 離散型分布の場合、<span class="math inline">\(L(\theta \mid x) = P(X=x \mid \theta) \le 1\)</span> ですが、連続型分布（正規分布など）の場合、<span class="math inline">\(L(\theta \mid x) = f(x \mid \theta)\)</span> は確率密度関数の値（高さ）であるため、分散 <span class="math inline">\(\sigma^2\)</span> が非常に小さい場合などは <span class="math inline">\(1\)</span> を大きく超えることがあります（例えば <span class="math inline">\(\sigma = 0.1\)</span> のとき正規分布のピークの高さは約 <span class="math inline">\(3.99\)</span>）。 これは、尤度が確率そのものではない決定的な証拠の1つです。</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>❓ 第3問：「尤度比（Likelihood Ratio）」とは何か？何に使えるか？
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>【解答】</strong> 2つの異なるパラメータ仮説 <span class="math inline">\(\theta_0\)</span> と <span class="math inline">\(\theta_1\)</span> に対する尤度の比率 <span class="math inline">\(\frac{L(\theta_1 \mid x)}{L(\theta_0 \mid x)}\)</span> のことです。 「得られたデータのもとで、仮説1は仮説0の何倍尤もらしいか」を数値化でき、統計的仮説検定（尤度比検定）やモデル選択（AIC/BIC）、ベイズ更新のオッズ比などで中心的な役割を果たします。</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="まとめ" class="level2" data-number="8">
+<h2 data-number="8" class="anchored" data-anchor-id="まとめ"><span class="header-section-number">8</span> まとめ</h2>
+<ol type="1">
+<li><strong>確率（Probability）</strong>は、<strong>「パラメータ固定 <span class="math inline">\(\to\)</span> データの分布」</strong>を語る指標であり、足すと必ず <span class="math inline">\(1\)</span> になる。</li>
+<li><strong>尤度（Likelihood）</strong>は、<strong>「データ固定 <span class="math inline">\(\to\)</span> パラメータの尤もらしさ」</strong>を測る指標であり、パラメータの確率ではない。</li>
+<li><strong>最尤法（MLE）</strong>は、手元の観測データの尤度（または対数尤度）を最大化するパラメータを探す王道の手法である。</li>
+<li><strong>ベイズ統計</strong>では、尤度に事前確率を掛け合わせることで、パラメータの事後確率へと昇華させる。</li>
+</ol>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const cellDetails = window.document.querySelectorAll(".cell details.code-fold");
+        for (let i=0; i<cellDetails.length; i++) {
+          const details = cellDetails[i];
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell div.sourceCode.cell-code");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "「確率（Probability）」と「尤度（Likelihood）」の決定的な違い"</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="an">subtitle:</span><span class="co"> "直感的な意味・数学的定義・gganimateによる動的可視化から最尤推定まで"</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "Antigravity Pair Programming"</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> "2026-08-19"</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="in">```{r setup, include=FALSE}</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>({</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(ggplot2)</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(dplyr)</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(tidyr)</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(patchwork)</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>font_family <span class="ot">&lt;-</span> <span class="st">"Hiragino Sans"</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a><span class="fu">## はじめに：なぜ「確率」と「尤度」は混乱するのか？</span></span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>統計学や機械学習を学び始めると、必ずぶつかる壁が**「確率（Probability）」と「尤度（Likelihood：ゆうど）」の違い**です。</span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>日常会話において、この2つの言葉はほぼ同じ意味（「確からしさ」や「可能性」）で使われます。しかし、**統計学の世界では全く異なる数学的対象**であり、視点（アプローチ）が真逆です。</span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>::: {.callout-important appearance="simple"}</span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🧭 核心となる一言要約</span></span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**確率（Probability）**: **「前提（パラメータ $\theta$）が分かっているとき、どんなデータ $x$ が得られるか？」**を語る指標（**順問題 / 未来予測**）</span>
+<span id="cb19-27"><a href="#cb19-27" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**尤度（Likelihood）**: **「得られたデータ $x$ が分かっているとき、どの前提（パラメータ $\theta$）がもっともらしいか？」**を語る指標（**逆問題 / 原因推定**）</span>
+<span id="cb19-28"><a href="#cb19-28" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb19-29"><a href="#cb19-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-30"><a href="#cb19-30" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb19-31"><a href="#cb19-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-32"><a href="#cb19-32" aria-hidden="true" tabindex="-1"></a><span class="fu">## 決定的な違いの比較表</span></span>
+<span id="cb19-33"><a href="#cb19-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-34"><a href="#cb19-34" aria-hidden="true" tabindex="-1"></a>両者の根本的な違いを一覧表で整理します。</span>
+<span id="cb19-35"><a href="#cb19-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-36"><a href="#cb19-36" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 比較項目 <span class="pp">|</span> 確率（Probability） <span class="pp">|</span> 尤度（Likelihood） <span class="pp">|</span></span>
+<span id="cb19-37"><a href="#cb19-37" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">|</span></span>
+<span id="cb19-38"><a href="#cb19-38" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **数式表現** <span class="pp">|</span> $P(X = x \mid \theta)$ <span class="pp">|</span> $L(\theta \mid x) = P(X = x \mid \theta)$ <span class="pp">|</span></span>
+<span id="cb19-39"><a href="#cb19-39" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **何が固定（既知）か？** | **パラメータ $\theta$**（母数・コインの性質など） | **観測データ $x$**（標本・実験結果） <span class="pp">|</span></span>
+<span id="cb19-40"><a href="#cb19-40" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **何が変数（動くもの）か？** | **データ $X$**（起こりうるすべての事象） | **パラメータ $\theta$**（推定したい候補値） <span class="pp">|</span></span>
+<span id="cb19-41"><a href="#cb19-41" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **合計 / 積分の値** | すべての事象を足すと **必ず $1$（$100\%$）** | 全パラメータで積分しても **$1$ にはならない** <span class="pp">|</span></span>
+<span id="cb19-42"><a href="#cb19-42" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **グラフの種類** | **確率分布**（横軸: データ $x$） | **尤度関数**（横軸: パラメータ $\theta$） <span class="pp">|</span></span>
+<span id="cb19-43"><a href="#cb19-43" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **時間のイメージ** | **未来の予測**（コインを投げる前） | **過去の解釈・原因推定**（コインを投げた後） <span class="pp">|</span></span>
+<span id="cb19-44"><a href="#cb19-44" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **代表的な問い** <span class="pp">|</span> 「歪みのないコイン（$p=0.5$）を10回投げたら、表が7回出る確率は？」 <span class="pp">|</span> 「コインを10回投げたら表が7回出た。このコインの表が出る確率 $p$ はいくつか？」 <span class="pp">|</span></span>
+<span id="cb19-45"><a href="#cb19-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-46"><a href="#cb19-46" aria-hidden="true" tabindex="-1"></a>::: {.callout-note}</span>
+<span id="cb19-47"><a href="#cb19-47" aria-hidden="true" tabindex="-1"></a><span class="fu">### ⚠️ 尤度は「確率」ではない！</span></span>
+<span id="cb19-48"><a href="#cb19-48" aria-hidden="true" tabindex="-1"></a>数式上は $L(\theta \mid x) = P(X = x \mid \theta)$ と同じ計算式を使いますが、**「何を変数として見ているか」**が異なります。</span>
+<span id="cb19-49"><a href="#cb19-49" aria-hidden="true" tabindex="-1"></a>尤度 $L(\theta \mid x)$ はパラメータ $\theta$ の関数であり、$\int L(\theta \mid x) d\theta = 1$ にはなりません。したがって、**「パラメータが $\theta$ である確率」とは呼べず、「尤もらしさ（Likelihood）」**と呼びます。</span>
+<span id="cb19-50"><a href="#cb19-50" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb19-51"><a href="#cb19-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-52"><a href="#cb19-52" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb19-53"><a href="#cb19-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-54"><a href="#cb19-54" aria-hidden="true" tabindex="-1"></a><span class="fu">## 動的ビジュアライゼーション（gganimate による直感理解）</span></span>
+<span id="cb19-55"><a href="#cb19-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-56"><a href="#cb19-56" aria-hidden="true" tabindex="-1"></a>両者の関係性を最も直感的に理解できるのが、**「確率分布の棒の高さが、リアルタイムに尤度曲線を描いていく」**アニメーションです。</span>
+<span id="cb19-57"><a href="#cb19-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-58"><a href="#cb19-58" aria-hidden="true" tabindex="-1"></a><span class="fu">### 離散型モデル：コイン投げ（二項分布 $n=10, k=7$）</span></span>
+<span id="cb19-59"><a href="#cb19-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-60"><a href="#cb19-60" aria-hidden="true" tabindex="-1"></a>「コインを10回投げたら表が7回出た（$k=7$）」という状況を考えます。</span>
+<span id="cb19-61"><a href="#cb19-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-62"><a href="#cb19-62" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**左側【確率の視点】**: コインの歪みパラメータ $p$（表が出る確率）を $0.05 \to 0.95$ へスキャンしたとき、確率分布全体の形が動きます。その中で**「観測された $k=7$」の赤い棒の高さ**に注目してください。</span>
+<span id="cb19-63"><a href="#cb19-63" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**右側【尤度の視点】**: 左側で変化する「$k=7$ の棒の高さ」を拾い集め、横軸をパラメータ $p$、縦軸を尤度としてプロットしたものが右側の赤い曲線です。</span>
+<span id="cb19-64"><a href="#cb19-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-65"><a href="#cb19-65" aria-hidden="true" tabindex="-1"></a><span class="al">![【徹底比較】確率（Probability）vs 尤度（Likelihood）のアニメーション](probability_vs_likelihood.gif)</span></span>
+<span id="cb19-66"><a href="#cb19-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-67"><a href="#cb19-67" aria-hidden="true" tabindex="-1"></a><span class="fu">#### アニメーションからわかる重要なポイント</span></span>
+<span id="cb19-68"><a href="#cb19-68" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**左の赤い棒の高さ ＝ 右の赤い点の高さ**: </span>
+<span id="cb19-69"><a href="#cb19-69" aria-hidden="true" tabindex="-1"></a>   どの瞬間（どの $p$）においても、左側の $P(X=7 \mid p)$ の値が、そのまま右側の尤度 $L(p \mid X=7)$ の値になっています。</span>
+<span id="cb19-70"><a href="#cb19-70" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**最尤推定量（MLE: Maximum Likelihood Estimator）**:</span>
+<span id="cb19-71"><a href="#cb19-71" aria-hidden="true" tabindex="-1"></a>   パラメータ $p = 0.70$ の瞬間に、左側の $k=7$ の棒が最も高くなり、右側の尤度関数の山頂（最大値 $\approx 0.267$）に到達します。これが**「最尤法（もっとも観測データを生じやすいパラメータを選ぶ手法）」**です。</span>
+<span id="cb19-72"><a href="#cb19-72" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**合計値の違い**:</span>
+<span id="cb19-73"><a href="#cb19-73" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>左側はどの瞬間も、青い棒＋赤い棒の合計は常に $1.0$（$100\%$）です。</span>
+<span id="cb19-74"><a href="#cb19-74" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>右側の赤い曲線の下側の面積（積分値）は $\frac{1}{11} \approx 0.0909$ であり、$1.0$ にはなりません。</span>
+<span id="cb19-75"><a href="#cb19-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-76"><a href="#cb19-76" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb19-77"><a href="#cb19-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-78"><a href="#cb19-78" aria-hidden="true" tabindex="-1"></a><span class="fu">### 連続型モデル：製品の重量測定（正規分布 $x = 12.0\text{g}, \sigma = 2.0$）</span></span>
+<span id="cb19-79"><a href="#cb19-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-80"><a href="#cb19-80" aria-hidden="true" tabindex="-1"></a>連続値（身長、体重、測定値など）の場合、特定の一点が得られる確率は数学的に $0$ になります。そのため、確率密度の「高さ（確率密度関数 $f(x)$ の値）」を尤度として用います。</span>
+<span id="cb19-81"><a href="#cb19-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-82"><a href="#cb19-82" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**左側【確率密度の視点】**: 平均パラメータ $\mu$ が動くにつれて、正規分布の釣鐘型が左右に移動します。固定された観測点 $x = 12.0$ における垂線の高さ（密度）が上下します。</span>
+<span id="cb19-83"><a href="#cb19-83" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**右側【尤度関数の視点】**: その垂線の高さを $\mu$ に対してプロットしたものが右側の尤度曲線です。</span>
+<span id="cb19-84"><a href="#cb19-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-85"><a href="#cb19-85" aria-hidden="true" tabindex="-1"></a><span class="al">![【連続分布版】確率密度（Probability Density）vs 尤度（Likelihood）のアニメーション](probability_vs_likelihood_continuous.gif)</span></span>
+<span id="cb19-86"><a href="#cb19-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-87"><a href="#cb19-87" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb19-88"><a href="#cb19-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-89"><a href="#cb19-89" aria-hidden="true" tabindex="-1"></a><span class="fu">## 数式と理論計算（Rコードでの実践）</span></span>
+<span id="cb19-90"><a href="#cb19-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-91"><a href="#cb19-91" aria-hidden="true" tabindex="-1"></a><span class="fu">### 1. 二項分布における計算</span></span>
+<span id="cb19-92"><a href="#cb19-92" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-93"><a href="#cb19-93" aria-hidden="true" tabindex="-1"></a>コインを $n = 10$ 回投げて表が $k$ 回出る確率質量関数（PMF）は以下で表されます。</span>
+<span id="cb19-94"><a href="#cb19-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-95"><a href="#cb19-95" aria-hidden="true" tabindex="-1"></a>$$P(X = k \mid p) = \binom{n}{k} p^k (1-p)^{n-k}$$</span>
+<span id="cb19-96"><a href="#cb19-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-97"><a href="#cb19-97" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 確率の計算（$p = 0.5$ を固定）</span></span>
+<span id="cb19-98"><a href="#cb19-98" aria-hidden="true" tabindex="-1"></a>「公平なコイン（$p=0.5$）を10回投げて表が7回出る確率」：</span>
+<span id="cb19-99"><a href="#cb19-99" aria-hidden="true" tabindex="-1"></a>$$P(X = 7 \mid p = 0.5) = \binom{10}{7} (0.5)^7 (0.5)^3 = 120 \times \frac{1}{1024} \approx 0.1172$$</span>
+<span id="cb19-100"><a href="#cb19-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-103"><a href="#cb19-103" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb19-104"><a href="#cb19-104" aria-hidden="true" tabindex="-1"></a><span class="co"># 確率の計算 (p = 0.5 固定)</span></span>
+<span id="cb19-105"><a href="#cb19-105" aria-hidden="true" tabindex="-1"></a>prob_k7 <span class="ot">&lt;-</span> <span class="fu">dbinom</span>(<span class="dv">7</span>, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">prob =</span> <span class="fl">0.5</span>)</span>
+<span id="cb19-106"><a href="#cb19-106" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"P(X = 7 | p = 0.5) = %.4f (約 %.2f%%)</span><span class="sc">\n</span><span class="st">"</span>, prob_k7, prob_k7 <span class="sc">*</span> <span class="dv">100</span>))</span>
+<span id="cb19-107"><a href="#cb19-107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-108"><a href="#cb19-108" aria-hidden="true" tabindex="-1"></a><span class="co"># 確率の合計は 1 になるか？</span></span>
+<span id="cb19-109"><a href="#cb19-109" aria-hidden="true" tabindex="-1"></a>sum_probs <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">dbinom</span>(<span class="dv">0</span><span class="sc">:</span><span class="dv">10</span>, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">prob =</span> <span class="fl">0.5</span>))</span>
+<span id="cb19-110"><a href="#cb19-110" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"k=0..10 の確率合計 = %.1f</span><span class="sc">\n</span><span class="st">"</span>, sum_probs))</span>
+<span id="cb19-111"><a href="#cb19-111" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb19-112"><a href="#cb19-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-113"><a href="#cb19-113" aria-hidden="true" tabindex="-1"></a><span class="fu">#### 尤度の計算（$k = 7$ を固定）</span></span>
+<span id="cb19-114"><a href="#cb19-114" aria-hidden="true" tabindex="-1"></a>「表が7回出たとき、コインのパラメータが $p = 0.5$ や $p = 0.7$ である尤度」：</span>
+<span id="cb19-115"><a href="#cb19-115" aria-hidden="true" tabindex="-1"></a>$$L(p = 0.5 \mid X = 7) = P(X = 7 \mid p = 0.5) \approx 0.1172$$</span>
+<span id="cb19-116"><a href="#cb19-116" aria-hidden="true" tabindex="-1"></a>$$L(p = 0.7 \mid X = 7) = P(X = 7 \mid p = 0.7) \approx 0.2668$$</span>
+<span id="cb19-117"><a href="#cb19-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-120"><a href="#cb19-120" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb19-121"><a href="#cb19-121" aria-hidden="true" tabindex="-1"></a><span class="co"># 尤度の計算 (k = 7 固定)</span></span>
+<span id="cb19-122"><a href="#cb19-122" aria-hidden="true" tabindex="-1"></a>lik_p05 <span class="ot">&lt;-</span> <span class="fu">dbinom</span>(<span class="dv">7</span>, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">prob =</span> <span class="fl">0.5</span>)</span>
+<span id="cb19-123"><a href="#cb19-123" aria-hidden="true" tabindex="-1"></a>lik_p07 <span class="ot">&lt;-</span> <span class="fu">dbinom</span>(<span class="dv">7</span>, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">prob =</span> <span class="fl">0.7</span>)</span>
+<span id="cb19-124"><a href="#cb19-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-125"><a href="#cb19-125" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"L(p = 0.5 | X = 7) = %.4f</span><span class="sc">\n</span><span class="st">"</span>, lik_p05))</span>
+<span id="cb19-126"><a href="#cb19-126" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"L(p = 0.7 | X = 7) = %.4f</span><span class="sc">\n</span><span class="st">"</span>, lik_p07))</span>
+<span id="cb19-127"><a href="#cb19-127" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"p=0.7 は p=0.5 に比べて約 %.2f 倍もっともらしい！</span><span class="sc">\n</span><span class="st">"</span>, lik_p07 <span class="sc">/</span> lik_p05))</span>
+<span id="cb19-128"><a href="#cb19-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-129"><a href="#cb19-129" aria-hidden="true" tabindex="-1"></a><span class="co"># 尤度関数を p ∈ [0, 1] で積分するとどうなるか？</span></span>
+<span id="cb19-130"><a href="#cb19-130" aria-hidden="true" tabindex="-1"></a>lik_integral <span class="ot">&lt;-</span> <span class="fu">integrate</span>(<span class="cf">function</span>(p) <span class="fu">dbinom</span>(<span class="dv">7</span>, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">prob =</span> p), <span class="at">lower =</span> <span class="dv">0</span>, <span class="at">upper =</span> <span class="dv">1</span>)</span>
+<span id="cb19-131"><a href="#cb19-131" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"尤度関数の積分値 = %.4f (≠ 1.0 なので確率ではない)</span><span class="sc">\n</span><span class="st">"</span>, lik_integral<span class="sc">$</span>value))</span>
+<span id="cb19-132"><a href="#cb19-132" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb19-133"><a href="#cb19-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-134"><a href="#cb19-134" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb19-135"><a href="#cb19-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-136"><a href="#cb19-136" aria-hidden="true" tabindex="-1"></a><span class="fu">## 最尤推定法（MLE: Maximum Likelihood Estimation）</span></span>
+<span id="cb19-137"><a href="#cb19-137" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-138"><a href="#cb19-138" aria-hidden="true" tabindex="-1"></a><span class="fu">### なぜ「尤度」を最大化するのか？</span></span>
+<span id="cb19-139"><a href="#cb19-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-140"><a href="#cb19-140" aria-hidden="true" tabindex="-1"></a>現実のデータ分析では、**「真のパラメータ $\theta$」は神様しか知りません**。私たちが手元に持っているのは**「観測されたデータ $x$」だけ**です。</span>
+<span id="cb19-141"><a href="#cb19-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-142"><a href="#cb19-142" aria-hidden="true" tabindex="-1"></a>そこで、**「手元のデータが得られる確率が最も高くなるようなパラメータを選べば、それが最も真相に近いだろう」**と考えるのが**最尤法（MLE）**です。</span>
+<span id="cb19-143"><a href="#cb19-143" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-144"><a href="#cb19-144" aria-hidden="true" tabindex="-1"></a>$$\hat{\theta}_{\text{MLE}} = \arg\max_{\theta} L(\theta \mid x)$$</span>
+<span id="cb19-145"><a href="#cb19-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-146"><a href="#cb19-146" aria-hidden="true" tabindex="-1"></a><span class="fu">### なぜ「対数尤度（Log-Likelihood）」をとるのか？</span></span>
+<span id="cb19-147"><a href="#cb19-147" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-148"><a href="#cb19-148" aria-hidden="true" tabindex="-1"></a>独立な $n$ 個のデータ $x_1, x_2, \dots, x_n$ が得られたとき、全体の尤度は各確率密度の**積（掛け算）**になります。</span>
+<span id="cb19-149"><a href="#cb19-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-150"><a href="#cb19-150" aria-hidden="true" tabindex="-1"></a>$$L(\theta \mid x_1, \dots, x_n) = \prod_{i=1}^n f(x_i \mid \theta)$$</span>
+<span id="cb19-151"><a href="#cb19-151" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-152"><a href="#cb19-152" aria-hidden="true" tabindex="-1"></a>このままでは計算が非常に困難（掛け算の微分は複雑、コンピュータ上で $0$ に近くなりすぎてアンダーフローする）なため、自然対数をとった**対数尤度関数 $\ell(\theta)$** を最大化します。</span>
+<span id="cb19-153"><a href="#cb19-153" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-154"><a href="#cb19-154" aria-hidden="true" tabindex="-1"></a>$$\ell(\theta) = \ln L(\theta \mid x_1, \dots, x_n) = \sum_{i=1}^n \ln f(x_i \mid \theta)$$</span>
+<span id="cb19-155"><a href="#cb19-155" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-156"><a href="#cb19-156" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip}</span>
+<span id="cb19-157"><a href="#cb19-157" aria-hidden="true" tabindex="-1"></a><span class="fu">### 💡 対数をとっても最大値の位置は変わらない</span></span>
+<span id="cb19-158"><a href="#cb19-158" aria-hidden="true" tabindex="-1"></a>対数関数 $\ln(y)$ は単調増加関数（$y_1 &lt; y_2 \iff \ln y_1 &lt; \ln y_2$）であるため、$L(\theta)$ を最大化する $\theta$ と、$\ln L(\theta)$ を最大化する $\theta$ は**完全に一致**します。</span>
+<span id="cb19-159"><a href="#cb19-159" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb19-160"><a href="#cb19-160" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-161"><a href="#cb19-161" aria-hidden="true" tabindex="-1"></a><span class="fu">### R による最尤推定の実装例</span></span>
+<span id="cb19-162"><a href="#cb19-162" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-165"><a href="#cb19-165" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb19-166"><a href="#cb19-166" aria-hidden="true" tabindex="-1"></a><span class="co"># 観測データ: コインを10回投げて表が7回</span></span>
+<span id="cb19-167"><a href="#cb19-167" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb19-168"><a href="#cb19-168" aria-hidden="true" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="dv">7</span></span>
+<span id="cb19-169"><a href="#cb19-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-170"><a href="#cb19-170" aria-hidden="true" tabindex="-1"></a><span class="co"># 負の対数尤度関数 (optim は最小化を行うためマイナスをつける)</span></span>
+<span id="cb19-171"><a href="#cb19-171" aria-hidden="true" tabindex="-1"></a>neg_log_lik <span class="ot">&lt;-</span> <span class="cf">function</span>(p) {</span>
+<span id="cb19-172"><a href="#cb19-172" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (p <span class="sc">&lt;=</span> <span class="dv">0</span> <span class="sc">||</span> p <span class="sc">&gt;=</span> <span class="dv">1</span>) <span class="fu">return</span>(<span class="cn">Inf</span>)</span>
+<span id="cb19-173"><a href="#cb19-173" aria-hidden="true" tabindex="-1"></a>  <span class="sc">-</span><span class="fu">dbinom</span>(k, <span class="at">size =</span> n, <span class="at">prob =</span> p, <span class="at">log =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb19-174"><a href="#cb19-174" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb19-175"><a href="#cb19-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-176"><a href="#cb19-176" aria-hidden="true" tabindex="-1"></a><span class="co"># 最適化を実行 (初期値 p = 0.5)</span></span>
+<span id="cb19-177"><a href="#cb19-177" aria-hidden="true" tabindex="-1"></a>opt_res <span class="ot">&lt;-</span> <span class="fu">optim</span>(<span class="at">par =</span> <span class="fl">0.5</span>, <span class="at">fn =</span> neg_log_lik, <span class="at">method =</span> <span class="st">"L-BFGS-B"</span>, <span class="at">lower =</span> <span class="fl">0.001</span>, <span class="at">upper =</span> <span class="fl">0.999</span>)</span>
+<span id="cb19-178"><a href="#cb19-178" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-179"><a href="#cb19-179" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"=== 最尤推定の結果 ===</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb19-180"><a href="#cb19-180" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"推定されたパラメータ p̂_MLE : %.4f (理論値 k/n = %.1f)</span><span class="sc">\n</span><span class="st">"</span>, opt_res<span class="sc">$</span>par, k <span class="sc">/</span> n))</span>
+<span id="cb19-181"><a href="#cb19-181" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"最大対数尤度                 : %.4f</span><span class="sc">\n</span><span class="st">"</span>, <span class="sc">-</span>opt_res<span class="sc">$</span>value))</span>
+<span id="cb19-182"><a href="#cb19-182" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb19-183"><a href="#cb19-183" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-184"><a href="#cb19-184" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb19-185"><a href="#cb19-185" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-186"><a href="#cb19-186" aria-hidden="true" tabindex="-1"></a><span class="fu">## ベイズ統計における架け橋（確率と尤度が出会う場所）</span></span>
+<span id="cb19-187"><a href="#cb19-187" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-188"><a href="#cb19-188" aria-hidden="true" tabindex="-1"></a>「尤度はパラメータの確率ではない」と述べましたが、**「事前確率（事前知識）」と組み合わせることで、パラメータの確率（事後確率）に変換することができます**。これが**ベイズの定理**です。</span>
+<span id="cb19-189"><a href="#cb19-189" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-190"><a href="#cb19-190" aria-hidden="true" tabindex="-1"></a>$$\underbrace{P(\theta \mid x)}_{\text{事後確率（パラメータの確率）}} = \frac{\overbrace{P(x \mid \theta)}^{\text{尤度 } L(\theta \mid x)} \times \overbrace{P(\theta)}^{\text{事前確率}}}{\underbrace{P(x)}_{\text{周辺尤度（正規化定数）}}}$$</span>
+<span id="cb19-191"><a href="#cb19-191" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-192"><a href="#cb19-192" aria-hidden="true" tabindex="-1"></a>$$P(\theta \mid x) \propto L(\theta \mid x) \times P(\theta)$$</span>
+<span id="cb19-193"><a href="#cb19-193" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-194"><a href="#cb19-194" aria-hidden="true" tabindex="-1"></a>::: {.callout-note appearance="simple"}</span>
+<span id="cb19-195"><a href="#cb19-195" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🤝 統計学の2大学派における位置づけ</span></span>
+<span id="cb19-196"><a href="#cb19-196" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**頻度論（古典統計学）**: パラメータ $\theta$ は「固定された1つの未知の真値」。$\theta$ の確率は考えず、**尤度 $L(\theta \mid x)$ を最大化（MLE）**して点推定・区間推定を行う。</span>
+<span id="cb19-197"><a href="#cb19-197" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**ベイズ統計学**: パラメータ $\theta$ 自体も不確実性を持つ確率変数として扱う。**尤度 $L(\theta \mid x)$ に事前分布 $P(\theta)$ を掛けて正規化**し、事後分布 $P(\theta \mid x)$ を求める。</span>
+<span id="cb19-198"><a href="#cb19-198" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb19-199"><a href="#cb19-199" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-200"><a href="#cb19-200" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb19-201"><a href="#cb19-201" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-202"><a href="#cb19-202" aria-hidden="true" tabindex="-1"></a><span class="fu">## 理解度チェッククイズ</span></span>
+<span id="cb19-203"><a href="#cb19-203" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-204"><a href="#cb19-204" aria-hidden="true" tabindex="-1"></a>理解度を試すための3つのクイズです。クリックして正解と解説を確認してください。</span>
+<span id="cb19-205"><a href="#cb19-205" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-206"><a href="#cb19-206" aria-hidden="true" tabindex="-1"></a>::: {.callout-caution collapse="true"}</span>
+<span id="cb19-207"><a href="#cb19-207" aria-hidden="true" tabindex="-1"></a><span class="fu">### ❓ 第1問：「サイコロを1回振って 6 が出る確率」と「6 の目が出たときのサイコロがイカサマである尤度」の違いは？</span></span>
+<span id="cb19-208"><a href="#cb19-208" aria-hidden="true" tabindex="-1"></a>**【解答】**</span>
+<span id="cb19-209"><a href="#cb19-209" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**確率**: サイコロの性質（公平: $p=1/6$）を前提として、未来の結果「6の目」が出る可能性を語る（$= 1/6$）。</span>
+<span id="cb19-210"><a href="#cb19-210" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**尤度**: 現実に「6の目」が出たという結果をもとに、サイコロの性質（イカサマ度合い $p$）の尤もらしさを評価する。例えば「6が出やすいサイコロ（$p=0.5$）」の尤度は $0.5$、「公平なサイコロ（$p=1/6$）」の尤度は約 $0.167$ となり、前者の方が尤度が高くなります。</span>
+<span id="cb19-211"><a href="#cb19-211" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb19-212"><a href="#cb19-212" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-213"><a href="#cb19-213" aria-hidden="true" tabindex="-1"></a>::: {.callout-caution collapse="true"}</span>
+<span id="cb19-214"><a href="#cb19-214" aria-hidden="true" tabindex="-1"></a><span class="fu">### ❓ 第2問：尤度関数 $L(\theta \mid x)$ の最大値が $1$ を超えることはあるか？</span></span>
+<span id="cb19-215"><a href="#cb19-215" aria-hidden="true" tabindex="-1"></a>**【解答】**</span>
+<span id="cb19-216"><a href="#cb19-216" aria-hidden="true" tabindex="-1"></a>**あります（特に連続型確率変数の場合）**。</span>
+<span id="cb19-217"><a href="#cb19-217" aria-hidden="true" tabindex="-1"></a>離散型分布の場合、$L(\theta \mid x) = P(X=x \mid \theta) \le 1$ ですが、連続型分布（正規分布など）の場合、$L(\theta \mid x) = f(x \mid \theta)$ は確率密度関数の値（高さ）であるため、分散 $\sigma^2$ が非常に小さい場合などは $1$ を大きく超えることがあります（例えば $\sigma = 0.1$ のとき正規分布のピークの高さは約 $3.99$）。</span>
+<span id="cb19-218"><a href="#cb19-218" aria-hidden="true" tabindex="-1"></a>これは、尤度が確率そのものではない決定的な証拠の1つです。</span>
+<span id="cb19-219"><a href="#cb19-219" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb19-220"><a href="#cb19-220" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-221"><a href="#cb19-221" aria-hidden="true" tabindex="-1"></a>::: {.callout-caution collapse="true"}</span>
+<span id="cb19-222"><a href="#cb19-222" aria-hidden="true" tabindex="-1"></a><span class="fu">### ❓ 第3問：「尤度比（Likelihood Ratio）」とは何か？何に使えるか？</span></span>
+<span id="cb19-223"><a href="#cb19-223" aria-hidden="true" tabindex="-1"></a>**【解答】**</span>
+<span id="cb19-224"><a href="#cb19-224" aria-hidden="true" tabindex="-1"></a>2つの異なるパラメータ仮説 $\theta_0$ と $\theta_1$ に対する尤度の比率 $\frac{L(\theta_1 \mid x)}{L(\theta_0 \mid x)}$ のことです。</span>
+<span id="cb19-225"><a href="#cb19-225" aria-hidden="true" tabindex="-1"></a>「得られたデータのもとで、仮説1は仮説0の何倍尤もらしいか」を数値化でき、統計的仮説検定（尤度比検定）やモデル選択（AIC/BIC）、ベイズ更新のオッズ比などで中心的な役割を果たします。</span>
+<span id="cb19-226"><a href="#cb19-226" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb19-227"><a href="#cb19-227" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-228"><a href="#cb19-228" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb19-229"><a href="#cb19-229" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-230"><a href="#cb19-230" aria-hidden="true" tabindex="-1"></a><span class="fu">## まとめ</span></span>
+<span id="cb19-231"><a href="#cb19-231" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-232"><a href="#cb19-232" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**確率（Probability）**は、**「パラメータ固定 $\to$ データの分布」**を語る指標であり、足すと必ず $1$ になる。</span>
+<span id="cb19-233"><a href="#cb19-233" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**尤度（Likelihood）**は、**「データ固定 $\to$ パラメータの尤もらしさ」**を測る指標であり、パラメータの確率ではない。</span>
+<span id="cb19-234"><a href="#cb19-234" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**最尤法（MLE）**は、手元の観測データの尤度（または対数尤度）を最大化するパラメータを探す王道の手法である。</span>
+<span id="cb19-235"><a href="#cb19-235" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**ベイズ統計**では、尤度に事前確率を掛け合わせることで、パラメータの事後確率へと昇華させる。</span>
+</code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

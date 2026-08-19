@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Antigravity Pair Programming">
+<meta name="dcterms.date" content="2026-08-19">
+
+<title>「身長がピッタリ170cmである確率」はなぜ 0 なのか？ – StatQuest Visual Companion</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-bb62276ab45c84d9efd712f51ff97b5a.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-9f5bcaa82ba071dd3281774c33d04d20.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../CSS_RoyalBlue_Solarized.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">StatQuest Visual Companion</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">🏠 ホーム</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">📚 基礎概念</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-">    
+        <li>
+    <a class="dropdown-item" href="../../topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html">
+ <span class="dropdown-text">① 確率 vs 尤度</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../topics/02_continuous_probability_zero/continuous_probability_zero_guide.html">
+ <span class="dropdown-text">② 連続変数の確率ゼロ (P(X=x)=0)</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu--1" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">📊 確率分布</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu--1">    
+        <li>
+    <a class="dropdown-item" href="../../topics/03_poisson_distribution/poisson_guide.html">
+ <span class="dropdown-text">③ ポアソン分布 &amp; 指数分布</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/chess-r-quarto/R-scripts"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目次</h2>
+   
+  <ul>
+  <li><a href="#はじめに日常の直感と数学のギャップ" id="toc-はじめに日常の直感と数学のギャップ" class="nav-link active" data-scroll-target="#はじめに日常の直感と数学のギャップ"><span class="header-section-number">1</span> はじめに：日常の直感と数学のギャップ</a></li>
+  <li><a href="#幾何学的な直感アナロジー幾何学的確率" id="toc-幾何学的な直感アナロジー幾何学的確率" class="nav-link" data-scroll-target="#幾何学的な直感アナロジー幾何学的確率"><span class="header-section-number">2</span> 幾何学的な直感アナロジー（幾何学的確率）</a>
+  <ul class="collapse">
+  <li><a href="#ダーツの的当て" id="toc-ダーツの的当て" class="nav-link" data-scroll-target="#ダーツの的当て"><span class="header-section-number">2.1</span> 1. ダーツの的当て</a></li>
+  <li><a href="#糸を切る実験" id="toc-糸を切る実験" class="nav-link" data-scroll-target="#糸を切る実験"><span class="header-section-number">2.2</span> 2. 糸を切る実験</a></li>
+  </ul></li>
+  <li><a href="#動的ビジュアライゼーションgganimate-による極限の可視化" id="toc-動的ビジュアライゼーションgganimate-による極限の可視化" class="nav-link" data-scroll-target="#動的ビジュアライゼーションgganimate-による極限の可視化"><span class="header-section-number">3</span> 動的ビジュアライゼーション（gganimate による極限の可視化）</a>
+  <ul class="collapse">
+  <li><a href="#アニメーションからわかる決定的な事実" id="toc-アニメーションからわかる決定的な事実" class="nav-link" data-scroll-target="#アニメーションからわかる決定的な事実"><span class="header-section-number">3.1</span> アニメーションからわかる決定的な事実</a></li>
+  </ul></li>
+  <li><a href="#確率probabilityと確率密度probability-densityの比較" id="toc-確率probabilityと確率密度probability-densityの比較" class="nav-link" data-scroll-target="#確率probabilityと確率密度probability-densityの比較"><span class="header-section-number">4</span> 「確率（Probability）」と「確率密度（Probability Density）」の比較</a>
+  <ul class="collapse">
+  <li><a href="#確率密度が-1-を超える具体例" id="toc-確率密度が-1-を超える具体例" class="nav-link" data-scroll-target="#確率密度が-1-を超える具体例"><span class="header-section-number">4.1</span> 確率密度が 1 を超える具体例</a></li>
+  </ul></li>
+  <li><a href="#確率ゼロは絶対に起きない不可能を意味するのか" id="toc-確率ゼロは絶対に起きない不可能を意味するのか" class="nav-link" data-scroll-target="#確率ゼロは絶対に起きない不可能を意味するのか"><span class="header-section-number">5</span> 「確率ゼロ」は「絶対に起きない（不可能）」を意味するのか？</a>
+  <ul class="collapse">
+  <li><a href="#測度論におけるほとんど確実にalmost-surely" id="toc-測度論におけるほとんど確実にalmost-surely" class="nav-link" data-scroll-target="#測度論におけるほとんど確実にalmost-surely"><span class="header-section-number">5.1</span> 測度論における「ほとんど確実に（Almost Surely）」</a></li>
+  </ul></li>
+  <li><a href="#r-による数値実験シミュレーション" id="toc-r-による数値実験シミュレーション" class="nav-link" data-scroll-target="#r-による数値実験シミュレーション"><span class="header-section-number">6</span> R による数値実験シミュレーション</a></li>
+  <li><a href="#連続型確率変数における重要な性質不等号のleと" id="toc-連続型確率変数における重要な性質不等号のleと" class="nav-link" data-scroll-target="#連続型確率変数における重要な性質不等号のleと"><span class="header-section-number">7</span> 連続型確率変数における重要な性質：不等号の「<span class="math inline">\(\le\)</span>」と「<span class="math inline">\(&lt;\)</span>」</a></li>
+  <li><a href="#理解度チェッククイズ" id="toc-理解度チェッククイズ" class="nav-link" data-scroll-target="#理解度チェッククイズ"><span class="header-section-number">8</span> 理解度チェッククイズ</a></li>
+  <li><a href="#まとめ" id="toc-まとめ" class="nav-link" data-scroll-target="#まとめ"><span class="header-section-number">9</span> まとめ</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">「身長がピッタリ170cmである確率」はなぜ 0 なのか？</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
+<p class="subtitle lead">連続型確率変数における「確率ゼロのパラドックス」・確率密度と極限の直感理解</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Antigravity Pair Programming </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">August 19, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="はじめに日常の直感と数学のギャップ" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="はじめに日常の直感と数学のギャップ"><span class="header-section-number">1</span> はじめに：日常の直感と数学のギャップ</h2>
+<p>「日本人の成人男性で、身長170cmの人なんて街中にいくらでもいるじゃないか。それなのに<strong>『身長が170cmである確率は 0 である（<span class="math inline">\(P(X = 170) = 0\)</span>）』</strong>と言われるのはなぜ？」</p>
+<p>統計学や確率論を学ぶとき、多くの人がこの<strong>「連続変数の確率ゼロ問題」</strong>に強い違和感を覚えます。</p>
+<div class="callout callout-style-simple callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>🧭 違和感の正体：日常の「170cm」と数学の「170cm」の違い
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong>日常の「170cm」</strong>: 「測定機器の精度（有効数字）」を前提とした<strong>『区間（幅）』</strong>の話。
+<ul>
+<li>身長計が170cmと表示するのは、実際には <strong><span class="math inline">\(169.5\text{cm} \le X &lt; 170.5\text{cm}\)</span>（幅 1cm の範囲）</strong> に入っていることを意味します。この区間に入る確率は <strong>約 <span class="math inline">\(6.6\%\)</span></strong> 存在します。</li>
+</ul></li>
+<li><strong>数学の「170cm」</strong>: 小数点以下が無限に続く<strong>『幅ゼロの1点』</strong>の話。
+<ul>
+<li><span class="math inline">\(170.00000000000000000000\dots\text{cm}\)</span> に<strong>ナノメートル・原子レベルまで完全に一致する確率</strong>を計算すると、数学的に <strong><span class="math inline">\(0\)</span></strong> になります。</li>
+</ul></li>
+</ul>
+</div>
+</div>
+<hr>
+</section>
+<section id="幾何学的な直感アナロジー幾何学的確率" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="幾何学的な直感アナロジー幾何学的確率"><span class="header-section-number">2</span> 幾何学的な直感アナロジー（幾何学的確率）</h2>
+<p>なぜ「幅がゼロの1点」の確率は 0 になるのか、身近な幾何学の例で考えてみましょう。</p>
+<section id="ダーツの的当て" class="level3" data-number="2.1">
+<h3 data-number="2.1" class="anchored" data-anchor-id="ダーツの的当て"><span class="header-section-number">2.1</span> 1. ダーツの的当て</h3>
+<p>面積が <span class="math inline">\(100\text{cm}^2\)</span> のダーツボードに、ダーツの針が必ずどこか1点に刺さるとします。</p>
+<ul>
+<li>「右半分のエリア（面積 <span class="math inline">\(50\text{cm}^2\)</span>）に刺さる確率」 <span class="math inline">\(\to \frac{50}{100} = 50\%\)</span></li>
+<li>「中心の小さな丸（面積 <span class="math inline">\(1\text{cm}^2\)</span>）に刺さる確率」 <span class="math inline">\(\to \frac{1}{100} = 1\%\)</span></li>
+<li><strong>「幾何学的に指定した特定の1点（座標 <span class="math inline">\((x_0, y_0)\)</span>）にドンピシャで刺さる確率」</strong>:
+<ul>
+<li>幾何学的な「点」には<strong>面積がありません（面積 <span class="math inline">\(= 0\)</span>）</strong>。</li>
+<li>したがって、確率は <span class="math inline">\(\frac{0}{100} = 0\%\)</span> となります。</li>
+</ul></li>
+</ul>
+<p>ダーツは<strong>絶対にどこかの点に刺さっている</strong>にもかかわらず、<strong>「その指定された点に刺さる確率」は <span class="math inline">\(0\)</span></strong> なのです。</p>
+</section>
+<section id="糸を切る実験" class="level3" data-number="2.2">
+<h3 data-number="2.2" class="anchored" data-anchor-id="糸を切る実験"><span class="header-section-number">2.2</span> 2. 糸を切る実験</h3>
+<p>長さ <span class="math inline">\(10\text{cm}\)</span> の糸をランダムな位置でハサミで切るとき、ピッタリ <span class="math inline">\(5.000000\dots\text{cm}\)</span> で切れる確率は何％でしょうか？ <span class="math inline">\(0\)</span> から <span class="math inline">\(10\)</span> までの間には実数が<strong>無限個（非可算無限）</strong>存在するため、特定の実数を言い当てる確率は <span class="math inline">\(\frac{1}{\infty} \to 0\)</span> です。</p>
+<hr>
+</section>
+</section>
+<section id="動的ビジュアライゼーションgganimate-による極限の可視化" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="動的ビジュアライゼーションgganimate-による極限の可視化"><span class="header-section-number">3</span> 動的ビジュアライゼーション（gganimate による極限の可視化）</h2>
+<p>成人男性の身長分布（平均 <span class="math inline">\(\mu = 170\text{cm}\)</span>、標準偏差 <span class="math inline">\(\sigma = 6\text{cm}\)</span> の正規分布）を用いて、<strong>区間の幅 <span class="math inline">\(\Delta x\)</span> を徐々に狭めていったときに面積（確率）がどう変化するか</strong>をアニメーションで見てみましょう。</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="continuous_probability_zero.gif" class="img-fluid figure-img"></p>
+<figcaption>区間幅 Δx を 0 へ縮小したときの一点の確率ゼロ可視化</figcaption>
+</figure>
+</div>
+<section id="アニメーションからわかる決定的な事実" class="level3" data-number="3.1">
+<h3 data-number="3.1" class="anchored" data-anchor-id="アニメーションからわかる決定的な事実"><span class="header-section-number">3.1</span> アニメーションからわかる決定的な事実</h3>
+<ol type="1">
+<li><strong>確率密度（グラフの高さ）は一定のまま！</strong>
+<ul>
+<li>身長 <span class="math inline">\(170\text{cm}\)</span> における確率密度関数の高さは <span class="math inline">\(f(170) \approx 0.0665\)</span> であり、ゼロではありません。</li>
+</ul></li>
+<li><strong>しかし、幅 <span class="math inline">\(\Delta x\)</span> が狭くなるにつれて「面積（確率）」がゼロへ収縮する！</strong>
+<ul>
+<li><strong>幅 <span class="math inline">\(20\text{cm}\)</span></strong>（<span class="math inline">\(160 \sim 180\text{cm}\)</span>）: 確率 <span class="math inline">\(\approx 90.44\%\)</span></li>
+<li><strong>幅 <span class="math inline">\(2\text{cm}\)</span></strong>（<span class="math inline">\(169 \sim 171\text{cm}\)</span>）: 確率 <span class="math inline">\(\approx 13.23\%\)</span></li>
+<li><strong>幅 <span class="math inline">\(0.2\text{cm}\)</span></strong>（<span class="math inline">\(169.9 \sim 170.1\text{cm}\)</span>）: 確率 <span class="math inline">\(\approx 1.33\%\)</span></li>
+<li><strong>幅 <span class="math inline">\(0\text{cm}\)</span></strong>（ピッタリ <span class="math inline">\(170.000\dots\text{cm}\)</span>）: <span class="math display">\[\text{確率 } P(X = 170) = \text{底辺（幅 0）} \times \text{高さ } f(170) = 0 \times 0.0665 = \mathbf{0}\]</span></li>
+</ul></li>
+</ol>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>💡 核心の公式
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>連続型確率変数において、微小幅 <span class="math inline">\(\Delta x\)</span> における確率は以下のように近似されます： <span class="math display">\[P\left(x - \frac{\Delta x}{2} \le X \le x + \frac{\Delta x}{2}\right) \approx f(x) \times \Delta x\]</span> <span class="math inline">\(\Delta x \to 0\)</span> の極限をとると、<span class="math inline">\(f(x)\)</span> がどんな値であっても右辺は必ず <span class="math inline">\(0\)</span> になります。</p>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="確率probabilityと確率密度probability-densityの比較" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="確率probabilityと確率密度probability-densityの比較"><span class="header-section-number">4</span> 「確率（Probability）」と「確率密度（Probability Density）」の比較</h2>
+<p>この混乱を解消するためには、「確率」と「確率密度」の違いを明確に区別することが不可欠です。</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">比較項目</th>
+<th style="text-align: left;">確率（Probability）</th>
+<th style="text-align: left;">確率密度（Probability Density）</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>記号</strong></td>
+<td style="text-align: left;"><span class="math inline">\(P(a \le X \le b)\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(f(x)\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>図形的な意味</strong></td>
+<td style="text-align: left;">曲線の下の <strong>「面積」</strong>（積分値）</td>
+<td style="text-align: left;">曲線上の特定地点の <strong>「高さ」</strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>計算式</strong></td>
+<td style="text-align: left;"><span class="math inline">\(P(a \le X \le b) = \int_a^b f(x) dx\)</span></td>
+<td style="text-align: left;"><span class="math inline">\(f(x) = \lim_{\Delta x \to 0} \frac{P(x \le X \le x+\Delta x)}{\Delta x}\)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>値の範囲</strong></td>
+<td style="text-align: left;"><strong>必ず <span class="math inline">\(0 \le P \le 1\)</span></strong>（<span class="math inline">\(0\% \sim 100\%\)</span>）</td>
+<td style="text-align: left;"><strong><span class="math inline">\(0 \le f(x) &lt; \infty\)</span></strong>（<strong><span class="math inline">\(1\)</span> を超えてもよい！</strong>）</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>単位（次元）</strong></td>
+<td style="text-align: left;"><strong>無次元</strong>（割合・パーセント）</td>
+<td style="text-align: left;"><strong><span class="math inline">\([1 / \text{変数の単位}]\)</span></strong>（例: <span class="math inline">\(1/\text{cm}\)</span>, <span class="math inline">\(1/\text{kg}\)</span>）</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>1点での値</strong></td>
+<td style="text-align: left;">常に <strong><span class="math inline">\(P(X = x) = 0\)</span></strong></td>
+<td style="text-align: left;"><strong><span class="math inline">\(f(x) \ge 0\)</span></strong>（有限の正の値）</td>
+</tr>
+</tbody>
+</table>
+<section id="確率密度が-1-を超える具体例" class="level3" data-number="4.1">
+<h3 data-number="4.1" class="anchored" data-anchor-id="確率密度が-1-を超える具体例"><span class="header-section-number">4.1</span> 確率密度が 1 を超える具体例</h3>
+<p>「確率密度」は確率そのものではなく「単位長さあたりの密度」であるため、<span class="math inline">\(1\)</span> を超えることが多々あります。</p>
+<p>例えば、非常に精密なネジの長さが <span class="math inline">\(N(\mu = 10\text{mm}, \sigma = 0.05\text{mm})\)</span> に従う場合：</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 標準偏差が小さい場合の確率密度</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>sigma_small <span class="ot">&lt;-</span> <span class="fl">0.05</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>f_peak <span class="ot">&lt;-</span> <span class="fu">dnorm</span>(<span class="dv">10</span>, <span class="at">mean =</span> <span class="dv">10</span>, <span class="at">sd =</span> sigma_small)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"中心 x = 10mm における確率密度の高さ: f(10) = %.2f (1 を大幅に超過！)</span><span class="sc">\n</span><span class="st">"</span>, f_peak))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>中心 x = 10mm における確率密度の高さ: f(10) = 7.98 (1 を大幅に超過！)</code></pre>
+</div>
+</div>
+<p>高さは約 <span class="math inline">\(7.98\)</span> にも達しますが、幅 <span class="math inline">\(0.01\text{mm}\)</span> の微小面積を計算すると <span class="math inline">\(7.98 \times 0.01 \approx 0.0798\)</span>（約 <span class="math inline">\(8\%\)</span>）となり、確率は必ず <span class="math inline">\(1\)</span> 以下に収まります。</p>
+<hr>
+</section>
+</section>
+<section id="確率ゼロは絶対に起きない不可能を意味するのか" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="確率ゼロは絶対に起きない不可能を意味するのか"><span class="header-section-number">5</span> 「確率ゼロ」は「絶対に起きない（不可能）」を意味するのか？</h2>
+<p>これは確率論・測度論における最も深遠なテーマの1つです。</p>
+<div class="callout callout-style-simple callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>🚨 結論：「確率 0 の事象」でも実際に発生する！
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong>不可能な事象（空集合 <span class="math inline">\(\emptyset\)</span>）</strong> の確率は必ず <span class="math inline">\(0\)</span> です（例: サイコロを振って 7 が出る確率 <span class="math inline">\(= 0\)</span>）。</li>
+<li>しかし、その逆は成り立ちません。<strong>「確率が <span class="math inline">\(0\)</span> だからといって、絶対に起こらないわけではない」</strong>のです。</li>
+</ul>
+</div>
+</div>
+<section id="測度論におけるほとんど確実にalmost-surely" class="level3" data-number="5.1">
+<h3 data-number="5.1" class="anchored" data-anchor-id="測度論におけるほとんど確実にalmost-surely"><span class="header-section-number">5.1</span> 測度論における「ほとんど確実に（Almost Surely）」</h3>
+<p>ランダムに身長を測定したとき、測定された人の身長は（仮に超高精度のレーザーで測れば）<span class="math inline">\(170.238491029\dots\text{cm}\)</span> のような何らかの実数になります。</p>
+<ul>
+<li>測定される<strong>前</strong>の段階で、「その人がピッタリ <span class="math inline">\(170.238491029\dots\text{cm}\)</span> である確率」を計算すると <strong><span class="math inline">\(0\)</span></strong> です。</li>
+<li>にもかかわらず、測定した<strong>後</strong>には<strong>「確率 <span class="math inline">\(0\)</span> の事象」が実際に目の前で起こった</strong>ことになります。</li>
+</ul>
+<p>このように、連続空間では「確率ゼロの事象の無限の集まり」によって全体（確率 1）が構成されています。数学ではこの性質を<strong>「ほとんど確実に（almost surely / a.s.）」</strong>と呼びます。</p>
+<hr>
+</section>
+</section>
+<section id="r-による数値実験シミュレーション" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="r-による数値実験シミュレーション"><span class="header-section-number">6</span> R による数値実験シミュレーション</h2>
+<p>コンピュータの乱数を用いて、この事実をシミュレーションしてみましょう。</p>
+<div class="cell">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 100万人分の成人男性の身長データを生成 (μ = 170, σ = 6)</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>n_people <span class="ot">&lt;-</span> <span class="dv">1000000</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>heights <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n_people, <span class="at">mean =</span> <span class="dv">170</span>, <span class="at">sd =</span> <span class="dv">6</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 実験1: ピッタリ 170.00000000000000 cm の人は何人いるか？</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>exact_170 <span class="ot">&lt;-</span> <span class="fu">sum</span>(heights <span class="sc">==</span> <span class="fl">170.0</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"【実験1】100万人中、ピッタリ 170.000...cm だった人数: %d 人 (割合: %.6f%%)</span><span class="sc">\n</span><span class="st">"</span>, </span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>            exact_170, (exact_170 <span class="sc">/</span> n_people) <span class="sc">*</span> <span class="dv">100</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>【実験1】100万人中、ピッタリ 170.000...cm だった人数: 0 人 (割合: 0.000000%)</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 実験2: 通常の身長計の精度 (169.5cm 〜 170.5cm) に入る人は何人いるか？</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>range_170 <span class="ot">&lt;-</span> <span class="fu">sum</span>(heights <span class="sc">&gt;=</span> <span class="fl">169.5</span> <span class="sc">&amp;</span> heights <span class="sc">&lt;</span> <span class="fl">170.5</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>theo_prob <span class="ot">&lt;-</span> <span class="fu">pnorm</span>(<span class="fl">170.5</span>, <span class="at">mean =</span> <span class="dv">170</span>, <span class="at">sd =</span> <span class="dv">6</span>) <span class="sc">-</span> <span class="fu">pnorm</span>(<span class="fl">169.5</span>, <span class="at">mean =</span> <span class="dv">170</span>, <span class="at">sd =</span> <span class="dv">6</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"【実験2】100万人中、169.5cm〜170.5cm に入った人数: %d 人 (割合: %.2f%%)</span><span class="sc">\n</span><span class="st">"</span>, </span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>            range_170, (range_170 <span class="sc">/</span> n_people) <span class="sc">*</span> <span class="dv">100</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>【実験2】100万人中、169.5cm〜170.5cm に入った人数: 66615 人 (割合: 6.66%)</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"         理論値 (pnorm による積分面積)          : %.2f%%</span><span class="sc">\n</span><span class="st">"</span>, theo_prob <span class="sc">*</span> <span class="dv">100</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>         理論値 (pnorm による積分面積)          : 6.64%</code></pre>
+</div>
+</div>
+<p>100万人分のデータを集めても、コンピュータの倍精度浮動小数点でピッタリ <span class="math inline">\(170.000\dots\)</span> になる人は<strong>0人</strong>でした。一方、幅 <span class="math inline">\(1\text{cm}\)</span> の区間には約 <span class="math inline">\(6.6\)</span> 万人（<span class="math inline">\(6.6\%\)</span>）が綺麗に収まっています。</p>
+<hr>
+</section>
+<section id="連続型確率変数における重要な性質不等号のleと" class="level2" data-number="7">
+<h2 data-number="7" class="anchored" data-anchor-id="連続型確率変数における重要な性質不等号のleと"><span class="header-section-number">7</span> 連続型確率変数における重要な性質：不等号の「<span class="math inline">\(\le\)</span>」と「<span class="math inline">\(&lt;\)</span>」</h2>
+<p>離散型確率変数（サイコロの目など）では、<span class="math inline">\(P(X \le 3)\)</span> と <span class="math inline">\(P(X &lt; 3)\)</span> は異なります（<span class="math inline">\(P(X=3)\)</span> の分だけズレる）。</p>
+<p>しかし、<strong>連続型確率変数では <span class="math inline">\(P(X = c) = 0\)</span> であるため、イコール（等号）の有無で確率が変わりません</strong>。</p>
+<p><span class="math display">\[P(a \le X \le b) = P(a &lt; X \le b) = P(a \le X &lt; b) = P(a &lt; X &lt; b)\]</span></p>
+<p>境界線となる1点の面積は常に <span class="math inline">\(0\)</span> だからこそ、端点を含めても含めなくても積分面積は完全に一致します。</p>
+<hr>
+</section>
+<section id="理解度チェッククイズ" class="level2" data-number="8">
+<h2 data-number="8" class="anchored" data-anchor-id="理解度チェッククイズ"><span class="header-section-number">8</span> 理解度チェッククイズ</h2>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>❓ 第1問：連続型確率変数 <span class="math inline">\(X\)</span> の確率密度関数 <span class="math inline">\(f(x)\)</span> について、<span class="math inline">\(f(170) = 0.0665\)</span> であるとき、<span class="math inline">\(P(X = 170) = 0.0665\)</span> と言えるか？
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>【解答】</strong> <strong>言えません（誤り）</strong>。 <span class="math inline">\(f(170) = 0.0665\)</span> はあくまで確率密度の「高さ」であり、確率は「面積」です。一点における幅は <span class="math inline">\(0\)</span> なので、確率 <span class="math inline">\(P(X = 170) = 0\)</span> となります。</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>❓ 第2問：一様分布 <span class="math inline">\(U(0, 10)\)</span>（0から10まで均等に発生する乱数）において、<span class="math inline">\(P(X = 5)\)</span> と <span class="math inline">\(P(4.9 \le X \le 5.1)\)</span> はそれぞれいくらか？
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>【解答】</strong> - <span class="math inline">\(P(X = 5) = \mathbf{0}\)</span> - <span class="math inline">\(P(4.9 \le X \le 5.1) = \text{幅 } (5.1 - 4.9) \times \text{高さ } \frac{1}{10} = 0.2 \times 0.1 = \mathbf{0.02} \ (2\%)\)</span></p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>❓ 第3問：「確率が 0 の事象」と「空集合（不可能な事象）」の違いは何か？
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>【解答】</strong> - <strong>空集合（不可能な事象）</strong>: 定義上絶対に起こり得ない事象（例: 偶数の奇数、コインを投げてサイコロの目が出るなど）。その確率は必ず <span class="math inline">\(0\)</span>。 - <strong>確率が 0 の事象</strong>: 起こり得る事象であっても、連続空間の一点のように測度（面積や体積）が <span class="math inline">\(0\)</span> である事象。ランダムに選ばれた値そのものは、選ばれる前の確率としては <span class="math inline">\(0\)</span> ですが、実際に発生します。</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="まとめ" class="level2" data-number="9">
+<h2 data-number="9" class="anchored" data-anchor-id="まとめ"><span class="header-section-number">9</span> まとめ</h2>
+<ol type="1">
+<li><strong>日常の「170cm」</strong>は測定精度の幅（<span class="math inline">\(169.5 \sim 170.5\text{cm}\)</span>）を指しており、面積（確率 <span class="math inline">\(\approx 6.6\%\)</span>）を持つ。</li>
+<li><strong>数学の「170cm」</strong>は幅ゼロの1点（<span class="math inline">\(170.000\dots\text{cm}\)</span>）を指しており、幅がゼロなので面積（確率）は必ず <span class="math inline">\(0\)</span> になる。</li>
+<li><strong>確率密度 <span class="math inline">\(f(x)\)</span></strong> は「高さ」であり、確率は常に微小幅を掛けた「面積（<span class="math inline">\(\int f(x) dx\)</span>）」として計算される。</li>
+<li><strong>「確率がゼロ」は「起こり得ない」と同義ではない</strong>。連続空間では確率ゼロの事象が実際に発生する。</li>
+</ol>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const cellDetails = window.document.querySelectorAll(".cell details.code-fold");
+        for (let i=0; i<cellDetails.length; i++) {
+          const details = cellDetails[i];
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell div.sourceCode.cell-code");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "「身長がピッタリ170cmである確率」はなぜ 0 なのか？"</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="an">subtitle:</span><span class="co"> "連続型確率変数における「確率ゼロのパラドックス」・確率密度と極限の直感理解"</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "Antigravity Pair Programming"</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> "2026-08-19"</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="in">```{r setup, include=FALSE}</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>({</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(ggplot2)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(dplyr)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(tidyr)</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(patchwork)</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>font_family <span class="ot">&lt;-</span> <span class="st">"Hiragino Sans"</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="fu">## はじめに：日常の直感と数学のギャップ</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>「日本人の成人男性で、身長170cmの人なんて街中にいくらでもいるじゃないか。それなのに**『身長が170cmである確率は 0 である（$P(X = 170) = 0$）』**と言われるのはなぜ？」</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>統計学や確率論を学ぶとき、多くの人がこの**「連続変数の確率ゼロ問題」**に強い違和感を覚えます。</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>::: {.callout-important appearance="simple"}</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🧭 違和感の正体：日常の「170cm」と数学の「170cm」の違い</span></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**日常の「170cm」**: 「測定機器の精度（有効数字）」を前提とした**『区間（幅）』**の話。</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>身長計が170cmと表示するのは、実際には **$169.5\text{cm} \le X &lt; 170.5\text{cm}$（幅 1cm の範囲）** に入っていることを意味します。この区間に入る確率は **約 $6.6\%$** 存在します。</span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**数学の「170cm」**: 小数点以下が無限に続く**『幅ゼロの1点』**の話。</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>$170.00000000000000000000\dots\text{cm}$ に**ナノメートル・原子レベルまで完全に一致する確率**を計算すると、数学的に **$0$** になります。</span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a><span class="fu">## 幾何学的な直感アナロジー（幾何学的確率）</span></span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>なぜ「幅がゼロの1点」の確率は 0 になるのか、身近な幾何学の例で考えてみましょう。</span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a><span class="fu">### 1. ダーツの的当て</span></span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>面積が $100\text{cm}^2$ のダーツボードに、ダーツの針が必ずどこか1点に刺さるとします。</span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>「右半分のエリア（面積 $50\text{cm}^2$）に刺さる確率」 $\to \frac{50}{100} = 50\%$</span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>「中心の小さな丸（面積 $1\text{cm}^2$）に刺さる確率」 $\to \frac{1}{100} = 1\%$</span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**「幾何学的に指定した特定の1点（座標 $(x_0, y_0)$）にドンピシャで刺さる確率」**:</span>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>幾何学的な「点」には**面積がありません（面積 $= 0$）**。</span>
+<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>したがって、確率は $\frac{0}{100} = 0\%$ となります。</span>
+<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a>ダーツは**絶対にどこかの点に刺さっている**にもかかわらず、**「その指定された点に刺さる確率」は $0$** なのです。</span>
+<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2. 糸を切る実験</span></span>
+<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a>長さ $10\text{cm}$ の糸をランダムな位置でハサミで切るとき、ピッタリ $5.000000\dots\text{cm}$ で切れる確率は何％でしょうか？</span>
+<span id="cb9-51"><a href="#cb9-51" aria-hidden="true" tabindex="-1"></a>$0$ から $10$ までの間には実数が**無限個（非可算無限）**存在するため、特定の実数を言い当てる確率は $\frac{1}{\infty} \to 0$ です。</span>
+<span id="cb9-52"><a href="#cb9-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-53"><a href="#cb9-53" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb9-54"><a href="#cb9-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-55"><a href="#cb9-55" aria-hidden="true" tabindex="-1"></a><span class="fu">## 動的ビジュアライゼーション（gganimate による極限の可視化）</span></span>
+<span id="cb9-56"><a href="#cb9-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-57"><a href="#cb9-57" aria-hidden="true" tabindex="-1"></a>成人男性の身長分布（平均 $\mu = 170\text{cm}$、標準偏差 $\sigma = 6\text{cm}$ の正規分布）を用いて、**区間の幅 $\Delta x$ を徐々に狭めていったときに面積（確率）がどう変化するか**をアニメーションで見てみましょう。</span>
+<span id="cb9-58"><a href="#cb9-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-59"><a href="#cb9-59" aria-hidden="true" tabindex="-1"></a><span class="al">![区間幅 Δx を 0 へ縮小したときの一点の確率ゼロ可視化](continuous_probability_zero.gif)</span></span>
+<span id="cb9-60"><a href="#cb9-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-61"><a href="#cb9-61" aria-hidden="true" tabindex="-1"></a><span class="fu">### アニメーションからわかる決定的な事実</span></span>
+<span id="cb9-62"><a href="#cb9-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-63"><a href="#cb9-63" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**確率密度（グラフの高さ）は一定のまま！**</span>
+<span id="cb9-64"><a href="#cb9-64" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>身長 $170\text{cm}$ における確率密度関数の高さは $f(170) \approx 0.0665$ であり、ゼロではありません。</span>
+<span id="cb9-65"><a href="#cb9-65" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**しかし、幅 $\Delta x$ が狭くなるにつれて「面積（確率）」がゼロへ収縮する！**</span>
+<span id="cb9-66"><a href="#cb9-66" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>**幅 $20\text{cm}$**（$160 \sim 180\text{cm}$）: 確率 $\approx 90.44\%$</span>
+<span id="cb9-67"><a href="#cb9-67" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>**幅 $2\text{cm}$**（$169 \sim 171\text{cm}$）: 確率 $\approx 13.23\%$</span>
+<span id="cb9-68"><a href="#cb9-68" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>**幅 $0.2\text{cm}$**（$169.9 \sim 170.1\text{cm}$）: 確率 $\approx 1.33\%$</span>
+<span id="cb9-69"><a href="#cb9-69" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>**幅 $0\text{cm}$**（ピッタリ $170.000\dots\text{cm}$）:</span>
+<span id="cb9-70"><a href="#cb9-70" aria-hidden="true" tabindex="-1"></a>     $$\text{確率 } P(X = 170) = \text{底辺（幅 0）} \times \text{高さ } f(170) = 0 \times 0.0665 = \mathbf{0}$$</span>
+<span id="cb9-71"><a href="#cb9-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-72"><a href="#cb9-72" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip}</span>
+<span id="cb9-73"><a href="#cb9-73" aria-hidden="true" tabindex="-1"></a><span class="fu">### 💡 核心の公式</span></span>
+<span id="cb9-74"><a href="#cb9-74" aria-hidden="true" tabindex="-1"></a>連続型確率変数において、微小幅 $\Delta x$ における確率は以下のように近似されます：</span>
+<span id="cb9-75"><a href="#cb9-75" aria-hidden="true" tabindex="-1"></a>$$P\left(x - \frac{\Delta x}{2} \le X \le x + \frac{\Delta x}{2}\right) \approx f(x) \times \Delta x$$</span>
+<span id="cb9-76"><a href="#cb9-76" aria-hidden="true" tabindex="-1"></a>$\Delta x \to 0$ の極限をとると、$f(x)$ がどんな値であっても右辺は必ず $0$ になります。</span>
+<span id="cb9-77"><a href="#cb9-77" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb9-78"><a href="#cb9-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-79"><a href="#cb9-79" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb9-80"><a href="#cb9-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-81"><a href="#cb9-81" aria-hidden="true" tabindex="-1"></a><span class="fu">## 「確率（Probability）」と「確率密度（Probability Density）」の比較</span></span>
+<span id="cb9-82"><a href="#cb9-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-83"><a href="#cb9-83" aria-hidden="true" tabindex="-1"></a>この混乱を解消するためには、「確率」と「確率密度」の違いを明確に区別することが不可欠です。</span>
+<span id="cb9-84"><a href="#cb9-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-85"><a href="#cb9-85" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> 比較項目 <span class="pp">|</span> 確率（Probability） <span class="pp">|</span> 確率密度（Probability Density） <span class="pp">|</span></span>
+<span id="cb9-86"><a href="#cb9-86" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">|</span></span>
+<span id="cb9-87"><a href="#cb9-87" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **記号** <span class="pp">|</span> $P(a \le X \le b)$ <span class="pp">|</span> $f(x)$ <span class="pp">|</span></span>
+<span id="cb9-88"><a href="#cb9-88" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **図形的な意味** | 曲線の下の **「面積」**（積分値） | 曲線上の特定地点の **「高さ」** <span class="pp">|</span></span>
+<span id="cb9-89"><a href="#cb9-89" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **計算式** <span class="pp">|</span> $P(a \le X \le b) = \int_a^b f(x) dx$ <span class="pp">|</span> $f(x) = \lim_{\Delta x \to 0} \frac{P(x \le X \le x+\Delta x)}{\Delta x}$ <span class="pp">|</span></span>
+<span id="cb9-90"><a href="#cb9-90" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **値の範囲** | **必ず $0 \le P \le 1$**（$0\% \sim 100\%$） | **$0 \le f(x) &lt; \infty$**（**$1$ を超えてもよい！**） <span class="pp">|</span></span>
+<span id="cb9-91"><a href="#cb9-91" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **単位（次元）** | **無次元**（割合・パーセント） | **$[1 / \text{変数の単位}]$**（例: $1/\text{cm}$, $1/\text{kg}$） <span class="pp">|</span></span>
+<span id="cb9-92"><a href="#cb9-92" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **1点での値** | 常に **$P(X = x) = 0$** | **$f(x) \ge 0$**（有限の正の値） <span class="pp">|</span></span>
+<span id="cb9-93"><a href="#cb9-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-94"><a href="#cb9-94" aria-hidden="true" tabindex="-1"></a><span class="fu">### 確率密度が 1 を超える具体例</span></span>
+<span id="cb9-95"><a href="#cb9-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-96"><a href="#cb9-96" aria-hidden="true" tabindex="-1"></a>「確率密度」は確率そのものではなく「単位長さあたりの密度」であるため、$1$ を超えることが多々あります。</span>
+<span id="cb9-97"><a href="#cb9-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-98"><a href="#cb9-98" aria-hidden="true" tabindex="-1"></a>例えば、非常に精密なネジの長さが $N(\mu = 10\text{mm}, \sigma = 0.05\text{mm})$ に従う場合：</span>
+<span id="cb9-99"><a href="#cb9-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-102"><a href="#cb9-102" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb9-103"><a href="#cb9-103" aria-hidden="true" tabindex="-1"></a><span class="co"># 標準偏差が小さい場合の確率密度</span></span>
+<span id="cb9-104"><a href="#cb9-104" aria-hidden="true" tabindex="-1"></a>sigma_small <span class="ot">&lt;-</span> <span class="fl">0.05</span></span>
+<span id="cb9-105"><a href="#cb9-105" aria-hidden="true" tabindex="-1"></a>f_peak <span class="ot">&lt;-</span> <span class="fu">dnorm</span>(<span class="dv">10</span>, <span class="at">mean =</span> <span class="dv">10</span>, <span class="at">sd =</span> sigma_small)</span>
+<span id="cb9-106"><a href="#cb9-106" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"中心 x = 10mm における確率密度の高さ: f(10) = %.2f (1 を大幅に超過！)</span><span class="sc">\n</span><span class="st">"</span>, f_peak))</span>
+<span id="cb9-107"><a href="#cb9-107" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb9-108"><a href="#cb9-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-109"><a href="#cb9-109" aria-hidden="true" tabindex="-1"></a>高さは約 $7.98$ にも達しますが、幅 $0.01\text{mm}$ の微小面積を計算すると $7.98 \times 0.01 \approx 0.0798$（約 $8\%$）となり、確率は必ず $1$ 以下に収まります。</span>
+<span id="cb9-110"><a href="#cb9-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-111"><a href="#cb9-111" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb9-112"><a href="#cb9-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-113"><a href="#cb9-113" aria-hidden="true" tabindex="-1"></a><span class="fu">## 「確率ゼロ」は「絶対に起きない（不可能）」を意味するのか？</span></span>
+<span id="cb9-114"><a href="#cb9-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-115"><a href="#cb9-115" aria-hidden="true" tabindex="-1"></a>これは確率論・測度論における最も深遠なテーマの1つです。</span>
+<span id="cb9-116"><a href="#cb9-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-117"><a href="#cb9-117" aria-hidden="true" tabindex="-1"></a>::: {.callout-note appearance="simple"}</span>
+<span id="cb9-118"><a href="#cb9-118" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🚨 結論：「確率 0 の事象」でも実際に発生する！</span></span>
+<span id="cb9-119"><a href="#cb9-119" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**不可能な事象（空集合 $\emptyset$）** の確率は必ず $0$ です（例: サイコロを振って 7 が出る確率 $= 0$）。</span>
+<span id="cb9-120"><a href="#cb9-120" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>しかし、その逆は成り立ちません。**「確率が $0$ だからといって、絶対に起こらないわけではない」**のです。</span>
+<span id="cb9-121"><a href="#cb9-121" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb9-122"><a href="#cb9-122" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-123"><a href="#cb9-123" aria-hidden="true" tabindex="-1"></a><span class="fu">### 測度論における「ほとんど確実に（Almost Surely）」</span></span>
+<span id="cb9-124"><a href="#cb9-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-125"><a href="#cb9-125" aria-hidden="true" tabindex="-1"></a>ランダムに身長を測定したとき、測定された人の身長は（仮に超高精度のレーザーで測れば）$170.238491029\dots\text{cm}$ のような何らかの実数になります。</span>
+<span id="cb9-126"><a href="#cb9-126" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-127"><a href="#cb9-127" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>測定される**前**の段階で、「その人がピッタリ $170.238491029\dots\text{cm}$ である確率」を計算すると **$0$** です。</span>
+<span id="cb9-128"><a href="#cb9-128" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>にもかかわらず、測定した**後**には**「確率 $0$ の事象」が実際に目の前で起こった**ことになります。</span>
+<span id="cb9-129"><a href="#cb9-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-130"><a href="#cb9-130" aria-hidden="true" tabindex="-1"></a>このように、連続空間では「確率ゼロの事象の無限の集まり」によって全体（確率 1）が構成されています。数学ではこの性質を**「ほとんど確実に（almost surely / a.s.）」**と呼びます。</span>
+<span id="cb9-131"><a href="#cb9-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-132"><a href="#cb9-132" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb9-133"><a href="#cb9-133" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-134"><a href="#cb9-134" aria-hidden="true" tabindex="-1"></a><span class="fu">## R による数値実験シミュレーション</span></span>
+<span id="cb9-135"><a href="#cb9-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-136"><a href="#cb9-136" aria-hidden="true" tabindex="-1"></a>コンピュータの乱数を用いて、この事実をシミュレーションしてみましょう。</span>
+<span id="cb9-137"><a href="#cb9-137" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-140"><a href="#cb9-140" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb9-141"><a href="#cb9-141" aria-hidden="true" tabindex="-1"></a><span class="co"># 100万人分の成人男性の身長データを生成 (μ = 170, σ = 6)</span></span>
+<span id="cb9-142"><a href="#cb9-142" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb9-143"><a href="#cb9-143" aria-hidden="true" tabindex="-1"></a>n_people <span class="ot">&lt;-</span> <span class="dv">1000000</span></span>
+<span id="cb9-144"><a href="#cb9-144" aria-hidden="true" tabindex="-1"></a>heights <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n_people, <span class="at">mean =</span> <span class="dv">170</span>, <span class="at">sd =</span> <span class="dv">6</span>)</span>
+<span id="cb9-145"><a href="#cb9-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-146"><a href="#cb9-146" aria-hidden="true" tabindex="-1"></a><span class="co"># 実験1: ピッタリ 170.00000000000000 cm の人は何人いるか？</span></span>
+<span id="cb9-147"><a href="#cb9-147" aria-hidden="true" tabindex="-1"></a>exact_170 <span class="ot">&lt;-</span> <span class="fu">sum</span>(heights <span class="sc">==</span> <span class="fl">170.0</span>)</span>
+<span id="cb9-148"><a href="#cb9-148" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"【実験1】100万人中、ピッタリ 170.000...cm だった人数: %d 人 (割合: %.6f%%)</span><span class="sc">\n</span><span class="st">"</span>, </span>
+<span id="cb9-149"><a href="#cb9-149" aria-hidden="true" tabindex="-1"></a>            exact_170, (exact_170 <span class="sc">/</span> n_people) <span class="sc">*</span> <span class="dv">100</span>))</span>
+<span id="cb9-150"><a href="#cb9-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-151"><a href="#cb9-151" aria-hidden="true" tabindex="-1"></a><span class="co"># 実験2: 通常の身長計の精度 (169.5cm 〜 170.5cm) に入る人は何人いるか？</span></span>
+<span id="cb9-152"><a href="#cb9-152" aria-hidden="true" tabindex="-1"></a>range_170 <span class="ot">&lt;-</span> <span class="fu">sum</span>(heights <span class="sc">&gt;=</span> <span class="fl">169.5</span> <span class="sc">&amp;</span> heights <span class="sc">&lt;</span> <span class="fl">170.5</span>)</span>
+<span id="cb9-153"><a href="#cb9-153" aria-hidden="true" tabindex="-1"></a>theo_prob <span class="ot">&lt;-</span> <span class="fu">pnorm</span>(<span class="fl">170.5</span>, <span class="at">mean =</span> <span class="dv">170</span>, <span class="at">sd =</span> <span class="dv">6</span>) <span class="sc">-</span> <span class="fu">pnorm</span>(<span class="fl">169.5</span>, <span class="at">mean =</span> <span class="dv">170</span>, <span class="at">sd =</span> <span class="dv">6</span>)</span>
+<span id="cb9-154"><a href="#cb9-154" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-155"><a href="#cb9-155" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"【実験2】100万人中、169.5cm〜170.5cm に入った人数: %d 人 (割合: %.2f%%)</span><span class="sc">\n</span><span class="st">"</span>, </span>
+<span id="cb9-156"><a href="#cb9-156" aria-hidden="true" tabindex="-1"></a>            range_170, (range_170 <span class="sc">/</span> n_people) <span class="sc">*</span> <span class="dv">100</span>))</span>
+<span id="cb9-157"><a href="#cb9-157" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"         理論値 (pnorm による積分面積)          : %.2f%%</span><span class="sc">\n</span><span class="st">"</span>, theo_prob <span class="sc">*</span> <span class="dv">100</span>))</span>
+<span id="cb9-158"><a href="#cb9-158" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb9-159"><a href="#cb9-159" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-160"><a href="#cb9-160" aria-hidden="true" tabindex="-1"></a>100万人分のデータを集めても、コンピュータの倍精度浮動小数点でピッタリ $170.000\dots$ になる人は**0人**でした。一方、幅 $1\text{cm}$ の区間には約 $6.6$ 万人（$6.6\%$）が綺麗に収まっています。</span>
+<span id="cb9-161"><a href="#cb9-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-162"><a href="#cb9-162" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb9-163"><a href="#cb9-163" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-164"><a href="#cb9-164" aria-hidden="true" tabindex="-1"></a><span class="fu">## 連続型確率変数における重要な性質：不等号の「$\le$」と「$&lt;$」</span></span>
+<span id="cb9-165"><a href="#cb9-165" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-166"><a href="#cb9-166" aria-hidden="true" tabindex="-1"></a>離散型確率変数（サイコロの目など）では、$P(X \le 3)$ と $P(X &lt; 3)$ は異なります（$P(X=3)$ の分だけズレる）。</span>
+<span id="cb9-167"><a href="#cb9-167" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-168"><a href="#cb9-168" aria-hidden="true" tabindex="-1"></a>しかし、**連続型確率変数では $P(X = c) = 0$ であるため、イコール（等号）の有無で確率が変わりません**。</span>
+<span id="cb9-169"><a href="#cb9-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-170"><a href="#cb9-170" aria-hidden="true" tabindex="-1"></a>$$P(a \le X \le b) = P(a &lt; X \le b) = P(a \le X &lt; b) = P(a &lt; X &lt; b)$$</span>
+<span id="cb9-171"><a href="#cb9-171" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-172"><a href="#cb9-172" aria-hidden="true" tabindex="-1"></a>境界線となる1点の面積は常に $0$ だからこそ、端点を含めても含めなくても積分面積は完全に一致します。</span>
+<span id="cb9-173"><a href="#cb9-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-174"><a href="#cb9-174" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb9-175"><a href="#cb9-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-176"><a href="#cb9-176" aria-hidden="true" tabindex="-1"></a><span class="fu">## 理解度チェッククイズ</span></span>
+<span id="cb9-177"><a href="#cb9-177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-178"><a href="#cb9-178" aria-hidden="true" tabindex="-1"></a>::: {.callout-caution collapse="true"}</span>
+<span id="cb9-179"><a href="#cb9-179" aria-hidden="true" tabindex="-1"></a><span class="fu">### ❓ 第1問：連続型確率変数 $X$ の確率密度関数 $f(x)$ について、$f(170) = 0.0665$ であるとき、$P(X = 170) = 0.0665$ と言えるか？</span></span>
+<span id="cb9-180"><a href="#cb9-180" aria-hidden="true" tabindex="-1"></a>**【解答】**</span>
+<span id="cb9-181"><a href="#cb9-181" aria-hidden="true" tabindex="-1"></a>**言えません（誤り）**。</span>
+<span id="cb9-182"><a href="#cb9-182" aria-hidden="true" tabindex="-1"></a>$f(170) = 0.0665$ はあくまで確率密度の「高さ」であり、確率は「面積」です。一点における幅は $0$ なので、確率 $P(X = 170) = 0$ となります。</span>
+<span id="cb9-183"><a href="#cb9-183" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb9-184"><a href="#cb9-184" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-185"><a href="#cb9-185" aria-hidden="true" tabindex="-1"></a>::: {.callout-caution collapse="true"}</span>
+<span id="cb9-186"><a href="#cb9-186" aria-hidden="true" tabindex="-1"></a><span class="fu">### ❓ 第2問：一様分布 $U(0, 10)$（0から10まで均等に発生する乱数）において、$P(X = 5)$ と $P(4.9 \le X \le 5.1)$ はそれぞれいくらか？</span></span>
+<span id="cb9-187"><a href="#cb9-187" aria-hidden="true" tabindex="-1"></a>**【解答】**</span>
+<span id="cb9-188"><a href="#cb9-188" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$P(X = 5) = \mathbf{0}$</span>
+<span id="cb9-189"><a href="#cb9-189" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>$P(4.9 \le X \le 5.1) = \text{幅 } (5.1 - 4.9) \times \text{高さ } \frac{1}{10} = 0.2 \times 0.1 = \mathbf{0.02} \ (2\%)$</span>
+<span id="cb9-190"><a href="#cb9-190" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb9-191"><a href="#cb9-191" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-192"><a href="#cb9-192" aria-hidden="true" tabindex="-1"></a>::: {.callout-caution collapse="true"}</span>
+<span id="cb9-193"><a href="#cb9-193" aria-hidden="true" tabindex="-1"></a><span class="fu">### ❓ 第3問：「確率が 0 の事象」と「空集合（不可能な事象）」の違いは何か？</span></span>
+<span id="cb9-194"><a href="#cb9-194" aria-hidden="true" tabindex="-1"></a>**【解答】**</span>
+<span id="cb9-195"><a href="#cb9-195" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**空集合（不可能な事象）**: 定義上絶対に起こり得ない事象（例: 偶数の奇数、コインを投げてサイコロの目が出るなど）。その確率は必ず $0$。</span>
+<span id="cb9-196"><a href="#cb9-196" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**確率が 0 の事象**: 起こり得る事象であっても、連続空間の一点のように測度（面積や体積）が $0$ である事象。ランダムに選ばれた値そのものは、選ばれる前の確率としては $0$ ですが、実際に発生します。</span>
+<span id="cb9-197"><a href="#cb9-197" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb9-198"><a href="#cb9-198" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-199"><a href="#cb9-199" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb9-200"><a href="#cb9-200" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-201"><a href="#cb9-201" aria-hidden="true" tabindex="-1"></a><span class="fu">## まとめ</span></span>
+<span id="cb9-202"><a href="#cb9-202" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-203"><a href="#cb9-203" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**日常の「170cm」**は測定精度の幅（$169.5 \sim 170.5\text{cm}$）を指しており、面積（確率 $\approx 6.6\%$）を持つ。</span>
+<span id="cb9-204"><a href="#cb9-204" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**数学の「170cm」**は幅ゼロの1点（$170.000\dots\text{cm}$）を指しており、幅がゼロなので面積（確率）は必ず $0$ になる。</span>
+<span id="cb9-205"><a href="#cb9-205" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**確率密度 $f(x)$** は「高さ」であり、確率は常に微小幅を掛けた「面積（$\int f(x) dx$）」として計算される。</span>
+<span id="cb9-206"><a href="#cb9-206" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**「確率がゼロ」は「起こり得ない」と同義ではない**。連続空間では確率ゼロの事象が実際に発生する。</span>
+</code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

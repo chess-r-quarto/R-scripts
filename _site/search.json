@@ -1,0 +1,219 @@
+[
+  {
+    "objectID": "topics/03_poisson_distribution/poisson_guide.html",
+    "href": "topics/03_poisson_distribution/poisson_guide.html",
+    "title": "ポアソン分布と到着間隔（指数分布）の基礎と実践",
+    "section": "",
+    "text": "ポアソン分布（Poisson Distribution）は、「ある一定の時間や空間の中で、平均して \\(\\lambda\\)（ラムダ）回起こるランダムな事象が、ちょうど \\(k\\) 回起こる確率」を表す離散型確率分布です。\n\n\n\\[P(X = k) = \\frac{\\lambda^k e^{-\\lambda}}{k!} \\quad (k = 0, 1, 2, \\dots)\\]\n\n\\(\\lambda &gt; 0\\) : 単位時間（または単位空間）あたりの平均発生回数\n\\(k \\ge 0\\) : 実際に観測される発生回数\n\\(e\\) : 自然対数の底（ネイピア数 \\(\\approx 2.71828\\)）\n\n\n\n\nポアソン分布の最大の特徴は、「期待値（平均）と分散が完全に一致する」という点です。\n\\[\\text{E}[X] = \\lambda\\] \\[\\text{Var}(X) = \\lambda\\]"
+  },
+  {
+    "objectID": "topics/03_poisson_distribution/poisson_guide.html#はじめにポアソン分布とは",
+    "href": "topics/03_poisson_distribution/poisson_guide.html#はじめにポアソン分布とは",
+    "title": "ポアソン分布と到着間隔（指数分布）の基礎と実践",
+    "section": "",
+    "text": "ポアソン分布（Poisson Distribution）は、「ある一定の時間や空間の中で、平均して \\(\\lambda\\)（ラムダ）回起こるランダムな事象が、ちょうど \\(k\\) 回起こる確率」を表す離散型確率分布です。\n\n\n\\[P(X = k) = \\frac{\\lambda^k e^{-\\lambda}}{k!} \\quad (k = 0, 1, 2, \\dots)\\]\n\n\\(\\lambda &gt; 0\\) : 単位時間（または単位空間）あたりの平均発生回数\n\\(k \\ge 0\\) : 実際に観測される発生回数\n\\(e\\) : 自然対数の底（ネイピア数 \\(\\approx 2.71828\\)）\n\n\n\n\nポアソン分布の最大の特徴は、「期待値（平均）と分散が完全に一致する」という点です。\n\\[\\text{E}[X] = \\lambda\\] \\[\\text{Var}(X) = \\lambda\\]"
+  },
+  {
+    "objectID": "topics/03_poisson_distribution/poisson_guide.html#ポアソン分布が成立するための前提条件",
+    "href": "topics/03_poisson_distribution/poisson_guide.html#ポアソン分布が成立するための前提条件",
+    "title": "ポアソン分布と到着間隔（指数分布）の基礎と実践",
+    "section": "2 ポアソン分布が成立するための前提条件",
+    "text": "2 ポアソン分布が成立するための前提条件\nポアソン分布が適用できるのは、「事象同士に互いに因果関係（連鎖や反発）がなく、完全に独立してランダムに生じる現象」に限られます。この確率モデルをポアソン過程と呼び、以下の3条件を満たす必要があります。\n\n独立性（無記憶性）\n\nある時間帯に事象が発生したかどうかが、他の時間帯で発生する確率に全く影響を与えない。\n\n定常性（斉時性）\n\n単位時間あたりに事象が起きる平均ペース \\(\\lambda\\) は、どの時間帯でも一定である。\n\n希少性（非集積性）\n\nごくわずかな微小時間 \\(\\Delta t\\) の間に、事象が同時に2回以上重なって起きる確率は無視できるほど小さい。\n\n\n\n\n\n\n\n\nNote具体例：平日のコンビニでトイレを借りる客\n\n\n\n\nなぜ当てはまるか？: トイレの利用は個人の生理現象や行動に依存しており、「前の客が使ったから次の客も行きたくなる」といった客同士の連鎖（因果）はありません。\n母数と確率: 来店客や通行人という膨大な母数（\\(n\\)）の中で、偶発的にトイレを借りる確率（\\(p\\)）はごくわずかであり、二項分布の極限（\\(n \\to \\infty, p \\to 0, np = \\lambda\\)）としてのポアソン分布に綺麗に従います。"
+  },
+  {
+    "objectID": "topics/03_poisson_distribution/poisson_guide.html#python-による理論計算と乱数シミュレーション",
+    "href": "topics/03_poisson_distribution/poisson_guide.html#python-による理論計算と乱数シミュレーション",
+    "title": "ポアソン分布と到着間隔（指数分布）の基礎と実践",
+    "section": "3 Python による理論計算と乱数シミュレーション",
+    "text": "3 Python による理論計算と乱数シミュレーション\nまずは Python (scipy.stats と numpy) を用いて、1時間に平均 3 人 (\\(\\lambda = 3.0\\)) が訪れるケースの確率計算と乱数シミュレーションを実行します。\n\n\nCode\nimport numpy as np\nfrom scipy.stats import poisson\n\nlam = 3.0\nk_vals = np.arange(0, 11)\n\n# 1. 理論確率の計算 (PMF)\nprobs = poisson.pmf(k_vals, lam)\n\nprint(f\"=== 平均発生件数 λ = {lam} の場合の確率 ===\")\n\n\n=== 平均発生件数 λ = 3.0 の場合の確率 ===\n\n\nCode\nfor k, p in zip(k_vals, probs):\n    bar = \"■\" * int(p * 40)\n    print(f\"{k:2d} 回 : {p:8.4f} ({p*100:5.1f}%) | {bar}\")\n\n\n 0 回 :   0.0498 (  5.0%) | ■\n 1 回 :   0.1494 ( 14.9%) | ■■■■■\n 2 回 :   0.2240 ( 22.4%) | ■■■■■■■■\n 3 回 :   0.2240 ( 22.4%) | ■■■■■■■■\n 4 回 :   0.1680 ( 16.8%) | ■■■■■■\n 5 回 :   0.1008 ( 10.1%) | ■■■■\n 6 回 :   0.0504 (  5.0%) | ■■\n 7 回 :   0.0216 (  2.2%) | \n 8 回 :   0.0081 (  0.8%) | \n 9 回 :   0.0027 (  0.3%) | \n10 回 :   0.0008 (  0.1%) | \n\n\nCode\n# 2. 乱数シミュレーション (10,000時間分)\nnp.random.seed(42)\nsamples = np.random.poisson(lam, size=10000)\n\nprint(\"\\n=== 10,000回シミュレーション結果 ===\")\n\n\n\n=== 10,000回シミュレーション結果 ===\n\n\nCode\nprint(f\"標本平均 : {np.mean(samples):.4f} (理論値 λ = {lam})\")\n\n\n標本平均 : 2.9946 (理論値 λ = 3.0)\n\n\nCode\nprint(f\"標本分散 : {np.var(samples):.4f} (理論値 λ = {lam})\")\n\n\n標本分散 : 2.9666 (理論値 λ = 3.0)"
+  },
+  {
+    "objectID": "topics/03_poisson_distribution/poisson_guide.html#r-ggplot2-による多角的可視化",
+    "href": "topics/03_poisson_distribution/poisson_guide.html#r-ggplot2-による多角的可視化",
+    "title": "ポアソン分布と到着間隔（指数分布）の基礎と実践",
+    "section": "4 R (ggplot2) による多角的可視化",
+    "text": "4 R (ggplot2) による多角的可視化\nR では dpois（確率密度）、ppois（累積分布）、rpois（乱数）が標準で提供されています。ggplot2 と patchwork を用いて、ポアソン分布の振る舞いを多角的にプロットします。\n\n\nCode\nlibrary(ggplot2)\nlibrary(patchwork)\nlibrary(dplyr)\n\nfont_family &lt;- \"Hiragino Sans\"\nlam &lt;- 3.0\n\n# 1. λ の違いによる形状変化\ndf_lambda &lt;- expand.grid(k = 0:25, lambda = c(1, 3, 7, 15)) %&gt;%\n  mutate(\n    prob = dpois(k, lambda = lambda),\n    lambda_label = factor(paste0(\"λ = \", lambda), levels = paste0(\"λ = \", c(1, 3, 7, 15)))\n  )\n\np1 &lt;- ggplot(df_lambda, aes(x = k, y = prob, color = lambda_label, fill = lambda_label)) +\n  geom_line(linewidth = 1) +\n  geom_point(size = 2) +\n  geom_area(alpha = 0.15, position = \"identity\") +\n  scale_color_brewer(palette = \"Set1\", name = \"平均発生率\") +\n  scale_fill_brewer(palette = \"Set1\", name = \"平均発生率\") +\n  labs(\n    title = \"① 平均発生率 λ による形状変化\",\n    subtitle = \"λ が大きくなると正規分布に近づく\",\n    x = \"1時間の発生回数 k\",\n    y = \"発生確率 P(X = k)\"\n  ) +\n  theme_minimal(base_family = font_family) +\n  theme(plot.title = element_text(face = \"bold\", size = 12))\n\n# 2. 理論値 vs シミュレーション\nset.seed(42)\nsamples_r &lt;- rpois(10000, lambda = lam)\ndf_sim &lt;- data.frame(k = samples_r)\ndf_theory &lt;- data.frame(k = 0:max(samples_r), prob = dpois(0:max(samples_r), lambda = lam))\n\np2 &lt;- ggplot() +\n  geom_histogram(data = df_sim, aes(x = k, y = after_stat(density)),\n                 binwidth = 1, center = 0, fill = \"#3498db\", color = \"white\", alpha = 0.6) +\n  geom_line(data = df_theory, aes(x = k, y = prob), color = \"#e74c3c\", linewidth = 1.1) +\n  geom_point(data = df_theory, aes(x = k, y = prob), color = \"#e74c3c\", size = 2.5) +\n  labs(\n    title = paste0(\"② 理論値 vs シミュレーション (λ = \", lam, \")\"),\n    subtitle = \"10,000回のサンプリング結果と理論式の一致\",\n    x = \"1時間の発生回数 k\",\n    y = \"相対度数 / 確率\"\n  ) +\n  theme_minimal(base_family = font_family) +\n  theme(plot.title = element_text(face = \"bold\", size = 12))\n\n# 3. 累積確率分布 (CDF)\ndf_cdf &lt;- data.frame(k = 0:15, cdf = ppois(0:15, lambda = lam))\n\np3 &lt;- ggplot(df_cdf, aes(x = k, y = cdf)) +\n  geom_step(color = \"#e67e22\", linewidth = 1.2, direction = \"hv\") +\n  geom_point(color = \"#d35400\", size = 2) +\n  geom_hline(yintercept = 0.5, linetype = \"dotted\", color = \"gray40\") +\n  geom_hline(yintercept = 0.95, linetype = \"dashed\", color = \"red\") +\n  annotate(\"text\", x = 12, y = 0.92, label = \"95% 信頼ライン\", color = \"red\", family = font_family, size = 3.5) +\n  labs(\n    title = paste0(\"③ 累積確率分布 CDF (λ = \", lam, \")\"),\n    subtitle = \"k 回以下で収まる確率 P(X ≤ k)\",\n    x = \"発生回数 k\",\n    y = \"累積確率 P(X ≤ k)\"\n  ) +\n  theme_minimal(base_family = font_family) +\n  theme(plot.title = element_text(face = \"bold\", size = 12))\n\n# 4. 到着間隔 (指数分布)\nrate_per_min &lt;- lam / 60\ninterval_sim &lt;- rexp(10000, rate = rate_per_min)\ndf_intervals &lt;- data.frame(interval = interval_sim)\ndf_exp_theory &lt;- data.frame(t = seq(0, 80, length.out = 200)) %&gt;%\n  mutate(density = dexp(t, rate = rate_per_min))\n\np4 &lt;- ggplot() +\n  geom_histogram(data = df_intervals, aes(x = interval, y = after_stat(density)),\n                 binwidth = 3, boundary = 0, fill = \"#1abc9c\", color = \"white\", alpha = 0.6) +\n  geom_line(data = df_exp_theory, aes(x = t, y = density), color = \"#16a085\", linewidth = 1.2) +\n  coord_cartesian(xlim = c(0, 80)) +\n  labs(\n    title = \"④ 表裏一体: 到着間隔 (指数分布)\",\n    subtitle = \"平均間隔: 20分 (直後に来る確率が最も高い)\",\n    x = \"次の事象までの待ち時間 (分)\",\n    y = \"確率密度\"\n  ) +\n  theme_minimal(base_family = font_family) +\n  theme(plot.title = element_text(face = \"bold\", size = 12))\n\n# 2x2 に統合\n(p1 + p2) / (p3 + p4)"
+  },
+  {
+    "objectID": "topics/03_poisson_distribution/poisson_guide.html#表裏一体の関係ポアソン分布と指数分布",
+    "href": "topics/03_poisson_distribution/poisson_guide.html#表裏一体の関係ポアソン分布と指数分布",
+    "title": "ポアソン分布と到着間隔（指数分布）の基礎と実践",
+    "section": "5 表裏一体の関係：「ポアソン分布」と「指数分布」",
+    "text": "5 表裏一体の関係：「ポアソン分布」と「指数分布」\nポアソン過程を観測するとき、着目する視点（回数か時間か）によって従う確率分布が切り替わります。\n\n\n\n\n\n\n\n\n\n視点\n問い\n確率分布\n特徴\n\n\n\n\n回数を見る\n一定時間内に何回起きるか？\nポアソン分布\n離散型（0, 1, 2, … 回）\n\n\n時間を見る\n事象が起きてから何分後に次が起きるか？\n指数分布\n連続型（0分以上）\n\n\n\n1時間に平均 \\(\\lambda = 3\\) 回起きる場合、平均待ち時間は \\(\\frac{1}{\\lambda} = \\frac{1}{3}\\text{時間} = 20\\text{分}\\) となり、待ち時間は \\(\\text{Exp}(\\text{rate} = 3/\\text{hour})\\) に従います。"
+  },
+  {
+    "objectID": "topics/03_poisson_distribution/poisson_guide.html#発展実務データへの応用",
+    "href": "topics/03_poisson_distribution/poisson_guide.html#発展実務データへの応用",
+    "title": "ポアソン分布と到着間隔（指数分布）の基礎と実践",
+    "section": "6 発展：実務データへの応用",
+    "text": "6 発展：実務データへの応用\n現実のデータでは、厳密なポアソン過程の前提が崩れるケースがあります。その場合は以下の手法へと拡張します。\n\n時間帯による平均発生率の変化 \\(\\lambda(t)\\)\n\n例: 昼食後の 14:00〜15:00 に利用客が集中する\n➔ 非斉次ポアソン過程（Inhomogeneous Poisson Process）\n\n外部要因（気温・曜日・イベント）による影響\n\n➔ ポアソン回帰分析（GLM: 一般化線形モデル）: \\(\\log(\\lambda) = \\beta_0 + \\beta_1 X_1 + \\dots\\)\n\n事象が連鎖して発生する（過分散: 分散 &gt; 平均）\n\n感染症や口コミの拡散など\n➔ 負の二項分布（Negative Binomial Distribution）"
+  },
+  {
+    "objectID": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html",
+    "href": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html",
+    "title": "「確率（Probability）」と「尤度（Likelihood）」の決定的な違い",
+    "section": "",
+    "text": "統計学や機械学習を学び始めると、必ずぶつかる壁が「確率（Probability）」と「尤度（Likelihood：ゆうど）」の違いです。\n日常会話において、この2つの言葉はほぼ同じ意味（「確からしさ」や「可能性」）で使われます。しかし、統計学の世界では全く異なる数学的対象であり、視点（アプローチ）が真逆です。\n\n\n\n\n\n\nImportant🧭 核心となる一言要約\n\n\n\n\n確率（Probability）: 「前提（パラメータ \\(\\theta\\)）が分かっているとき、どんなデータ \\(x\\) が得られるか？」を語る指標（順問題 / 未来予測）\n尤度（Likelihood）: 「得られたデータ \\(x\\) が分かっているとき、どの前提（パラメータ \\(\\theta\\)）がもっともらしいか？」を語る指標（逆問題 / 原因推定）"
+  },
+  {
+    "objectID": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#はじめになぜ確率と尤度は混乱するのか",
+    "href": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#はじめになぜ確率と尤度は混乱するのか",
+    "title": "「確率（Probability）」と「尤度（Likelihood）」の決定的な違い",
+    "section": "",
+    "text": "統計学や機械学習を学び始めると、必ずぶつかる壁が「確率（Probability）」と「尤度（Likelihood：ゆうど）」の違いです。\n日常会話において、この2つの言葉はほぼ同じ意味（「確からしさ」や「可能性」）で使われます。しかし、統計学の世界では全く異なる数学的対象であり、視点（アプローチ）が真逆です。\n\n\n\n\n\n\nImportant🧭 核心となる一言要約\n\n\n\n\n確率（Probability）: 「前提（パラメータ \\(\\theta\\)）が分かっているとき、どんなデータ \\(x\\) が得られるか？」を語る指標（順問題 / 未来予測）\n尤度（Likelihood）: 「得られたデータ \\(x\\) が分かっているとき、どの前提（パラメータ \\(\\theta\\)）がもっともらしいか？」を語る指標（逆問題 / 原因推定）"
+  },
+  {
+    "objectID": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#決定的な違いの比較表",
+    "href": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#決定的な違いの比較表",
+    "title": "「確率（Probability）」と「尤度（Likelihood）」の決定的な違い",
+    "section": "2 決定的な違いの比較表",
+    "text": "2 決定的な違いの比較表\n両者の根本的な違いを一覧表で整理します。\n\n\n\n\n\n\n\n\n比較項目\n確率（Probability）\n尤度（Likelihood）\n\n\n\n\n数式表現\n\\(P(X = x \\mid \\theta)\\)\n\\(L(\\theta \\mid x) = P(X = x \\mid \\theta)\\)\n\n\n何が固定（既知）か？\nパラメータ \\(\\theta\\)（母数・コインの性質など）\n観測データ \\(x\\)（標本・実験結果）\n\n\n何が変数（動くもの）か？\nデータ \\(X\\)（起こりうるすべての事象）\nパラメータ \\(\\theta\\)（推定したい候補値）\n\n\n合計 / 積分の値\nすべての事象を足すと 必ず \\(1\\)（\\(100\\%\\)）\n全パラメータで積分しても \\(1\\) にはならない\n\n\nグラフの種類\n確率分布（横軸: データ \\(x\\)）\n尤度関数（横軸: パラメータ \\(\\theta\\)）\n\n\n時間のイメージ\n未来の予測（コインを投げる前）\n過去の解釈・原因推定（コインを投げた後）\n\n\n代表的な問い\n「歪みのないコイン（\\(p=0.5\\)）を10回投げたら、表が7回出る確率は？」\n「コインを10回投げたら表が7回出た。このコインの表が出る確率 \\(p\\) はいくつか？」\n\n\n\n\n\n\n\n\n\nNote⚠️ 尤度は「確率」ではない！\n\n\n\n数式上は \\(L(\\theta \\mid x) = P(X = x \\mid \\theta)\\) と同じ計算式を使いますが、「何を変数として見ているか」が異なります。 尤度 \\(L(\\theta \\mid x)\\) はパラメータ \\(\\theta\\) の関数であり、\\(\\int L(\\theta \\mid x) d\\theta = 1\\) にはなりません。したがって、「パラメータが \\(\\theta\\) である確率」とは呼べず、「尤もらしさ（Likelihood）」と呼びます。"
+  },
+  {
+    "objectID": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#動的ビジュアライゼーションgganimate-による直感理解",
+    "href": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#動的ビジュアライゼーションgganimate-による直感理解",
+    "title": "「確率（Probability）」と「尤度（Likelihood）」の決定的な違い",
+    "section": "3 動的ビジュアライゼーション（gganimate による直感理解）",
+    "text": "3 動的ビジュアライゼーション（gganimate による直感理解）\n両者の関係性を最も直感的に理解できるのが、「確率分布の棒の高さが、リアルタイムに尤度曲線を描いていく」アニメーションです。\n\n3.1 離散型モデル：コイン投げ（二項分布 \\(n=10, k=7\\)）\n「コインを10回投げたら表が7回出た（\\(k=7\\)）」という状況を考えます。\n\n左側【確率の視点】: コインの歪みパラメータ \\(p\\)（表が出る確率）を \\(0.05 \\to 0.95\\) へスキャンしたとき、確率分布全体の形が動きます。その中で「観測された \\(k=7\\)」の赤い棒の高さに注目してください。\n右側【尤度の視点】: 左側で変化する「\\(k=7\\) の棒の高さ」を拾い集め、横軸をパラメータ \\(p\\)、縦軸を尤度としてプロットしたものが右側の赤い曲線です。\n\n\n\n\n【徹底比較】確率（Probability）vs 尤度（Likelihood）のアニメーション\n\n\n\n3.1.1 アニメーションからわかる重要なポイント\n\n左の赤い棒の高さ ＝ 右の赤い点の高さ: どの瞬間（どの \\(p\\)）においても、左側の \\(P(X=7 \\mid p)\\) の値が、そのまま右側の尤度 \\(L(p \\mid X=7)\\) の値になっています。\n最尤推定量（MLE: Maximum Likelihood Estimator）: パラメータ \\(p = 0.70\\) の瞬間に、左側の \\(k=7\\) の棒が最も高くなり、右側の尤度関数の山頂（最大値 \\(\\approx 0.267\\)）に到達します。これが「最尤法（もっとも観測データを生じやすいパラメータを選ぶ手法）」です。\n合計値の違い:\n\n左側はどの瞬間も、青い棒＋赤い棒の合計は常に \\(1.0\\)（\\(100\\%\\)）です。\n右側の赤い曲線の下側の面積（積分値）は \\(\\frac{1}{11} \\approx 0.0909\\) であり、\\(1.0\\) にはなりません。\n\n\n\n\n\n\n3.2 連続型モデル：製品の重量測定（正規分布 \\(x = 12.0\\text{g}, \\sigma = 2.0\\)）\n連続値（身長、体重、測定値など）の場合、特定の一点が得られる確率は数学的に \\(0\\) になります。そのため、確率密度の「高さ（確率密度関数 \\(f(x)\\) の値）」を尤度として用います。\n\n左側【確率密度の視点】: 平均パラメータ \\(\\mu\\) が動くにつれて、正規分布の釣鐘型が左右に移動します。固定された観測点 \\(x = 12.0\\) における垂線の高さ（密度）が上下します。\n右側【尤度関数の視点】: その垂線の高さを \\(\\mu\\) に対してプロットしたものが右側の尤度曲線です。\n\n\n\n\n【連続分布版】確率密度（Probability Density）vs 尤度（Likelihood）のアニメーション"
+  },
+  {
+    "objectID": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#数式と理論計算rコードでの実践",
+    "href": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#数式と理論計算rコードでの実践",
+    "title": "「確率（Probability）」と「尤度（Likelihood）」の決定的な違い",
+    "section": "4 数式と理論計算（Rコードでの実践）",
+    "text": "4 数式と理論計算（Rコードでの実践）\n\n4.1 1. 二項分布における計算\nコインを \\(n = 10\\) 回投げて表が \\(k\\) 回出る確率質量関数（PMF）は以下で表されます。\n\\[P(X = k \\mid p) = \\binom{n}{k} p^k (1-p)^{n-k}\\]\n\n4.1.1 確率の計算（\\(p = 0.5\\) を固定）\n「公平なコイン（\\(p=0.5\\)）を10回投げて表が7回出る確率」： \\[P(X = 7 \\mid p = 0.5) = \\binom{10}{7} (0.5)^7 (0.5)^3 = 120 \\times \\frac{1}{1024} \\approx 0.1172\\]\n\n\nCode\n# 確率の計算 (p = 0.5 固定)\nprob_k7 &lt;- dbinom(7, size = 10, prob = 0.5)\ncat(sprintf(\"P(X = 7 | p = 0.5) = %.4f (約 %.2f%%)\\n\", prob_k7, prob_k7 * 100))\n\n\nP(X = 7 | p = 0.5) = 0.1172 (約 11.72%)\n\n\nCode\n# 確率の合計は 1 になるか？\nsum_probs &lt;- sum(dbinom(0:10, size = 10, prob = 0.5))\ncat(sprintf(\"k=0..10 の確率合計 = %.1f\\n\", sum_probs))\n\n\nk=0..10 の確率合計 = 1.0\n\n\n\n\n4.1.2 尤度の計算（\\(k = 7\\) を固定）\n「表が7回出たとき、コインのパラメータが \\(p = 0.5\\) や \\(p = 0.7\\) である尤度」： \\[L(p = 0.5 \\mid X = 7) = P(X = 7 \\mid p = 0.5) \\approx 0.1172\\] \\[L(p = 0.7 \\mid X = 7) = P(X = 7 \\mid p = 0.7) \\approx 0.2668\\]\n\n\nCode\n# 尤度の計算 (k = 7 固定)\nlik_p05 &lt;- dbinom(7, size = 10, prob = 0.5)\nlik_p07 &lt;- dbinom(7, size = 10, prob = 0.7)\n\ncat(sprintf(\"L(p = 0.5 | X = 7) = %.4f\\n\", lik_p05))\n\n\nL(p = 0.5 | X = 7) = 0.1172\n\n\nCode\ncat(sprintf(\"L(p = 0.7 | X = 7) = %.4f\\n\", lik_p07))\n\n\nL(p = 0.7 | X = 7) = 0.2668\n\n\nCode\ncat(sprintf(\"p=0.7 は p=0.5 に比べて約 %.2f 倍もっともらしい！\\n\", lik_p07 / lik_p05))\n\n\np=0.7 は p=0.5 に比べて約 2.28 倍もっともらしい！\n\n\nCode\n# 尤度関数を p ∈ [0, 1] で積分するとどうなるか？\nlik_integral &lt;- integrate(function(p) dbinom(7, size = 10, prob = p), lower = 0, upper = 1)\ncat(sprintf(\"尤度関数の積分値 = %.4f (≠ 1.0 なので確率ではない)\\n\", lik_integral$value))\n\n\n尤度関数の積分値 = 0.0909 (≠ 1.0 なので確率ではない)"
+  },
+  {
+    "objectID": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#最尤推定法mle-maximum-likelihood-estimation",
+    "href": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#最尤推定法mle-maximum-likelihood-estimation",
+    "title": "「確率（Probability）」と「尤度（Likelihood）」の決定的な違い",
+    "section": "5 最尤推定法（MLE: Maximum Likelihood Estimation）",
+    "text": "5 最尤推定法（MLE: Maximum Likelihood Estimation）\n\n5.1 なぜ「尤度」を最大化するのか？\n現実のデータ分析では、「真のパラメータ \\(\\theta\\)」は神様しか知りません。私たちが手元に持っているのは「観測されたデータ \\(x\\)」だけです。\nそこで、「手元のデータが得られる確率が最も高くなるようなパラメータを選べば、それが最も真相に近いだろう」と考えるのが最尤法（MLE）です。\n\\[\\hat{\\theta}_{\\text{MLE}} = \\arg\\max_{\\theta} L(\\theta \\mid x)\\]\n\n\n5.2 なぜ「対数尤度（Log-Likelihood）」をとるのか？\n独立な \\(n\\) 個のデータ \\(x_1, x_2, \\dots, x_n\\) が得られたとき、全体の尤度は各確率密度の積（掛け算）になります。\n\\[L(\\theta \\mid x_1, \\dots, x_n) = \\prod_{i=1}^n f(x_i \\mid \\theta)\\]\nこのままでは計算が非常に困難（掛け算の微分は複雑、コンピュータ上で \\(0\\) に近くなりすぎてアンダーフローする）なため、自然対数をとった対数尤度関数 \\(\\ell(\\theta)\\) を最大化します。\n\\[\\ell(\\theta) = \\ln L(\\theta \\mid x_1, \\dots, x_n) = \\sum_{i=1}^n \\ln f(x_i \\mid \\theta)\\]\n\n\n\n\n\n\nTip💡 対数をとっても最大値の位置は変わらない\n\n\n\n対数関数 \\(\\ln(y)\\) は単調増加関数（\\(y_1 &lt; y_2 \\iff \\ln y_1 &lt; \\ln y_2\\)）であるため、\\(L(\\theta)\\) を最大化する \\(\\theta\\) と、\\(\\ln L(\\theta)\\) を最大化する \\(\\theta\\) は完全に一致します。\n\n\n\n\n5.3 R による最尤推定の実装例\n\n\nCode\n# 観測データ: コインを10回投げて表が7回\nn &lt;- 10\nk &lt;- 7\n\n# 負の対数尤度関数 (optim は最小化を行うためマイナスをつける)\nneg_log_lik &lt;- function(p) {\n  if (p &lt;= 0 || p &gt;= 1) return(Inf)\n  -dbinom(k, size = n, prob = p, log = TRUE)\n}\n\n# 最適化を実行 (初期値 p = 0.5)\nopt_res &lt;- optim(par = 0.5, fn = neg_log_lik, method = \"L-BFGS-B\", lower = 0.001, upper = 0.999)\n\ncat(\"=== 最尤推定の結果 ===\\n\")\n\n\n=== 最尤推定の結果 ===\n\n\nCode\ncat(sprintf(\"推定されたパラメータ p̂_MLE : %.4f (理論値 k/n = %.1f)\\n\", opt_res$par, k / n))\n\n\n推定されたパラメータ p̂_MLE : 0.7000 (理論値 k/n = 0.7)\n\n\nCode\ncat(sprintf(\"最大対数尤度                 : %.4f\\n\", -opt_res$value))\n\n\n最大対数尤度                 : -1.3212"
+  },
+  {
+    "objectID": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#ベイズ統計における架け橋確率と尤度が出会う場所",
+    "href": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#ベイズ統計における架け橋確率と尤度が出会う場所",
+    "title": "「確率（Probability）」と「尤度（Likelihood）」の決定的な違い",
+    "section": "6 ベイズ統計における架け橋（確率と尤度が出会う場所）",
+    "text": "6 ベイズ統計における架け橋（確率と尤度が出会う場所）\n「尤度はパラメータの確率ではない」と述べましたが、「事前確率（事前知識）」と組み合わせることで、パラメータの確率（事後確率）に変換することができます。これがベイズの定理です。\n\\[\\underbrace{P(\\theta \\mid x)}_{\\text{事後確率（パラメータの確率）}} = \\frac{\\overbrace{P(x \\mid \\theta)}^{\\text{尤度 } L(\\theta \\mid x)} \\times \\overbrace{P(\\theta)}^{\\text{事前確率}}}{\\underbrace{P(x)}_{\\text{周辺尤度（正規化定数）}}}\\]\n\\[P(\\theta \\mid x) \\propto L(\\theta \\mid x) \\times P(\\theta)\\]\n\n\n\n\n\n\nNote🤝 統計学の2大学派における位置づけ\n\n\n\n\n頻度論（古典統計学）: パラメータ \\(\\theta\\) は「固定された1つの未知の真値」。\\(\\theta\\) の確率は考えず、尤度 \\(L(\\theta \\mid x)\\) を最大化（MLE）して点推定・区間推定を行う。\nベイズ統計学: パラメータ \\(\\theta\\) 自体も不確実性を持つ確率変数として扱う。尤度 \\(L(\\theta \\mid x)\\) に事前分布 \\(P(\\theta)\\) を掛けて正規化し、事後分布 \\(P(\\theta \\mid x)\\) を求める。"
+  },
+  {
+    "objectID": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#理解度チェッククイズ",
+    "href": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#理解度チェッククイズ",
+    "title": "「確率（Probability）」と「尤度（Likelihood）」の決定的な違い",
+    "section": "7 理解度チェッククイズ",
+    "text": "7 理解度チェッククイズ\n理解度を試すための3つのクイズです。クリックして正解と解説を確認してください。\n\n\n\n\n\n\nCaution❓ 第1問：「サイコロを1回振って 6 が出る確率」と「6 の目が出たときのサイコロがイカサマである尤度」の違いは？\n\n\n\n\n\n【解答】 - 確率: サイコロの性質（公平: \\(p=1/6\\)）を前提として、未来の結果「6の目」が出る可能性を語る（\\(= 1/6\\)）。 - 尤度: 現実に「6の目」が出たという結果をもとに、サイコロの性質（イカサマ度合い \\(p\\)）の尤もらしさを評価する。例えば「6が出やすいサイコロ（\\(p=0.5\\)）」の尤度は \\(0.5\\)、「公平なサイコロ（\\(p=1/6\\)）」の尤度は約 \\(0.167\\) となり、前者の方が尤度が高くなります。\n\n\n\n\n\n\n\n\n\nCaution❓ 第2問：尤度関数 \\(L(\\theta \\mid x)\\) の最大値が \\(1\\) を超えることはあるか？\n\n\n\n\n\n【解答】 あります（特に連続型確率変数の場合）。 離散型分布の場合、\\(L(\\theta \\mid x) = P(X=x \\mid \\theta) \\le 1\\) ですが、連続型分布（正規分布など）の場合、\\(L(\\theta \\mid x) = f(x \\mid \\theta)\\) は確率密度関数の値（高さ）であるため、分散 \\(\\sigma^2\\) が非常に小さい場合などは \\(1\\) を大きく超えることがあります（例えば \\(\\sigma = 0.1\\) のとき正規分布のピークの高さは約 \\(3.99\\)）。 これは、尤度が確率そのものではない決定的な証拠の1つです。\n\n\n\n\n\n\n\n\n\nCaution❓ 第3問：「尤度比（Likelihood Ratio）」とは何か？何に使えるか？\n\n\n\n\n\n【解答】 2つの異なるパラメータ仮説 \\(\\theta_0\\) と \\(\\theta_1\\) に対する尤度の比率 \\(\\frac{L(\\theta_1 \\mid x)}{L(\\theta_0 \\mid x)}\\) のことです。 「得られたデータのもとで、仮説1は仮説0の何倍尤もらしいか」を数値化でき、統計的仮説検定（尤度比検定）やモデル選択（AIC/BIC）、ベイズ更新のオッズ比などで中心的な役割を果たします。"
+  },
+  {
+    "objectID": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#まとめ",
+    "href": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#まとめ",
+    "title": "「確率（Probability）」と「尤度（Likelihood）」の決定的な違い",
+    "section": "8 まとめ",
+    "text": "8 まとめ\n\n確率（Probability）は、「パラメータ固定 \\(\\to\\) データの分布」を語る指標であり、足すと必ず \\(1\\) になる。\n尤度（Likelihood）は、「データ固定 \\(\\to\\) パラメータの尤もらしさ」を測る指標であり、パラメータの確率ではない。\n最尤法（MLE）は、手元の観測データの尤度（または対数尤度）を最大化するパラメータを探す王道の手法である。\nベイズ統計では、尤度に事前確率を掛け合わせることで、パラメータの事後確率へと昇華させる。"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "StatQuest Visual Companion (R & gganimate)",
+    "section": "",
+    "text": "Note🎯 StatQuest 補助教材ポータルへようこそ！\n\n\n\n世界中で大絶賛されている統計学習チャンネル 「StatQuest with Josh Starmer」 の名講義をベースに、R 言語と gganimate による動的アニメーション・シミュレーションコードを組み合わせたインタラクティブ教材集です。各トピックの「教材を開く」ボタンから、GitHub Pages でレンダリングされたフルドキュメントを閲覧できます。"
+  },
+  {
+    "objectID": "index.html#収録教材一覧interactive-guides",
+    "href": "index.html#収録教材一覧interactive-guides",
+    "title": "StatQuest Visual Companion (R & gganimate)",
+    "section": "1 📚 収録教材一覧（Interactive Guides）",
+    "text": "1 📚 収録教材一覧（Interactive Guides）\n\n\n\n\nTopic 01 ・ 基礎概念\n\n1.1 確率 vs 尤度\nProbability vs Likelihood\n\nStatQuest: Probability vs Likelihood\n核心: 「前提からデータを語る（確率）」vs「データから前提を推定する（尤度）」。パラメータ変化に伴い確率分布の高さが尤度曲線を描く瞬間をアニメーション化。\nキーワード: 順問題・逆問題、最尤推定量 (MLE)、対数尤度、ベイズの定理\n\n📖 教材を開く (GitHub Pages)\n\n\n\n\n\n\nTopic 02 ・ 基礎概念\n\n1.2 連続変数の確率ゼロ\nWhy P(X = 170) = 0?\n\nStatQuest: Probability vs Probability Density\n核心: 「身長170cmの人は大勢いるのに、なぜ数学的には確率ゼロなのか？」。日常の有効数字（幅）と数学の極限（幅ゼロ）の違い、確率密度（高さ）と確率（面積）の関係を動的可視化。\nキーワード: 確率密度関数 (PDF)、極限 \\(\\Delta x \\to 0\\)、測度論、almost surely\n\n📖 教材を開く (GitHub Pages)\n\n\n\n\n\n\nTopic 03 ・ 確率分布\n\n1.3 ポアソン分布 & 指数分布\nPoisson & Exponential\n\nStatQuest: Poisson Distribution & Exponential Distribution\n核心: 「一定時間内の発生回数（ポアソン）」と「次の事象までの待ち時間（指数）」。表裏一体の関係にある2つの分布をシミュレーションとアニメーションで解説。\nキーワード: ポアソン過程、無記憶性、期待値と分散の一致、稀な事象\n\n📖 教材を開く (GitHub Pages)"
+  },
+  {
+    "objectID": "index.html#github-pages-クイックリンクリスト",
+    "href": "index.html#github-pages-クイックリンクリスト",
+    "title": "StatQuest Visual Companion (R & gganimate)",
+    "section": "2 🌐 GitHub Pages クイックリンクリスト",
+    "text": "2 🌐 GitHub Pages クイックリンクリスト\n各教材のレンダリング済み HTML ページへのダイレクトリンク一覧です：\n\n\n\n#\nトピック\nGitHub Pages オンラインリンク\n対応スクリプト / GIF\n\n\n\n\n01\n確率（Probability）vs 尤度（Likelihood）\n🔗 解説ドキュメント (HTML)\nアニメーション R / GIF\n\n\n02\n連続変数の確率ゼロ（\\(P(X=170)=0\\)）\n🔗 解説ドキュメント (HTML)\nアニメーション R / GIF\n\n\n03\nポアソン分布と到着間隔（指数分布）\n🔗 解説ドキュメント (HTML)\nアニメーション R / GIF"
+  },
+  {
+    "objectID": "index.html#今後の追加予定カリキュラムstatquest-シリーズ",
+    "href": "index.html#今後の追加予定カリキュラムstatquest-シリーズ",
+    "title": "StatQuest Visual Companion (R & gganimate)",
+    "section": "3 🔮 今後の追加予定カリキュラム（StatQuest シリーズ）",
+    "text": "3 🔮 今後の追加予定カリキュラム（StatQuest シリーズ）\n\n🔄 p値と仮説検定の真実 (p-values: What they are and how to interpret them)\n🔄 中心極限定理の動的シミュレーション (The Central Limit Theorem)\n🔄 ロジスティック回帰とオッズ比 (Logistic Regression)\n🔄 主成分分析 (PCA) の幾何学的直感 (Principal Component Analysis)\n🔄 ROC曲線とAUCの直感理解 (ROC and AUC, Clearly Explained!)"
+  },
+  {
+    "objectID": "index.html#ソースコードとローカル実行",
+    "href": "index.html#ソースコードとローカル実行",
+    "title": "StatQuest Visual Companion (R & gganimate)",
+    "section": "4 🛠️ ソースコードとローカル実行",
+    "text": "4 🛠️ ソースコードとローカル実行\nすべての教材ソース（Quarto QMD）およびアニメーション生成スクリプト（R）は GitHub リポジトリ で管理されています。\n# リポジトリのクローン\ngit clone https://github.com/chess-r-quarto/R-scripts.git\n\n# サイト全体のビルド\nquarto render\n\n# ローカルプレビューサーバーの起動\nquarto preview"
+  },
+  {
+    "objectID": "topics/02_continuous_probability_zero/continuous_probability_zero_guide.html",
+    "href": "topics/02_continuous_probability_zero/continuous_probability_zero_guide.html",
+    "title": "「身長がピッタリ170cmである確率」はなぜ 0 なのか？",
+    "section": "",
+    "text": "「日本人の成人男性で、身長170cmの人なんて街中にいくらでもいるじゃないか。それなのに『身長が170cmである確率は 0 である（\\(P(X = 170) = 0\\)）』と言われるのはなぜ？」\n統計学や確率論を学ぶとき、多くの人がこの「連続変数の確率ゼロ問題」に強い違和感を覚えます。\n\n\n\n\n\n\nImportant🧭 違和感の正体：日常の「170cm」と数学の「170cm」の違い\n\n\n\n\n日常の「170cm」: 「測定機器の精度（有効数字）」を前提とした『区間（幅）』の話。\n\n身長計が170cmと表示するのは、実際には \\(169.5\\text{cm} \\le X &lt; 170.5\\text{cm}\\)（幅 1cm の範囲） に入っていることを意味します。この区間に入る確率は 約 \\(6.6\\%\\) 存在します。\n\n数学の「170cm」: 小数点以下が無限に続く『幅ゼロの1点』の話。\n\n\\(170.00000000000000000000\\dots\\text{cm}\\) にナノメートル・原子レベルまで完全に一致する確率を計算すると、数学的に \\(0\\) になります。"
+  },
+  {
+    "objectID": "topics/02_continuous_probability_zero/continuous_probability_zero_guide.html#はじめに日常の直感と数学のギャップ",
+    "href": "topics/02_continuous_probability_zero/continuous_probability_zero_guide.html#はじめに日常の直感と数学のギャップ",
+    "title": "「身長がピッタリ170cmである確率」はなぜ 0 なのか？",
+    "section": "",
+    "text": "「日本人の成人男性で、身長170cmの人なんて街中にいくらでもいるじゃないか。それなのに『身長が170cmである確率は 0 である（\\(P(X = 170) = 0\\)）』と言われるのはなぜ？」\n統計学や確率論を学ぶとき、多くの人がこの「連続変数の確率ゼロ問題」に強い違和感を覚えます。\n\n\n\n\n\n\nImportant🧭 違和感の正体：日常の「170cm」と数学の「170cm」の違い\n\n\n\n\n日常の「170cm」: 「測定機器の精度（有効数字）」を前提とした『区間（幅）』の話。\n\n身長計が170cmと表示するのは、実際には \\(169.5\\text{cm} \\le X &lt; 170.5\\text{cm}\\)（幅 1cm の範囲） に入っていることを意味します。この区間に入る確率は 約 \\(6.6\\%\\) 存在します。\n\n数学の「170cm」: 小数点以下が無限に続く『幅ゼロの1点』の話。\n\n\\(170.00000000000000000000\\dots\\text{cm}\\) にナノメートル・原子レベルまで完全に一致する確率を計算すると、数学的に \\(0\\) になります。"
+  },
+  {
+    "objectID": "topics/02_continuous_probability_zero/continuous_probability_zero_guide.html#幾何学的な直感アナロジー幾何学的確率",
+    "href": "topics/02_continuous_probability_zero/continuous_probability_zero_guide.html#幾何学的な直感アナロジー幾何学的確率",
+    "title": "「身長がピッタリ170cmである確率」はなぜ 0 なのか？",
+    "section": "2 幾何学的な直感アナロジー（幾何学的確率）",
+    "text": "2 幾何学的な直感アナロジー（幾何学的確率）\nなぜ「幅がゼロの1点」の確率は 0 になるのか、身近な幾何学の例で考えてみましょう。\n\n2.1 1. ダーツの的当て\n面積が \\(100\\text{cm}^2\\) のダーツボードに、ダーツの針が必ずどこか1点に刺さるとします。\n\n「右半分のエリア（面積 \\(50\\text{cm}^2\\)）に刺さる確率」 \\(\\to \\frac{50}{100} = 50\\%\\)\n「中心の小さな丸（面積 \\(1\\text{cm}^2\\)）に刺さる確率」 \\(\\to \\frac{1}{100} = 1\\%\\)\n「幾何学的に指定した特定の1点（座標 \\((x_0, y_0)\\)）にドンピシャで刺さる確率」:\n\n幾何学的な「点」には面積がありません（面積 \\(= 0\\)）。\nしたがって、確率は \\(\\frac{0}{100} = 0\\%\\) となります。\n\n\nダーツは絶対にどこかの点に刺さっているにもかかわらず、「その指定された点に刺さる確率」は \\(0\\) なのです。\n\n\n2.2 2. 糸を切る実験\n長さ \\(10\\text{cm}\\) の糸をランダムな位置でハサミで切るとき、ピッタリ \\(5.000000\\dots\\text{cm}\\) で切れる確率は何％でしょうか？ \\(0\\) から \\(10\\) までの間には実数が無限個（非可算無限）存在するため、特定の実数を言い当てる確率は \\(\\frac{1}{\\infty} \\to 0\\) です。"
+  },
+  {
+    "objectID": "topics/02_continuous_probability_zero/continuous_probability_zero_guide.html#動的ビジュアライゼーションgganimate-による極限の可視化",
+    "href": "topics/02_continuous_probability_zero/continuous_probability_zero_guide.html#動的ビジュアライゼーションgganimate-による極限の可視化",
+    "title": "「身長がピッタリ170cmである確率」はなぜ 0 なのか？",
+    "section": "3 動的ビジュアライゼーション（gganimate による極限の可視化）",
+    "text": "3 動的ビジュアライゼーション（gganimate による極限の可視化）\n成人男性の身長分布（平均 \\(\\mu = 170\\text{cm}\\)、標準偏差 \\(\\sigma = 6\\text{cm}\\) の正規分布）を用いて、区間の幅 \\(\\Delta x\\) を徐々に狭めていったときに面積（確率）がどう変化するかをアニメーションで見てみましょう。\n\n\n\n区間幅 Δx を 0 へ縮小したときの一点の確率ゼロ可視化\n\n\n\n3.1 アニメーションからわかる決定的な事実\n\n確率密度（グラフの高さ）は一定のまま！\n\n身長 \\(170\\text{cm}\\) における確率密度関数の高さは \\(f(170) \\approx 0.0665\\) であり、ゼロではありません。\n\nしかし、幅 \\(\\Delta x\\) が狭くなるにつれて「面積（確率）」がゼロへ収縮する！\n\n幅 \\(20\\text{cm}\\)（\\(160 \\sim 180\\text{cm}\\)）: 確率 \\(\\approx 90.44\\%\\)\n幅 \\(2\\text{cm}\\)（\\(169 \\sim 171\\text{cm}\\)）: 確率 \\(\\approx 13.23\\%\\)\n幅 \\(0.2\\text{cm}\\)（\\(169.9 \\sim 170.1\\text{cm}\\)）: 確率 \\(\\approx 1.33\\%\\)\n幅 \\(0\\text{cm}\\)（ピッタリ \\(170.000\\dots\\text{cm}\\)）: \\[\\text{確率 } P(X = 170) = \\text{底辺（幅 0）} \\times \\text{高さ } f(170) = 0 \\times 0.0665 = \\mathbf{0}\\]\n\n\n\n\n\n\n\n\nTip💡 核心の公式\n\n\n\n連続型確率変数において、微小幅 \\(\\Delta x\\) における確率は以下のように近似されます： \\[P\\left(x - \\frac{\\Delta x}{2} \\le X \\le x + \\frac{\\Delta x}{2}\\right) \\approx f(x) \\times \\Delta x\\] \\(\\Delta x \\to 0\\) の極限をとると、\\(f(x)\\) がどんな値であっても右辺は必ず \\(0\\) になります。"
+  },
+  {
+    "objectID": "topics/02_continuous_probability_zero/continuous_probability_zero_guide.html#確率probabilityと確率密度probability-densityの比較",
+    "href": "topics/02_continuous_probability_zero/continuous_probability_zero_guide.html#確率probabilityと確率密度probability-densityの比較",
+    "title": "「身長がピッタリ170cmである確率」はなぜ 0 なのか？",
+    "section": "4 「確率（Probability）」と「確率密度（Probability Density）」の比較",
+    "text": "4 「確率（Probability）」と「確率密度（Probability Density）」の比較\nこの混乱を解消するためには、「確率」と「確率密度」の違いを明確に区別することが不可欠です。\n\n\n\n\n\n\n\n\n比較項目\n確率（Probability）\n確率密度（Probability Density）\n\n\n\n\n記号\n\\(P(a \\le X \\le b)\\)\n\\(f(x)\\)\n\n\n図形的な意味\n曲線の下の 「面積」（積分値）\n曲線上の特定地点の 「高さ」\n\n\n計算式\n\\(P(a \\le X \\le b) = \\int_a^b f(x) dx\\)\n\\(f(x) = \\lim_{\\Delta x \\to 0} \\frac{P(x \\le X \\le x+\\Delta x)}{\\Delta x}\\)\n\n\n値の範囲\n必ず \\(0 \\le P \\le 1\\)（\\(0\\% \\sim 100\\%\\)）\n\\(0 \\le f(x) &lt; \\infty\\)（\\(1\\) を超えてもよい！）\n\n\n単位（次元）\n無次元（割合・パーセント）\n\\([1 / \\text{変数の単位}]\\)（例: \\(1/\\text{cm}\\), \\(1/\\text{kg}\\)）\n\n\n1点での値\n常に \\(P(X = x) = 0\\)\n\\(f(x) \\ge 0\\)（有限の正の値）\n\n\n\n\n4.1 確率密度が 1 を超える具体例\n「確率密度」は確率そのものではなく「単位長さあたりの密度」であるため、\\(1\\) を超えることが多々あります。\n例えば、非常に精密なネジの長さが \\(N(\\mu = 10\\text{mm}, \\sigma = 0.05\\text{mm})\\) に従う場合：\n\n\nCode\n# 標準偏差が小さい場合の確率密度\nsigma_small &lt;- 0.05\nf_peak &lt;- dnorm(10, mean = 10, sd = sigma_small)\ncat(sprintf(\"中心 x = 10mm における確率密度の高さ: f(10) = %.2f (1 を大幅に超過！)\\n\", f_peak))\n\n\n中心 x = 10mm における確率密度の高さ: f(10) = 7.98 (1 を大幅に超過！)\n\n\n高さは約 \\(7.98\\) にも達しますが、幅 \\(0.01\\text{mm}\\) の微小面積を計算すると \\(7.98 \\times 0.01 \\approx 0.0798\\)（約 \\(8\\%\\)）となり、確率は必ず \\(1\\) 以下に収まります。"
+  },
+  {
+    "objectID": "topics/02_continuous_probability_zero/continuous_probability_zero_guide.html#確率ゼロは絶対に起きない不可能を意味するのか",
+    "href": "topics/02_continuous_probability_zero/continuous_probability_zero_guide.html#確率ゼロは絶対に起きない不可能を意味するのか",
+    "title": "「身長がピッタリ170cmである確率」はなぜ 0 なのか？",
+    "section": "5 「確率ゼロ」は「絶対に起きない（不可能）」を意味するのか？",
+    "text": "5 「確率ゼロ」は「絶対に起きない（不可能）」を意味するのか？\nこれは確率論・測度論における最も深遠なテーマの1つです。\n\n\n\n\n\n\nNote🚨 結論：「確率 0 の事象」でも実際に発生する！\n\n\n\n\n不可能な事象（空集合 \\(\\emptyset\\)） の確率は必ず \\(0\\) です（例: サイコロを振って 7 が出る確率 \\(= 0\\)）。\nしかし、その逆は成り立ちません。「確率が \\(0\\) だからといって、絶対に起こらないわけではない」のです。\n\n\n\n\n5.1 測度論における「ほとんど確実に（Almost Surely）」\nランダムに身長を測定したとき、測定された人の身長は（仮に超高精度のレーザーで測れば）\\(170.238491029\\dots\\text{cm}\\) のような何らかの実数になります。\n\n測定される前の段階で、「その人がピッタリ \\(170.238491029\\dots\\text{cm}\\) である確率」を計算すると \\(0\\) です。\nにもかかわらず、測定した後には「確率 \\(0\\) の事象」が実際に目の前で起こったことになります。\n\nこのように、連続空間では「確率ゼロの事象の無限の集まり」によって全体（確率 1）が構成されています。数学ではこの性質を「ほとんど確実に（almost surely / a.s.）」と呼びます。"
+  },
+  {
+    "objectID": "topics/02_continuous_probability_zero/continuous_probability_zero_guide.html#r-による数値実験シミュレーション",
+    "href": "topics/02_continuous_probability_zero/continuous_probability_zero_guide.html#r-による数値実験シミュレーション",
+    "title": "「身長がピッタリ170cmである確率」はなぜ 0 なのか？",
+    "section": "6 R による数値実験シミュレーション",
+    "text": "6 R による数値実験シミュレーション\nコンピュータの乱数を用いて、この事実をシミュレーションしてみましょう。\n\n\nCode\n# 100万人分の成人男性の身長データを生成 (μ = 170, σ = 6)\nset.seed(42)\nn_people &lt;- 1000000\nheights &lt;- rnorm(n_people, mean = 170, sd = 6)\n\n# 実験1: ピッタリ 170.00000000000000 cm の人は何人いるか？\nexact_170 &lt;- sum(heights == 170.0)\ncat(sprintf(\"【実験1】100万人中、ピッタリ 170.000...cm だった人数: %d 人 (割合: %.6f%%)\\n\", \n            exact_170, (exact_170 / n_people) * 100))\n\n\n【実験1】100万人中、ピッタリ 170.000...cm だった人数: 0 人 (割合: 0.000000%)\n\n\nCode\n# 実験2: 通常の身長計の精度 (169.5cm 〜 170.5cm) に入る人は何人いるか？\nrange_170 &lt;- sum(heights &gt;= 169.5 & heights &lt; 170.5)\ntheo_prob &lt;- pnorm(170.5, mean = 170, sd = 6) - pnorm(169.5, mean = 170, sd = 6)\n\ncat(sprintf(\"【実験2】100万人中、169.5cm〜170.5cm に入った人数: %d 人 (割合: %.2f%%)\\n\", \n            range_170, (range_170 / n_people) * 100))\n\n\n【実験2】100万人中、169.5cm〜170.5cm に入った人数: 66615 人 (割合: 6.66%)\n\n\nCode\ncat(sprintf(\"         理論値 (pnorm による積分面積)          : %.2f%%\\n\", theo_prob * 100))\n\n\n         理論値 (pnorm による積分面積)          : 6.64%\n\n\n100万人分のデータを集めても、コンピュータの倍精度浮動小数点でピッタリ \\(170.000\\dots\\) になる人は0人でした。一方、幅 \\(1\\text{cm}\\) の区間には約 \\(6.6\\) 万人（\\(6.6\\%\\)）が綺麗に収まっています。"
+  },
+  {
+    "objectID": "topics/02_continuous_probability_zero/continuous_probability_zero_guide.html#連続型確率変数における重要な性質不等号のleと",
+    "href": "topics/02_continuous_probability_zero/continuous_probability_zero_guide.html#連続型確率変数における重要な性質不等号のleと",
+    "title": "「身長がピッタリ170cmである確率」はなぜ 0 なのか？",
+    "section": "7 連続型確率変数における重要な性質：不等号の「\\(\\le\\)」と「\\(<\\)」",
+    "text": "7 連続型確率変数における重要な性質：不等号の「\\(\\le\\)」と「\\(&lt;\\)」\n離散型確率変数（サイコロの目など）では、\\(P(X \\le 3)\\) と \\(P(X &lt; 3)\\) は異なります（\\(P(X=3)\\) の分だけズレる）。\nしかし、連続型確率変数では \\(P(X = c) = 0\\) であるため、イコール（等号）の有無で確率が変わりません。\n\\[P(a \\le X \\le b) = P(a &lt; X \\le b) = P(a \\le X &lt; b) = P(a &lt; X &lt; b)\\]\n境界線となる1点の面積は常に \\(0\\) だからこそ、端点を含めても含めなくても積分面積は完全に一致します。"
+  },
+  {
+    "objectID": "topics/02_continuous_probability_zero/continuous_probability_zero_guide.html#理解度チェッククイズ",
+    "href": "topics/02_continuous_probability_zero/continuous_probability_zero_guide.html#理解度チェッククイズ",
+    "title": "「身長がピッタリ170cmである確率」はなぜ 0 なのか？",
+    "section": "8 理解度チェッククイズ",
+    "text": "8 理解度チェッククイズ\n\n\n\n\n\n\nCaution❓ 第1問：連続型確率変数 \\(X\\) の確率密度関数 \\(f(x)\\) について、\\(f(170) = 0.0665\\) であるとき、\\(P(X = 170) = 0.0665\\) と言えるか？\n\n\n\n\n\n【解答】 言えません（誤り）。 \\(f(170) = 0.0665\\) はあくまで確率密度の「高さ」であり、確率は「面積」です。一点における幅は \\(0\\) なので、確率 \\(P(X = 170) = 0\\) となります。\n\n\n\n\n\n\n\n\n\nCaution❓ 第2問：一様分布 \\(U(0, 10)\\)（0から10まで均等に発生する乱数）において、\\(P(X = 5)\\) と \\(P(4.9 \\le X \\le 5.1)\\) はそれぞれいくらか？\n\n\n\n\n\n【解答】 - \\(P(X = 5) = \\mathbf{0}\\) - \\(P(4.9 \\le X \\le 5.1) = \\text{幅 } (5.1 - 4.9) \\times \\text{高さ } \\frac{1}{10} = 0.2 \\times 0.1 = \\mathbf{0.02} \\ (2\\%)\\)\n\n\n\n\n\n\n\n\n\nCaution❓ 第3問：「確率が 0 の事象」と「空集合（不可能な事象）」の違いは何か？\n\n\n\n\n\n【解答】 - 空集合（不可能な事象）: 定義上絶対に起こり得ない事象（例: 偶数の奇数、コインを投げてサイコロの目が出るなど）。その確率は必ず \\(0\\)。 - 確率が 0 の事象: 起こり得る事象であっても、連続空間の一点のように測度（面積や体積）が \\(0\\) である事象。ランダムに選ばれた値そのものは、選ばれる前の確率としては \\(0\\) ですが、実際に発生します。"
+  },
+  {
+    "objectID": "topics/02_continuous_probability_zero/continuous_probability_zero_guide.html#まとめ",
+    "href": "topics/02_continuous_probability_zero/continuous_probability_zero_guide.html#まとめ",
+    "title": "「身長がピッタリ170cmである確率」はなぜ 0 なのか？",
+    "section": "9 まとめ",
+    "text": "9 まとめ\n\n日常の「170cm」は測定精度の幅（\\(169.5 \\sim 170.5\\text{cm}\\)）を指しており、面積（確率 \\(\\approx 6.6\\%\\)）を持つ。\n数学の「170cm」は幅ゼロの1点（\\(170.000\\dots\\text{cm}\\)）を指しており、幅がゼロなので面積（確率）は必ず \\(0\\) になる。\n確率密度 \\(f(x)\\) は「高さ」であり、確率は常に微小幅を掛けた「面積（\\(\\int f(x) dx\\)）」として計算される。\n「確率がゼロ」は「起こり得ない」と同義ではない。連続空間では確率ゼロの事象が実際に発生する。"
+  }
+]
