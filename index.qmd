@@ -19,7 +19,7 @@ format:
 
 ::: {.grid}
 
-::: {.g-col-12 .g-col-md-4}
+::: {.g-col-12 .g-col-md-6}
 ::: {.portal-card}
 ![](topics/01_probability_vs_likelihood/probability_vs_likelihood.gif){.portal-card-img}
 
@@ -36,7 +36,7 @@ format:
 :::
 :::
 
-::: {.g-col-12 .g-col-md-4}
+::: {.g-col-12 .g-col-md-6}
 ::: {.portal-card}
 ![](topics/02_continuous_probability_zero/continuous_probability_zero.gif){.portal-card-img}
 
@@ -53,7 +53,7 @@ format:
 :::
 :::
 
-::: {.g-col-12 .g-col-md-4}
+::: {.g-col-12 .g-col-md-6}
 ::: {.portal-card}
 ![](topics/03_poisson_distribution/poisson_animation.gif){.portal-card-img}
 
@@ -70,6 +70,23 @@ format:
 :::
 :::
 
+::: {.g-col-12 .g-col-md-6}
+::: {.portal-card}
+![](topics/04_p_value/p_value.gif){.portal-card-img}
+
+<span class="portal-badge">Topic 04 ・ 基礎概念 & 検定</span>
+
+### P値（p-value）の本質
+**p-values Clearly Explained**
+
+- **StatQuest**: *p-values: What they are and how to interpret them*
+- **核心**: 「もし何の差もない世界だとしたら、これほど極端なデータが偶然出る確率はどれくらい奇跡的か？」。統計量の変化に伴いP値の裾野面積が急減しα=0.05を突破する動的アニメーションとシミュレーション。
+- **キーワード**: 帰無仮説、片側・両側検定、t検定、モンテカルロ法、効果量と検察官の誤謬
+
+<a href="topics/04_p_value/p_value_guide.html" class="btn-portal">📖 教材を開く (GitHub Pages)</a>
+:::
+:::
+
 :::
 
 ---
@@ -83,12 +100,13 @@ format:
 | **01** | **確率（Probability）vs 尤度（Likelihood）** | 🔗 [**解説ドキュメント (HTML)**](https://chess-r-quarto.github.io/R-scripts/topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html) | [アニメーション R](topics/01_probability_vs_likelihood/probability_vs_likelihood_anim.R) / [GIF](topics/01_probability_vs_likelihood/probability_vs_likelihood.gif) |
 | **02** | **連続変数の確率ゼロ（$P(X=170)=0$）** | 🔗 [**解説ドキュメント (HTML)**](https://chess-r-quarto.github.io/R-scripts/topics/02_continuous_probability_zero/continuous_probability_zero_guide.html) | [アニメーション R](topics/02_continuous_probability_zero/continuous_probability_zero_anim.R) / [GIF](topics/02_continuous_probability_zero/continuous_probability_zero.gif) |
 | **03** | **ポアソン分布と到着間隔（指数分布）** | 🔗 [**解説ドキュメント (HTML)**](https://chess-r-quarto.github.io/R-scripts/topics/03_poisson_distribution/poisson_guide.html) | [アニメーション R](topics/03_poisson_distribution/poisson_animation.R) / [GIF](topics/03_poisson_distribution/poisson_animation.gif) |
+| **04** | **P値（p-value）の本質と仮説検定** | 🔗 [**解説ドキュメント (HTML)**](https://chess-r-quarto.github.io/R-scripts/topics/04_p_value/p_value_guide.html) | [アニメーション R](topics/04_p_value/p_value_anim.R) / [GIF](topics/04_p_value/p_value.gif) |
 
 ---
 
 ## 🔮 今後の追加予定カリキュラム（StatQuest シリーズ）
 
-- 🔄 **p値と仮説検定の真実** (*p-values: What they are and how to interpret them*)
+- 🔄 **単回帰分析と最小二乗法** (*Linear Models and Least Squares*)
 - 🔄 **中心極限定理の動的シミュレーション** (*The Central Limit Theorem*)
 - 🔄 **ロジスティック回帰とオッズ比** (*Logistic Regression*)
 - 🔄 **主成分分析 (PCA) の幾何学的直感** (*Principal Component Analysis*)

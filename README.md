@@ -16,6 +16,8 @@ YouTube の人気統計チャンネル **「StatQuest with Josh Starmer」** の
   - *連続変数の確率ゼロパラドックス、確率密度と極限、区間幅 Δx→0 の gganimate アニメーション、測度論*
 - 📖 **Topic 03**: **[ポアソン分布と到着間隔（指数分布）の基礎と実践 ガイド](https://chess-r-quarto.github.io/R-scripts/topics/03_poisson_distribution/poisson_guide.html)**
   - *ポアソン過程、時間経過とイベント発生アニメーション、理論計算とシミュレーション*
+- 📖 **Topic 04**: **[「P値（p-value）」の本質を直感的に理解する ガイド](https://chess-r-quarto.github.io/R-scripts/topics/04_p_value/p_value_guide.html)**
+  - *帰無仮説、有意水準α=0.05の動的突破アニメーション、t検定、モンテカルロシミュレーション、ASA声明*
 
 ---
 
@@ -40,12 +42,17 @@ R-scripts/
 │   │   ├── continuous_probability_zero_anim.R
 │   │   └── continuous_probability_zero.gif
 │   │
-│   └── 03_poisson_distribution/         # ポアソン分布 & 指数分布
-│       ├── poisson_guide.qmd
-│       ├── poisson_animation.R
-│       ├── poisson_animation.gif
-│       ├── poisson_animation.mp4
-│       └── poisson_distribution.R
+│   ├── 03_poisson_distribution/         # ポアソン分布 & 指数分布
+│   │   ├── poisson_guide.qmd
+│   │   ├── poisson_animation.R
+│   │   ├── poisson_animation.gif
+│   │   ├── poisson_animation.mp4
+│   │   └── poisson_distribution.R
+│   │
+│   └── 04_p_value/                      # P値（p-value）の本質と仮説検定
+│       ├── p_value_guide.qmd
+│       ├── p_value_anim.R
+│       └── p_value.gif
 │
 ├── finance/                             # 📈 金融・市場データ分析スクリプト等
 │   └── sp500_gold.R
@@ -81,6 +88,7 @@ quarto preview
 Rscript topics/01_probability_vs_likelihood/probability_vs_likelihood_anim.R
 Rscript topics/02_continuous_probability_zero/continuous_probability_zero_anim.R
 Rscript topics/03_poisson_distribution/poisson_animation.R
+Rscript topics/04_p_value/p_value_anim.R
 ```
 
 ---

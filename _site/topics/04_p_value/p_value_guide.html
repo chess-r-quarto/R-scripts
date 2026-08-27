@@ -1,0 +1,1847 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="StatQuest Visual Companion">
+<meta name="dcterms.date" content="2026-08-27">
+
+<title>「P値（p-value）」の本質を直感的に理解する – StatQuest Visual Companion</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-bb62276ab45c84d9efd712f51ff97b5a.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-9f5bcaa82ba071dd3281774c33d04d20.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../CSS_RoyalBlue_Solarized.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">StatQuest Visual Companion</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">🏠 ホーム</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">📚 基礎概念</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-">    
+        <li>
+    <a class="dropdown-item" href="../../topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html">
+ <span class="dropdown-text">① 確率 vs 尤度</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../topics/02_continuous_probability_zero/continuous_probability_zero_guide.html">
+ <span class="dropdown-text">② 連続変数の確率ゼロ (P(X=x)=0)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../topics/04_p_value/p_value_guide.html">
+ <span class="dropdown-text">④ P値（p-value）の本質</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu--1" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">📊 確率分布 &amp; モデル</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu--1">    
+        <li>
+    <a class="dropdown-item" href="../../topics/03_poisson_distribution/poisson_guide.html">
+ <span class="dropdown-text">③ ポアソン分布 &amp; 指数分布</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/chess-r-quarto/R-scripts"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">目次</h2>
+   
+  <ul>
+  <li><a href="#はじめになぜp値は統計学最大の難所なのか" id="toc-はじめになぜp値は統計学最大の難所なのか" class="nav-link active" data-scroll-target="#はじめになぜp値は統計学最大の難所なのか"><span class="header-section-number">1</span> はじめに：なぜ「P値」は統計学最大の難所なのか？</a></li>
+  <li><a href="#p値を理解する3つのステップ" id="toc-p値を理解する3つのステップ" class="nav-link" data-scroll-target="#p値を理解する3つのステップ"><span class="header-section-number">2</span> P値を理解する「3つのステップ」</a>
+  <ul class="collapse">
+  <li><a href="#帰無仮説null-hypothesis-h_0" id="toc-帰無仮説null-hypothesis-h_0" class="nav-link" data-scroll-target="#帰無仮説null-hypothesis-h_0"><span class="header-section-number">2.1</span> 1. 帰無仮説（Null Hypothesis: <span class="math inline">\(H_0\)</span>）</a></li>
+  <li><a href="#手元のデータをその世界にプロットする" id="toc-手元のデータをその世界にプロットする" class="nav-link" data-scroll-target="#手元のデータをその世界にプロットする"><span class="header-section-number">2.2</span> 2. 「手元のデータ」をその世界にプロットする</a></li>
+  <li><a href="#それ以上に極端as-extreme-or-more-extremeを足す" id="toc-それ以上に極端as-extreme-or-more-extremeを足す" class="nav-link" data-scroll-target="#それ以上に極端as-extreme-or-more-extremeを足す"><span class="header-section-number">2.3</span> 3. 「それ以上に極端（as extreme or more extreme）」を足す</a></li>
+  </ul></li>
+  <li><a href="#決定的な比較表よくある誤解-vs-統計学の真実" id="toc-決定的な比較表よくある誤解-vs-統計学の真実" class="nav-link" data-scroll-target="#決定的な比較表よくある誤解-vs-統計学の真実"><span class="header-section-number">3</span> 決定的な比較表：よくある誤解 vs 統計学の真実</a></li>
+  <li><a href="#動的ビジュアライゼーションgganimate-による直感理解" id="toc-動的ビジュアライゼーションgganimate-による直感理解" class="nav-link" data-scroll-target="#動的ビジュアライゼーションgganimate-による直感理解"><span class="header-section-number">4</span> 動的ビジュアライゼーション（gganimate による直感理解）</a></li>
+  <li><a href="#具体例-1イカサマコインの検証離散型二項検定" id="toc-具体例-1イカサマコインの検証離散型二項検定" class="nav-link" data-scroll-target="#具体例-1イカサマコインの検証離散型二項検定"><span class="header-section-number">5</span> 具体例 1：イカサマコインの検証（離散型：二項検定）</a>
+  <ul class="collapse">
+  <li><a href="#仮説の設定" id="toc-仮説の設定" class="nav-link" data-scroll-target="#仮説の設定"><span class="header-section-number">5.1</span> 1. 仮説の設定</a></li>
+  <li><a href="#公平なコインを10回投げたときの確率分布rコード" id="toc-公平なコインを10回投げたときの確率分布rコード" class="nav-link" data-scroll-target="#公平なコインを10回投げたときの確率分布rコード"><span class="header-section-number">5.2</span> 2. 公平なコインを10回投げたときの確率分布（Rコード）</a></li>
+  <li><a href="#p値の計算" id="toc-p値の計算" class="nav-link" data-scroll-target="#p値の計算"><span class="header-section-number">5.3</span> 3. P値の計算</a></li>
+  </ul></li>
+  <li><a href="#具体例-2新薬の臨床試験連続型2標本-t検定" id="toc-具体例-2新薬の臨床試験連続型2標本-t検定" class="nav-link" data-scroll-target="#具体例-2新薬の臨床試験連続型2標本-t検定"><span class="header-section-number">6</span> 具体例 2：新薬の臨床試験（連続型：2標本 t検定）</a>
+  <ul class="collapse">
+  <li><a href="#シナリオ" id="toc-シナリオ" class="nav-link" data-scroll-target="#シナリオ"><span class="header-section-number">6.1</span> シナリオ</a></li>
+  <li><a href="#t検定の実行" id="toc-t検定の実行" class="nav-link" data-scroll-target="#t検定の実行"><span class="header-section-number">6.2</span> t検定の実行</a></li>
+  <li><a href="#t分布上でp値の領域を可視化する" id="toc-t分布上でp値の領域を可視化する" class="nav-link" data-scroll-target="#t分布上でp値の領域を可視化する"><span class="header-section-number">6.3</span> t分布上で「P値」の領域を可視化する</a></li>
+  </ul></li>
+  <li><a href="#具体例-3モンテカルロシミュレーションで体感する差がない世界" id="toc-具体例-3モンテカルロシミュレーションで体感する差がない世界" class="nav-link" data-scroll-target="#具体例-3モンテカルロシミュレーションで体感する差がない世界"><span class="header-section-number">7</span> 具体例 3：モンテカルロ・シミュレーションで体感する「差がない世界」</a>
+  <ul class="collapse">
+  <li><a href="#シミュレーションの手順" id="toc-シミュレーションの手順" class="nav-link" data-scroll-target="#シミュレーションの手順"><span class="header-section-number">7.1</span> シミュレーションの手順</a></li>
+  <li><a href="#シミュレーション結果のヒストグラム" id="toc-シミュレーション結果のヒストグラム" class="nav-link" data-scroll-target="#シミュレーション結果のヒストグラム"><span class="header-section-number">7.2</span> シミュレーション結果のヒストグラム</a></li>
+  </ul></li>
+  <li><a href="#なぜ有意水準は0.05なのか" id="toc-なぜ有意水準は0.05なのか" class="nav-link" data-scroll-target="#なぜ有意水準は0.05なのか"><span class="header-section-number">8</span> なぜ有意水準は「0.05」なのか？</a></li>
+  <li><a href="#理解度チェッククイズ全3問" id="toc-理解度チェッククイズ全3問" class="nav-link" data-scroll-target="#理解度チェッククイズ全3問"><span class="header-section-number">9</span> 理解度チェッククイズ（全3問）</a></li>
+  <li><a href="#まとめ" id="toc-まとめ" class="nav-link" data-scroll-target="#まとめ"><span class="header-section-number">10</span> まとめ</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">「P値（p-value）」の本質を直感的に理解する</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
+<p class="subtitle lead">StatQuest流のアプローチ：誤解の解体、視覚的解釈、Rによるシミュレーション実践</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>StatQuest Visual Companion </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">August 27, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="はじめになぜp値は統計学最大の難所なのか" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="はじめになぜp値は統計学最大の難所なのか"><span class="header-section-number">1</span> はじめに：なぜ「P値」は統計学最大の難所なのか？</h2>
+<p>統計学やデータ分析を学び始めて、誰もが一度は混乱するのが<strong>「P値（p-value）」</strong>です。</p>
+<p>論文や実務の分析レポートでは「<span class="math inline">\(p &lt; 0.05\)</span> だから統計的に有意である」という決まり文句が飛び交いますが、<strong>「では、P値とは何ですか？」</strong>と問われると、多くの人が口ごもってしまいます。</p>
+<div class="callout callout-style-simple callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>🧭 核心となる一言要約（Bam!）
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>P値とは、「もし仮に何の差も効果もない（すべてが単なる偶然である）世界」において、手元のデータ（またはそれ以上に極端なデータ）が偶然得られてしまう確率</strong>のことです。</p>
+<p><span class="math display">\[\text{P値} = P(\text{観測データ、またはそれ以上に極端なデータ} \mid \text{帰無仮説 } H_0 \text{ が真})\]</span></p>
+</div>
+</div>
+<p>日常の感覚で言えば、<strong>「偶然だと言い張るには、どれくらい無理があるか？（どれくらい奇跡的な珍事か？）」</strong>をパーセンテージで表した指標と言えます。</p>
+<hr>
+</section>
+<section id="p値を理解する3つのステップ" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="p値を理解する3つのステップ"><span class="header-section-number">2</span> P値を理解する「3つのステップ」</h2>
+<p>StatQuestの解説でおなじみの思考ステップで、P値の導出プロセスを整理しましょう。</p>
+<pre><code>【ステップ 1】「差がない世界（帰無仮説）」を仮定する
+               ↓
+【ステップ 2】その世界で、手元のデータが出る確率分布を考える
+               ↓
+【ステップ 3】手元のデータ、および「それ以上に極端な領域」の面積（確率）を合算する  ==&gt; これが P値！</code></pre>
+<section id="帰無仮説null-hypothesis-h_0" class="level3" data-number="2.1">
+<h3 data-number="2.1" class="anchored" data-anchor-id="帰無仮説null-hypothesis-h_0"><span class="header-section-number">2.1</span> 1. 帰無仮説（Null Hypothesis: <span class="math inline">\(H_0\)</span>）</h3>
+<p>「何も起きていない」「新薬も偽薬も効果は同じ」「コインは歪んでいない（<span class="math inline">\(p=0.5\)</span>）」という<strong>退屈な世界</strong>の仮定です。</p>
+</section>
+<section id="手元のデータをその世界にプロットする" class="level3" data-number="2.2">
+<h3 data-number="2.2" class="anchored" data-anchor-id="手元のデータをその世界にプロットする"><span class="header-section-number">2.2</span> 2. 「手元のデータ」をその世界にプロットする</h3>
+<p>帰無仮説が正しいとしたら、どんなデータが普通で、どんなデータが珍しいのかを確率分布（正規分布、t分布、二項分布など）で描きます。</p>
+</section>
+<section id="それ以上に極端as-extreme-or-more-extremeを足す" class="level3" data-number="2.3">
+<h3 data-number="2.3" class="anchored" data-anchor-id="それ以上に極端as-extreme-or-more-extremeを足す"><span class="header-section-number">2.3</span> 3. 「それ以上に極端（as extreme or more extreme）」を足す</h3>
+<p>なぜ「観測データそのものの確率」ではなく<strong>「それ以上極端なもの」</strong>を足すのでしょうか？ 連続型データでは一点の確率は常にゼロ（<span class="math inline">\(P(X=x)=0\)</span>）ですし、離散型でも「より疑わしい証拠」を含めて裾野全体の面積を測らないと、客観的な判定基準にならないためです。</p>
+<hr>
+</section>
+</section>
+<section id="決定的な比較表よくある誤解-vs-統計学の真実" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="決定的な比較表よくある誤解-vs-統計学の真実"><span class="header-section-number">3</span> 決定的な比較表：よくある誤解 vs 統計学の真実</h2>
+<p>P値には、専門家ですら陥りやすい代表的な<strong>「3大誤解」</strong>があります。</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">よくある誤解（❌）</th>
+<th style="text-align: left;">統計学の真実（⭕）</th>
+<th style="text-align: left;">理由・解説</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><strong>誤解 1</strong>: 「P値は、仮説が正しい確率である」</td>
+<td style="text-align: left;"><strong>P値は、帰無仮説が正しいと仮定したもとでデータが得られる確率</strong>である</td>
+<td style="text-align: left;"><span class="math inline">\(P(H_0 \mid \text{データ})\)</span> ではなく、<span class="math inline">\(P(\text{データ} \mid H_0)\)</span> です（条件付き確率の前後が逆）。</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>誤解 2</strong>: 「P値が小さいほど、効果が大きい」</td>
+<td style="text-align: left;"><strong>P値は効果の大きさ（Effect Size）ではない</strong></td>
+<td style="text-align: left;">サンプルサイズ <span class="math inline">\(N\)</span> が数万〜数百万と極端に大きい場合、ごくわずかな無意味な差でも P値 は <span class="math inline">\(0.0001\)</span> 以下になります。</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><strong>誤解 3</strong>: 「<span class="math inline">\(p &gt; 0.05\)</span> だから、差がないことが証明された」</td>
+<td style="text-align: left;"><strong>「差がない」と断定する証拠が不十分なだけ</strong>（無罪推定）</td>
+<td style="text-align: left;">「犯人である証拠が見つからなかった」からといって「無実が完全に証明された」わけではないのと同じです。</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>⚠️ 条件付き確率の取り違え（検察官の誤謬）
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>「容疑者が無実（帰無仮説）なら、犯行現場に指紋が一致する確率は <span class="math inline">\(0.001\)</span> だ（P値）」からといって、 「容疑者が無実である確率が <span class="math inline">\(0.001\)</span>（<span class="math inline">\(0.1\%\)</span>）である」と結論づけるのは数学的誤りです。 P値は<strong>「前提（<span class="math inline">\(H_0\)</span>）のもとでのデータの珍しさ」</strong>であり、<strong>「前提そのものの確かさ」</strong>ではありません。</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="動的ビジュアライゼーションgganimate-による直感理解" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="動的ビジュアライゼーションgganimate-による直感理解"><span class="header-section-number">4</span> 動的ビジュアライゼーション（gganimate による直感理解）</h2>
+<p>検定統計量（<span class="math inline">\(z\)</span> や <span class="math inline">\(t\)</span>）が中心から離れるにつれて、P値がどのように収縮し、判定が「有意差なし」から「統計的有意（Reject <span class="math inline">\(H_0\)</span>）」へ変わるかをアニメーションで体感してみましょう。</p>
+<ul>
+<li><strong>左側【帰無仮説の確率分布】</strong>: 統計量 <span class="math inline">\(z\)</span> が <span class="math inline">\(0 \to 3\)</span> へと離れるにつれ、両側の赤い裾野面積（P値）が急速に狭まっていきます。</li>
+<li><strong>右側【P値の減少曲線】</strong>: 統計量 <span class="math inline">\(z\)</span> と P値 の関係を描いた曲線です。赤い点が 有意水準 <span class="math inline">\(\alpha = 0.05\)</span>（点線）を下回った瞬間に「統計的有意（Bam!）」と判定が切り替わります。</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p_value.gif" class="img-fluid figure-img"></p>
+<figcaption>【P値の動的メカニズム】統計量の変化と両側P値の収縮アニメーション</figcaption>
+</figure>
+</div>
+<section id="アニメーションからわかる決定的なポイント" class="level4" data-number="4.0.1">
+<h4 data-number="4.0.1" class="anchored" data-anchor-id="アニメーションからわかる決定的なポイント"><span class="header-section-number">4.0.1</span> アニメーションからわかる決定的なポイント</h4>
+<ol type="1">
+<li><strong>P値は「赤色の面積」そのもの</strong>: 左側の正規分布で、観測値より外側にある赤い領域の合計が、右側プロットの縦軸（P値）と完全に一致しています。</li>
+<li><strong>中心付近（<span class="math inline">\(z \approx 0\)</span>）</strong>: データが平均近くにあるときは <span class="math inline">\(P \approx 1.0\)</span> であり、「偶然で普通に起こる範囲」です。</li>
+<li><strong>境界線（<span class="math inline">\(z \approx 1.96\)</span>）の突破</strong>: <span class="math inline">\(z\)</span> が <span class="math inline">\(1.96\)</span> を超えると赤い面積が <span class="math inline">\(5\%\)</span>（<span class="math inline">\(0.05\)</span>）未満となり、「偶然とは考えにくい」として帰無仮説を棄却します。</li>
+</ol>
+<hr>
+</section>
+</section>
+<section id="具体例-1イカサマコインの検証離散型二項検定" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="具体例-1イカサマコインの検証離散型二項検定"><span class="header-section-number">5</span> 具体例 1：イカサマコインの検証（離散型：二項検定）</h2>
+<p>まずは身近なコイン投げで直感をつかみましょう。</p>
+<p>友人が「このコインは表がよく出る特別なコインだ」と言い、<strong>10回投げて8回表</strong>が出ました。 このコインは本当にイカサマ（表が出やすい）なのでしょうか？</p>
+<section id="仮説の設定" class="level3" data-number="5.1">
+<h3 data-number="5.1" class="anchored" data-anchor-id="仮説の設定"><span class="header-section-number">5.1</span> 1. 仮説の設定</h3>
+<ul>
+<li><strong>帰無仮説 <span class="math inline">\(H_0\)</span></strong>: コインは公平である（表が出る確率 <span class="math inline">\(p = 0.5\)</span>）</li>
+<li><strong>対立仮説 <span class="math inline">\(H_1\)</span></strong>: コインは表が出やすい（片側検定: <span class="math inline">\(p &gt; 0.5\)</span>）</li>
+</ul>
+</section>
+<section id="公平なコインを10回投げたときの確率分布rコード" class="level3" data-number="5.2">
+<h3 data-number="5.2" class="anchored" data-anchor-id="公平なコインを10回投げたときの確率分布rコード"><span class="header-section-number">5.2</span> 2. 公平なコインを10回投げたときの確率分布（Rコード）</h3>
+<div class="cell" data-layout-align="center">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 10回投げて表が出る回数 k (0〜10)</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>p_null <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>k_vals <span class="ot">&lt;-</span> <span class="dv">0</span><span class="sc">:</span>n</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 各回数の確率を計算</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>df_coin <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">k =</span> k_vals,</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">prob =</span> <span class="fu">dbinom</span>(k_vals, <span class="at">size =</span> n, <span class="at">prob =</span> p_null)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">category =</span> <span class="fu">case_when</span>(</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>      k <span class="sc">&gt;=</span> <span class="dv">8</span> <span class="sc">~</span> <span class="st">"観測値 (8回) 以上 [P値の領域]"</span>,</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span>   <span class="sc">~</span> <span class="st">"帰無仮説で想定される通常の範囲"</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co"># プロット作成</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df_coin, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">factor</span>(k), <span class="at">y =</span> prob, <span class="at">fill =</span> category)) <span class="sc">+</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">width =</span> <span class="fl">0.7</span>, <span class="at">color =</span> <span class="st">"#002366"</span>, <span class="at">alpha =</span> <span class="fl">0.85</span>) <span class="sc">+</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">sprintf</span>(<span class="st">"%.3f"</span>, prob)), <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">size =</span> <span class="fl">3.5</span>, <span class="at">family =</span> <span class="st">"Hiragino Sans"</span>) <span class="sc">+</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>      <span class="st">"観測値 (8回) 以上 [P値の領域]"</span> <span class="ot">=</span> <span class="st">"#e74c3c"</span>,</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>      <span class="st">"帰無仮説で想定される通常の範囲"</span> <span class="ot">=</span> <span class="st">"#3498db"</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">percent_format</span>(<span class="at">accuracy =</span> <span class="dv">1</span>), <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.30</span>)) <span class="sc">+</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"公平なコイン（p = 0.5）を10回投げたときの表の回数分布"</span>,</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"赤色の棒の合計が「8回以上表が出る確率（片側P値）」を表す"</span>,</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"表が出た回数 (k)"</span>,</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"発生確率"</span>,</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">""</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p_value_guide_files/figure-html/coin-plot-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1350"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="p値の計算" class="level3" data-number="5.3">
+<h3 data-number="5.3" class="anchored" data-anchor-id="p値の計算"><span class="header-section-number">5.3</span> 3. P値の計算</h3>
+<p>表が8回以上（8回、9回、10回）出る確率の合計を計算します。</p>
+<div class="cell" data-layout-align="center">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 表が8回、9回、10回出る確率</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>prob_8  <span class="ot">&lt;-</span> <span class="fu">dbinom</span>(<span class="dv">8</span>, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">prob =</span> <span class="fl">0.5</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>prob_9  <span class="ot">&lt;-</span> <span class="fu">dbinom</span>(<span class="dv">9</span>, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">prob =</span> <span class="fl">0.5</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>prob_10 <span class="ot">&lt;-</span> <span class="fu">dbinom</span>(<span class="dv">10</span>, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">prob =</span> <span class="fl">0.5</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 合計（片側P値）</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>p_val_onesided <span class="ot">&lt;-</span> prob_8 <span class="sc">+</span> prob_9 <span class="sc">+</span> prob_10</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"P(X = 8)  = %.4f (約 %.2f%%)</span><span class="sc">\n</span><span class="st">"</span>, prob_8, prob_8 <span class="sc">*</span> <span class="dv">100</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>P(X = 8)  = 0.0439 (約 4.39%)</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"P(X = 9)  = %.4f (約 %.2f%%)</span><span class="sc">\n</span><span class="st">"</span>, prob_9, prob_9 <span class="sc">*</span> <span class="dv">100</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>P(X = 9)  = 0.0098 (約 0.98%)</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"P(X = 10) = %.4f (約 %.2f%%)</span><span class="sc">\n</span><span class="st">"</span>, prob_10, prob_10 <span class="sc">*</span> <span class="dv">100</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>P(X = 10) = 0.0010 (約 0.10%)</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"----------------------------------------</span><span class="sc">\n</span><span class="st">"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>----------------------------------------</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"片側 P値 (8回以上) = %.4f (約 %.2f%%)</span><span class="sc">\n</span><span class="st">"</span>, p_val_onesided, p_val_onesided <span class="sc">*</span> <span class="dv">100</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>片側 P値 (8回以上) = 0.0547 (約 5.47%)</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># binom.test() 関数による検定</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>binom_res <span class="ot">&lt;-</span> <span class="fu">binom.test</span>(<span class="at">x =</span> <span class="dv">8</span>, <span class="at">n =</span> <span class="dv">10</span>, <span class="at">p =</span> <span class="fl">0.5</span>, <span class="at">alternative =</span> <span class="st">"greater"</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"binom.test() の片側 P値: %.4f</span><span class="sc">\n</span><span class="st">"</span>, binom_res<span class="sc">$</span>p.value))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>binom.test() の片側 P値: 0.0547</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>💡 この結果をどう解釈するか？
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>公平なコインであっても、10回投げれば<strong>約 5.47% の確率でたまたま8回以上表が出る</strong>ことがあります。</li>
+<li>もし慣例的な基準（有意水準 <span class="math inline">\(\alpha = 0.05 = 5\%\)</span>）を採用するならば、<span class="math inline">\(0.0547 &gt; 0.05\)</span> であるため、<strong>「偶然でも起こりうる範囲内であり、イカサマとまでは断定できない」</strong>という結論になります。</li>
+</ul>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="具体例-2新薬の臨床試験連続型2標本-t検定" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="具体例-2新薬の臨床試験連続型2標本-t検定"><span class="header-section-number">6</span> 具体例 2：新薬の臨床試験（連続型：2標本 t検定）</h2>
+<p>次に、実務で最も頻出する「2つのグループの平均値の差」を検証する <strong>2標本 t検定（Student’s t-test）</strong> を見てみましょう。</p>
+<section id="シナリオ" class="level3" data-number="6.1">
+<h3 data-number="6.1" class="anchored" data-anchor-id="シナリオ"><span class="header-section-number">6.1</span> シナリオ</h3>
+<ul>
+<li>新しい降圧薬（グループA: 30名）と プラセボ（偽薬、グループB: 30名）の血圧低下量を測定。</li>
+<li>グループAの平均低下量: <span class="math inline">\(12.4 \text{ mmHg}\)</span></li>
+<li>グループBの平均低下量: <span class="math inline">\(8.1 \text{ mmHg}\)</span></li>
+<li>見かけ上、<span class="math inline">\(4.3 \text{ mmHg}\)</span> の差があります。これは薬の真の効果でしょうか？それとも単なる患者の個体差（偶然）でしょうか？</li>
+</ul>
+<div class="cell" data-layout-align="center">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 模擬データの生成</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>n_group <span class="ot">&lt;-</span> <span class="dv">30</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>group_a <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n_group, <span class="at">mean =</span> <span class="fl">12.4</span>, <span class="at">sd =</span> <span class="fl">6.0</span>) <span class="co"># 新薬群</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>group_b <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n_group, <span class="at">mean =</span> <span class="fl">8.1</span>,  <span class="at">sd =</span> <span class="fl">6.0</span>) <span class="co"># プラセボ群</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>df_patients <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">group =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"新薬群 (Drug A)"</span>, <span class="st">"プラセボ群 (Placebo B)"</span>), <span class="at">each =</span> n_group),</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction =</span> <span class="fu">c</span>(group_a, group_b)</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 2群の要約統計量</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>df_patients <span class="sc">%&gt;%</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(group) <span class="sc">%&gt;%</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    人数 <span class="ot">=</span> <span class="fu">n</span>(),</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>    標本平均 <span class="ot">=</span> <span class="fu">mean</span>(reduction),</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>    標本標準偏差 <span class="ot">=</span> <span class="fu">sd</span>(reduction)</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 4
+  group                   人数 標本平均 標本標準偏差
+  &lt;chr&gt;                  &lt;int&gt;    &lt;dbl&gt;        &lt;dbl&gt;
+1 プラセボ群 (Placebo B)    30     9.17         5.01
+2 新薬群 (Drug A)           30    12.1          5.89</code></pre>
+</div>
+</div>
+</section>
+<section id="t検定の実行" class="level3" data-number="6.2">
+<h3 data-number="6.2" class="anchored" data-anchor-id="t検定の実行"><span class="header-section-number">6.2</span> t検定の実行</h3>
+<div class="cell" data-layout-align="center">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Student の 2標本 t検定 (等分散を仮定)</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>t_res <span class="ot">&lt;-</span> <span class="fu">t.test</span>(group_a, group_b, <span class="at">var.equal =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(t_res)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Two Sample t-test
+
+data:  group_a and group_b
+t = 2.0884, df = 58, p-value = 0.04117
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ 0.1222781 5.7724168
+sample estimates:
+mean of x mean of y 
+ 12.11738   9.17003 </code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>obs_t <span class="ot">&lt;-</span> t_res<span class="sc">$</span>statistic <span class="co"># 観測された t 値</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>df_val <span class="ot">&lt;-</span> t_res<span class="sc">$</span>parameter <span class="co"># 自由度 (30 + 30 - 2 = 58)</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>p_value <span class="ot">&lt;-</span> t_res<span class="sc">$</span>p.value  <span class="co"># P値</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+</section>
+<section id="t分布上でp値の領域を可視化する" class="level3" data-number="6.3">
+<h3 data-number="6.3" class="anchored" data-anchor-id="t分布上でp値の領域を可視化する"><span class="header-section-number">6.3</span> t分布上で「P値」の領域を可視化する</h3>
+<p>t検定における P値 は、<strong>「差がない（<span class="math inline">\(\mu_A - \mu_B = 0\)</span>）としたときの t分布」</strong>において、観測された t値 より外側の裾野の面積（両側検定なら左右両方）です。</p>
+<div class="cell" data-layout-align="center">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># t分布の曲線データ作成</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>x_vals <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">4</span>, <span class="dv">4</span>, <span class="at">length.out =</span> <span class="dv">1000</span>)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>df_tdist <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> x_vals,</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">density =</span> <span class="fu">dt</span>(x_vals, <span class="at">df =</span> df_val)</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df_tdist, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> density)) <span class="sc">+</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 全体の t 分布曲線</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">"#002366"</span>, <span class="at">linewidth =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 右側の棄却・P値領域 (t &gt;= |obs_t|)</span></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_area</span>(</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">filter</span>(df_tdist, x <span class="sc">&gt;=</span> <span class="fu">abs</span>(obs_t)),</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"#e74c3c"</span>, <span class="at">alpha =</span> <span class="fl">0.7</span></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 左側の棄却・P値領域 (t &lt;= -|obs_t|)</span></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_area</span>(</span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">filter</span>(df_tdist, x <span class="sc">&lt;=</span> <span class="sc">-</span><span class="fu">abs</span>(obs_t)),</span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"#e74c3c"</span>, <span class="at">alpha =</span> <span class="fl">0.7</span></span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 観測された t 値の縦線</span></span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fu">abs</span>(obs_t), <span class="fu">abs</span>(obs_t)), <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"#e74c3c"</span>, <span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 注釈アノテーション</span></span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a>    <span class="st">"text"</span>, <span class="at">x =</span> <span class="fu">abs</span>(obs_t) <span class="sc">+</span> <span class="fl">0.4</span>, <span class="at">y =</span> <span class="fl">0.15</span>,</span>
+<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="fu">sprintf</span>(<span class="st">"観測された t値 = +%.2f</span><span class="sc">\n</span><span class="st">(右側の面積 = P/2)"</span>, obs_t),</span>
+<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"#e74c3c"</span>, <span class="at">fontface =</span> <span class="st">"bold"</span>, <span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">family =</span> <span class="st">"Hiragino Sans"</span></span>
+<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a>    <span class="st">"text"</span>, <span class="at">x =</span> <span class="sc">-</span><span class="fu">abs</span>(obs_t) <span class="sc">-</span> <span class="fl">0.4</span>, <span class="at">y =</span> <span class="fl">0.15</span>,</span>
+<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="fu">sprintf</span>(<span class="st">"対称な t値 = -%.2f</span><span class="sc">\n</span><span class="st">(左側の面積 = P/2)"</span>, obs_t),</span>
+<span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"#e74c3c"</span>, <span class="at">fontface =</span> <span class="st">"bold"</span>, <span class="at">hjust =</span> <span class="dv">1</span>, <span class="at">family =</span> <span class="st">"Hiragino Sans"</span></span>
+<span id="cb20-36"><a href="#cb20-36" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb20-37"><a href="#cb20-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb20-38"><a href="#cb20-38" aria-hidden="true" tabindex="-1"></a>    <span class="st">"label"</span>, <span class="at">x =</span> <span class="dv">0</span>, <span class="at">y =</span> <span class="fl">0.25</span>,</span>
+<span id="cb20-39"><a href="#cb20-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="fu">sprintf</span>(<span class="st">"両側の赤色面積の合計 (P値) = %.4f</span><span class="sc">\n</span><span class="st">(偶然これほど離れる確率: 約 %.2f%%)"</span>, p_value, p_value <span class="sc">*</span> <span class="dv">100</span>),</span>
+<span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"#fdf6e3"</span>, <span class="at">color =</span> <span class="st">"#002366"</span>, <span class="at">fontface =</span> <span class="st">"bold"</span>, <span class="at">family =</span> <span class="st">"Hiragino Sans"</span></span>
+<span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb20-42"><a href="#cb20-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb20-43"><a href="#cb20-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="fu">sprintf</span>(<span class="st">"帰無仮説のもとでの t分布 (自由度 df = %d) と P値の可視化"</span>, <span class="fu">as.integer</span>(df_val)),</span>
+<span id="cb20-44"><a href="#cb20-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"赤色に塗られた両側の裾野の面積の合計が、計算された P値 です"</span>,</span>
+<span id="cb20-45"><a href="#cb20-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"t 値 (平均値の差を標準誤差で割った指標)"</span>,</span>
+<span id="cb20-46"><a href="#cb20-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"確率密度"</span></span>
+<span id="cb20-47"><a href="#cb20-47" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p_value_guide_files/figure-html/t-distribution-plot-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1350"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>このグラフから直感的に理解できます。 - 山の中央（<span class="math inline">\(t = 0\)</span> 付近）は、「両グループに差がない世界」で普通に起きる結果です。 - 観測された <span class="math inline">\(t \approx 2.09\)</span> は山の中央から大きく離れており、両端の赤い面積（P値）はわずか <strong>約 4.12%</strong> しかありません。 - したがって、「偶然でこの差が出た」と考えるのは非常に不自然であり、新薬には確かな効果があると判断（帰無仮説を棄却）します。</p>
+<hr>
+</section>
+</section>
+<section id="具体例-3モンテカルロシミュレーションで体感する差がない世界" class="level2" data-number="7">
+<h2 data-number="7" class="anchored" data-anchor-id="具体例-3モンテカルロシミュレーションで体感する差がない世界"><span class="header-section-number">7</span> 具体例 3：モンテカルロ・シミュレーションで体感する「差がない世界」</h2>
+<p>数式や t分布 の定義が抽象的に感じる方のために、<strong>「差がない世界」をコンピュータの中で 10,000 回実際に創り出すシミュレーション</strong>を行ってみましょう！</p>
+<section id="シミュレーションの手順" class="level3" data-number="7.1">
+<h3 data-number="7.1" class="anchored" data-anchor-id="シミュレーションの手順"><span class="header-section-number">7.1</span> シミュレーションの手順</h3>
+<ol type="1">
+<li><strong>「完全に差がない世界」のデータ</strong>：全員に同じ平均値（効果なし）の薬を与えたと仮定し、乱数を 10,000 回生成します。</li>
+<li>毎回、2グループの平均の差を計算して記録します。</li>
+<li>10,000 回中、手元で観測された差（例: <span class="math inline">\(+3.5\text{ mmHg}\)</span> 以上、または <span class="math inline">\(-3.5\text{ mmHg}\)</span> 以下）が何回発生するか数えます。</li>
+</ol>
+<div class="cell" data-layout-align="center">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>n_sims <span class="ot">&lt;-</span> <span class="dv">10000</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>n_per_group <span class="ot">&lt;-</span> <span class="dv">30</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>observed_diff <span class="ot">&lt;-</span> <span class="fl">3.5</span> <span class="co"># 手元で観測された平均の差 (mmHg)</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 差がない世界 (平均 10, 標準偏差 6 で全員同じ)</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>simulated_diffs <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n_sims)</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_sims) {</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 差がない世界から 30名ずつランダム抽出</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  sample_1 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n_per_group, <span class="at">mean =</span> <span class="dv">10</span>, <span class="at">sd =</span> <span class="dv">6</span>)</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  sample_2 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n_per_group, <span class="at">mean =</span> <span class="dv">10</span>, <span class="at">sd =</span> <span class="dv">6</span>)</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 2群の平均の差を記録</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  simulated_diffs[i] <span class="ot">&lt;-</span> <span class="fu">mean</span>(sample_1) <span class="sc">-</span> <span class="fu">mean</span>(sample_2)</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a><span class="co"># 観測された差 (|diff| &gt;= 3.5) 以上に極端だった回数をカウント</span></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>extreme_count <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">abs</span>(simulated_diffs) <span class="sc">&gt;=</span> observed_diff)</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>simulated_p_value <span class="ot">&lt;-</span> extreme_count <span class="sc">/</span> n_sims</span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"シミュレーション総回数: %d 回</span><span class="sc">\n</span><span class="st">"</span>, n_sims))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>シミュレーション総回数: 10000 回</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"差がない世界で偶然 |差| &gt;= %.1f となった回数: %d 回</span><span class="sc">\n</span><span class="st">"</span>, observed_diff, extreme_count))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>差がない世界で偶然 |差| &gt;= 3.5 となった回数: 244 回</code></pre>
+</div>
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"シミュレーションによる P値: %.4f (約 %.2f%%)</span><span class="sc">\n</span><span class="st">"</span>, simulated_p_value, simulated_p_value <span class="sc">*</span> <span class="dv">100</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>シミュレーションによる P値: 0.0244 (約 2.44%)</code></pre>
+</div>
+</div>
+</section>
+<section id="シミュレーション結果のヒストグラム" class="level3" data-number="7.2">
+<h3 data-number="7.2" class="anchored" data-anchor-id="シミュレーション結果のヒストグラム"><span class="header-section-number">7.2</span> シミュレーション結果のヒストグラム</h3>
+<div class="cell" data-layout-align="center">
+<details open="" class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>df_sim <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">diff =</span> simulated_diffs) <span class="sc">%&gt;%</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">is_extreme =</span> <span class="fu">abs</span>(diff) <span class="sc">&gt;=</span> observed_diff)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df_sim, <span class="fu">aes</span>(<span class="at">x =</span> diff, <span class="at">fill =</span> is_extreme)) <span class="sc">+</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="fl">0.3</span>, <span class="at">color =</span> <span class="st">"#ffffff"</span>, <span class="at">alpha =</span> <span class="fl">0.85</span>) <span class="sc">+</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">c</span>(<span class="sc">-</span>observed_diff, observed_diff), <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"#e74c3c"</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"FALSE"</span> <span class="ot">=</span> <span class="st">"#3498db"</span>, <span class="st">"TRUE"</span> <span class="ot">=</span> <span class="st">"#e74c3c"</span>),</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"偶然の範囲内の差"</span>, <span class="fu">sprintf</span>(<span class="st">"|差| &gt;= %.1f (極端な結果)"</span>, observed_diff))</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"label"</span>, <span class="at">x =</span> observed_diff <span class="sc">+</span> <span class="fl">0.5</span>, <span class="at">y =</span> <span class="dv">600</span>,</span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="fu">sprintf</span>(<span class="st">"観測された差 = +%.1f</span><span class="sc">\n</span><span class="st">この外側の割合が P値"</span>, observed_diff),</span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"#e74c3c"</span>, <span class="at">fontface =</span> <span class="st">"bold"</span>, <span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">family =</span> <span class="st">"Hiragino Sans"</span>, <span class="at">fill =</span> <span class="st">"#fdf6e3"</span></span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"「差がない世界」を10,000回シミュレーションしたときの平均値の差"</span>,</span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="fu">sprintf</span>(<span class="st">"赤色部分の割合 = %d / 10,000 = %.2f%% (これが P値 の正体！)"</span>, extreme_count, simulated_p_value <span class="sc">*</span> <span class="dv">100</span>),</span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"2群の平均値の差 (グループ1 - グループ2)"</span>,</span>
+<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"シミュレーションで発生した頻度 (回)"</span>,</span>
+<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">""</span></span>
+<span id="cb27-22"><a href="#cb27-22" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="p_value_guide_files/figure-html/monte-carlo-plot-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" width="1350"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>🎯 これぞ P値 の本質！
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>「P値」とは、難解な積分記号や分布表の向こう側にあるものではなく、<strong>「差がない世界でサイコロを10,000回振ったとき、たまたまこれくらい極端な結果が出てしまう割合」</strong>そのものです！</p>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="なぜ有意水準は0.05なのか" class="level2" data-number="8">
+<h2 data-number="8" class="anchored" data-anchor-id="なぜ有意水準は0.05なのか"><span class="header-section-number">8</span> なぜ有意水準は「0.05」なのか？</h2>
+<p>歴史的に、近代統計学の父 <strong>ロナルド・フィッシャー（Ronald Fisher）</strong> が1925年の著書『研究者のための統計的方法』で「20回に1回（<span class="math inline">\(5\% = 0.05\)</span>）起こる程度の珍しさを目安にしてはどうか」と例示したのが広まり、国際的な慣例となりました。</p>
+<ul>
+<li><strong>有意水準 <span class="math inline">\(\alpha = 0.05\)</span></strong>: 「偶然で起こる確率が <span class="math inline">\(5\%\)</span> 未満なら、偶然とは考えにくく、効果があると判定しよう」</li>
+<li><strong>第1種の過誤（Type I Error / 偽陽性）</strong>: 「本当は何の差もないのに、たまたま <span class="math inline">\(5\%\)</span> のレアケースを引いて『効果あり』と誤判定してしまうリスク」がまさに <span class="math inline">\(\alpha\)</span> です。</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>近年の統計学の動向：P値ハッキングへの警鐘
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>アメリカ統計学会（ASA）は2016年に「P値に関する声明」を出し、<strong>「<span class="math inline">\(p &lt; 0.05\)</span> かどうかという機械的な二者択一のみで研究の真偽を判断してはならない」</strong>と強く警告しました。 P値だけでなく、<strong>効果量（Effect Size）</strong>や<strong>信頼区間（Confidence Interval）</strong>を併せて報告することが強く推奨されています。</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="理解度チェッククイズ全3問" class="level2" data-number="9">
+<h2 data-number="9" class="anchored" data-anchor-id="理解度チェッククイズ全3問"><span class="header-section-number">9</span> 理解度チェッククイズ（全3問）</h2>
+<p>理解を確実にするためのセルフチェックです。クリックして正解と解説を確認してください。</p>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>❓ 第1問：P値の定義
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>新薬の臨床試験で「血圧降下効果あり、P値 = 0.03」という結果が得られました。この「0.03」の正しい意味は次のうちどれでしょう？</p>
+<p>A. 新薬が効く確率が <span class="math inline">\(97\%\)</span> である。<br>
+B. 新薬に効果がない（偽薬と同じ）確率が <span class="math inline">\(3\%\)</span> である。<br>
+C. もし新薬に全く効果がないとしたら、今回のデータほど大きな差が偶然生じる確率が <span class="math inline">\(3\%\)</span> である。<br>
+D. 実験を100回繰り返したとき、3回は失敗することを意味する。</p>
+<details>
+<summary>
+👉 正解と解説を見る
+</summary>
+<p><strong>正解: C</strong></p>
+<strong>解説:</strong><br>
+P値は「帰無仮説（効果がない）が正しいと仮定したとき」に、観測データ以上の極端な結果が偶然生じる確率です。 AやBは「仮説そのものが正しい確率」と混同しており、ベイズ統計学における事後確率でなければ語れません。
+</details>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>❓ 第2問：サンプルサイズとP値
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>あるウェブサイトのABテストで、ボタンの色を青から緑に変更したところ、購入率が <span class="math inline">\(2.00\%\)</span> から <span class="math inline">\(2.01\%\)</span> へわずか <span class="math inline">\(0.01\%\)</span> 上昇しました。しかし、アクセス数が1,000万人と膨大だったため、検定結果は <span class="math inline">\(p = 0.0001\)</span> となりました。どう解釈すべきでしょうか？</p>
+<p>A. P値が極めて小さいので、ボタンの色を緑に変えると劇的な売上増加が見込める。<br>
+B. 統計的には「差がある（偶然ではない）」と確認できたが、効果の大きさ（<span class="math inline">\(0.01\%\)</span>）が実務的に価値あるものかはビジネス上の判断が必要である。<br>
+C. P値が小さいのだから、売上への影響度も極めて大きいと断言できる。</p>
+<details>
+<summary>
+👉 正解と解説を見る
+</summary>
+<p><strong>正解: B</strong></p>
+<strong>解説:</strong><br>
+サンプルサイズ <span class="math inline">\(N\)</span> が非常に大きい場合、実質的にはどうでもいい微小な差であっても P値 は <span class="math inline">\(0.0001\)</span> など極小になります。「統計的に有意であること（Statistical Significance）」と「実質的に意味があること（Practical / Clinical Significance）」は全く別物です。
+</details>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-caution callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Caution</span>❓ 第3問：p &gt; 0.05 だったときの結論
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>新しい学習アプリの効果を検証したところ、<span class="math inline">\(p = 0.18\)</span> でした（有意水準 <span class="math inline">\(\alpha = 0.05\)</span>）。このとき導くべき正しい結論はどれでしょう？</p>
+<p>A. この学習アプリには効果が全くないことが科学的に証明された。<br>
+B. 従来の勉強法と学習アプリの効果は完全に同一である。<br>
+C. 今回の実験データからは、「アプリに効果がある」と主張するための十分な証拠が得られなかった（効果がないと断定することはできない）。</p>
+<details>
+<summary>
+👉 正解と解説を見る
+</summary>
+<p><strong>正解: C</strong></p>
+<strong>解説:</strong><br>
+帰無仮説が棄却できなかった場合（<span class="math inline">\(p &gt; 0.05\)</span>）、「帰無仮説が正しい」と証明されたわけではありません。単に「サンプル数が足りなかった（検出力不足）」か「効果が小さかった」ために、偶然のバラツキと区別がつかなかっただけです。「証拠の不在は、不在の証拠にあらず（Absence of evidence is not evidence of absence）」という格言が有名です。
+</details>
+</div>
+</div>
+</div>
+<hr>
+</section>
+<section id="まとめ" class="level2" data-number="10">
+<h2 data-number="10" class="anchored" data-anchor-id="まとめ"><span class="header-section-number">10</span> まとめ</h2>
+<ol type="1">
+<li><strong>P値の本質</strong>: 「何の差もない世界（帰無仮説）」において、手元のデータ以上の極端な事象が偶然起きてしまう確率。</li>
+<li><strong>直感イメージ</strong>: 「偶然だと言い張るには、どれくらい苦しいか？」を示すバロメーター。P値が小さいほど「偶然とは考えにくい」ため、効果の存在を認める。</li>
+<li><strong>忘れてはならない注意点</strong>:
+<ul>
+<li>P値は「仮説が正しい確率」ではない。</li>
+<li>P値は「効果の大きさ」ではない（サンプルサイズに左右される）。</li>
+<li>有意差が出なくても「差がないことが証明された」わけではない。</li>
+<li>信頼区間や効果量とセットで評価することが現代統計学の鉄則！</li>
+</ul></li>
+</ol>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const cellDetails = window.document.querySelectorAll(".cell details.code-fold");
+        for (let i=0; i<cellDetails.length; i++) {
+          const details = cellDetails[i];
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell div.sourceCode.cell-code");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "「P値（p-value）」の本質を直感的に理解する"</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a><span class="an">subtitle:</span><span class="co"> "StatQuest流のアプローチ：誤解の解体、視覚的解釈、Rによるシミュレーション実践"</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "StatQuest Visual Companion"</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> "2026-08-27"</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a><span class="in">```{r setup, include=FALSE}</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>opts_chunk<span class="sc">$</span><span class="fu">set</span>(</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">echo =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">warning =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">message =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">fig.width =</span> <span class="dv">9</span>,</span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">fig.height =</span> <span class="dv">5</span>,</span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">fig.align =</span> <span class="st">"center"</span>,</span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">dev =</span> <span class="st">"png"</span>,</span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">dpi =</span> <span class="dv">150</span></span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressPackageStartupMessages</span>({</span>
+<span id="cb28-21"><a href="#cb28-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(ggplot2)</span>
+<span id="cb28-22"><a href="#cb28-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(dplyr)</span>
+<span id="cb28-23"><a href="#cb28-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(tidyr)</span>
+<span id="cb28-24"><a href="#cb28-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">library</span>(patchwork)</span>
+<span id="cb28-25"><a href="#cb28-25" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb28-26"><a href="#cb28-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-27"><a href="#cb28-27" aria-hidden="true" tabindex="-1"></a><span class="co"># プロジェクト共通の Solarized Light &amp; Royal Blue テーマ</span></span>
+<span id="cb28-28"><a href="#cb28-28" aria-hidden="true" tabindex="-1"></a>theme_statquest <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb28-29"><a href="#cb28-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_family =</span> <span class="st">"Hiragino Sans"</span>) <span class="sc">+</span></span>
+<span id="cb28-30"><a href="#cb28-30" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(</span>
+<span id="cb28-31"><a href="#cb28-31" aria-hidden="true" tabindex="-1"></a>      <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"#fdf6e3"</span>, <span class="at">color =</span> <span class="cn">NA</span>),</span>
+<span id="cb28-32"><a href="#cb28-32" aria-hidden="true" tabindex="-1"></a>      <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"#ffffff"</span>, <span class="at">color =</span> <span class="st">"#e2d9c2"</span>),</span>
+<span id="cb28-33"><a href="#cb28-33" aria-hidden="true" tabindex="-1"></a>      <span class="at">panel.grid.major =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"#f0ebd8"</span>),</span>
+<span id="cb28-34"><a href="#cb28-34" aria-hidden="true" tabindex="-1"></a>      <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb28-35"><a href="#cb28-35" aria-hidden="true" tabindex="-1"></a>      <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"#002366"</span>, <span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">15</span>, <span class="at">hjust =</span> <span class="dv">0</span>),</span>
+<span id="cb28-36"><a href="#cb28-36" aria-hidden="true" tabindex="-1"></a>      <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"#34495e"</span>, <span class="at">size =</span> <span class="dv">11</span>, <span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">margin =</span> <span class="fu">margin</span>(<span class="at">b =</span> <span class="dv">10</span>)),</span>
+<span id="cb28-37"><a href="#cb28-37" aria-hidden="true" tabindex="-1"></a>      <span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"#7f8c8d"</span>, <span class="at">size =</span> <span class="dv">9</span>),</span>
+<span id="cb28-38"><a href="#cb28-38" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"#002366"</span>, <span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">11</span>),</span>
+<span id="cb28-39"><a href="#cb28-39" aria-hidden="true" tabindex="-1"></a>      <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"#2c3e50"</span>, <span class="at">size =</span> <span class="dv">10</span>),</span>
+<span id="cb28-40"><a href="#cb28-40" aria-hidden="true" tabindex="-1"></a>      <span class="at">strip.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"#e8f0fe"</span>, <span class="at">color =</span> <span class="st">"#002366"</span>),</span>
+<span id="cb28-41"><a href="#cb28-41" aria-hidden="true" tabindex="-1"></a>      <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"#002366"</span>, <span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">11</span>),</span>
+<span id="cb28-42"><a href="#cb28-42" aria-hidden="true" tabindex="-1"></a>      <span class="at">legend.position =</span> <span class="st">"top"</span>,</span>
+<span id="cb28-43"><a href="#cb28-43" aria-hidden="true" tabindex="-1"></a>      <span class="at">legend.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">"#fdf6e3"</span>, <span class="at">color =</span> <span class="cn">NA</span>),</span>
+<span id="cb28-44"><a href="#cb28-44" aria-hidden="true" tabindex="-1"></a>      <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"#002366"</span>, <span class="at">face =</span> <span class="st">"bold"</span>, <span class="at">size =</span> <span class="dv">10</span>),</span>
+<span id="cb28-45"><a href="#cb28-45" aria-hidden="true" tabindex="-1"></a>      <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">color =</span> <span class="st">"#2c3e50"</span>, <span class="at">size =</span> <span class="dv">10</span>)</span>
+<span id="cb28-46"><a href="#cb28-46" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb28-47"><a href="#cb28-47" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb28-48"><a href="#cb28-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-49"><a href="#cb28-49" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(<span class="fu">theme_statquest</span>())</span>
+<span id="cb28-50"><a href="#cb28-50" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb28-51"><a href="#cb28-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-52"><a href="#cb28-52" aria-hidden="true" tabindex="-1"></a><span class="fu">## はじめに：なぜ「P値」は統計学最大の難所なのか？</span></span>
+<span id="cb28-53"><a href="#cb28-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-54"><a href="#cb28-54" aria-hidden="true" tabindex="-1"></a>統計学やデータ分析を学び始めて、誰もが一度は混乱するのが**「P値（p-value）」**です。</span>
+<span id="cb28-55"><a href="#cb28-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-56"><a href="#cb28-56" aria-hidden="true" tabindex="-1"></a>論文や実務の分析レポートでは「$p &lt; 0.05$ だから統計的に有意である」という決まり文句が飛び交いますが、**「では、P値とは何ですか？」**と問われると、多くの人が口ごもってしまいます。</span>
+<span id="cb28-57"><a href="#cb28-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-58"><a href="#cb28-58" aria-hidden="true" tabindex="-1"></a>::: {.callout-important appearance="simple"}</span>
+<span id="cb28-59"><a href="#cb28-59" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🧭 核心となる一言要約（Bam!）</span></span>
+<span id="cb28-60"><a href="#cb28-60" aria-hidden="true" tabindex="-1"></a>**P値とは、「もし仮に何の差も効果もない（すべてが単なる偶然である）世界」において、手元のデータ（またはそれ以上に極端なデータ）が偶然得られてしまう確率**のことです。</span>
+<span id="cb28-61"><a href="#cb28-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-62"><a href="#cb28-62" aria-hidden="true" tabindex="-1"></a>$$\text{P値} = P(\text{観測データ、またはそれ以上に極端なデータ} \mid \text{帰無仮説 } H_0 \text{ が真})$$</span>
+<span id="cb28-63"><a href="#cb28-63" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb28-64"><a href="#cb28-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-65"><a href="#cb28-65" aria-hidden="true" tabindex="-1"></a>日常の感覚で言えば、**「偶然だと言い張るには、どれくらい無理があるか？（どれくらい奇跡的な珍事か？）」**をパーセンテージで表した指標と言えます。</span>
+<span id="cb28-66"><a href="#cb28-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-67"><a href="#cb28-67" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb28-68"><a href="#cb28-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-69"><a href="#cb28-69" aria-hidden="true" tabindex="-1"></a><span class="fu">## P値を理解する「3つのステップ」</span></span>
+<span id="cb28-70"><a href="#cb28-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-71"><a href="#cb28-71" aria-hidden="true" tabindex="-1"></a>StatQuestの解説でおなじみの思考ステップで、P値の導出プロセスを整理しましょう。</span>
+<span id="cb28-72"><a href="#cb28-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-73"><a href="#cb28-73" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb28-74"><a href="#cb28-74" aria-hidden="true" tabindex="-1"></a><span class="in">【ステップ 1】「差がない世界（帰無仮説）」を仮定する</span></span>
+<span id="cb28-75"><a href="#cb28-75" aria-hidden="true" tabindex="-1"></a><span class="in">               ↓</span></span>
+<span id="cb28-76"><a href="#cb28-76" aria-hidden="true" tabindex="-1"></a><span class="in">【ステップ 2】その世界で、手元のデータが出る確率分布を考える</span></span>
+<span id="cb28-77"><a href="#cb28-77" aria-hidden="true" tabindex="-1"></a><span class="in">               ↓</span></span>
+<span id="cb28-78"><a href="#cb28-78" aria-hidden="true" tabindex="-1"></a><span class="in">【ステップ 3】手元のデータ、および「それ以上に極端な領域」の面積（確率）を合算する  ==&gt; これが P値！</span></span>
+<span id="cb28-79"><a href="#cb28-79" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb28-80"><a href="#cb28-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-81"><a href="#cb28-81" aria-hidden="true" tabindex="-1"></a><span class="fu">### 1. 帰無仮説（Null Hypothesis: $H_0$）</span></span>
+<span id="cb28-82"><a href="#cb28-82" aria-hidden="true" tabindex="-1"></a>「何も起きていない」「新薬も偽薬も効果は同じ」「コインは歪んでいない（$p=0.5$）」という**退屈な世界**の仮定です。</span>
+<span id="cb28-83"><a href="#cb28-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-84"><a href="#cb28-84" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2. 「手元のデータ」をその世界にプロットする</span></span>
+<span id="cb28-85"><a href="#cb28-85" aria-hidden="true" tabindex="-1"></a>帰無仮説が正しいとしたら、どんなデータが普通で、どんなデータが珍しいのかを確率分布（正規分布、t分布、二項分布など）で描きます。</span>
+<span id="cb28-86"><a href="#cb28-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-87"><a href="#cb28-87" aria-hidden="true" tabindex="-1"></a><span class="fu">### 3. 「それ以上に極端（as extreme or more extreme）」を足す</span></span>
+<span id="cb28-88"><a href="#cb28-88" aria-hidden="true" tabindex="-1"></a>なぜ「観測データそのものの確率」ではなく**「それ以上極端なもの」**を足すのでしょうか？</span>
+<span id="cb28-89"><a href="#cb28-89" aria-hidden="true" tabindex="-1"></a>連続型データでは一点の確率は常にゼロ（$P(X=x)=0$）ですし、離散型でも「より疑わしい証拠」を含めて裾野全体の面積を測らないと、客観的な判定基準にならないためです。</span>
+<span id="cb28-90"><a href="#cb28-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-91"><a href="#cb28-91" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb28-92"><a href="#cb28-92" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-93"><a href="#cb28-93" aria-hidden="true" tabindex="-1"></a><span class="fu">## 決定的な比較表：よくある誤解 vs 統計学の真実</span></span>
+<span id="cb28-94"><a href="#cb28-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-95"><a href="#cb28-95" aria-hidden="true" tabindex="-1"></a>P値には、専門家ですら陥りやすい代表的な**「3大誤解」**があります。</span>
+<span id="cb28-96"><a href="#cb28-96" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-97"><a href="#cb28-97" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> よくある誤解（❌） <span class="pp">|</span> 統計学の真実（⭕） <span class="pp">|</span> 理由・解説 <span class="pp">|</span></span>
+<span id="cb28-98"><a href="#cb28-98" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">|</span></span>
+<span id="cb28-99"><a href="#cb28-99" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **誤解 1**: 「P値は、仮説が正しい確率である」 | **P値は、帰無仮説が正しいと仮定したもとでデータが得られる確率**である <span class="pp">|</span> $P(H_0 \mid \text{データ})$ ではなく、$P(\text{データ} \mid H_0)$ です（条件付き確率の前後が逆）。 <span class="pp">|</span></span>
+<span id="cb28-100"><a href="#cb28-100" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **誤解 2**: 「P値が小さいほど、効果が大きい」 | **P値は効果の大きさ（Effect Size）ではない** <span class="pp">|</span> サンプルサイズ $N$ が数万〜数百万と極端に大きい場合、ごくわずかな無意味な差でも P値 は $0.0001$ 以下になります。 <span class="pp">|</span></span>
+<span id="cb28-101"><a href="#cb28-101" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **誤解 3**: 「$p &gt; 0.05$ だから、差がないことが証明された」 | **「差がない」と断定する証拠が不十分なだけ**（無罪推定） <span class="pp">|</span> 「犯人である証拠が見つからなかった」からといって「無実が完全に証明された」わけではないのと同じです。 <span class="pp">|</span></span>
+<span id="cb28-102"><a href="#cb28-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-103"><a href="#cb28-103" aria-hidden="true" tabindex="-1"></a>::: {.callout-warning}</span>
+<span id="cb28-104"><a href="#cb28-104" aria-hidden="true" tabindex="-1"></a><span class="fu">### ⚠️ 条件付き確率の取り違え（検察官の誤謬）</span></span>
+<span id="cb28-105"><a href="#cb28-105" aria-hidden="true" tabindex="-1"></a>「容疑者が無実（帰無仮説）なら、犯行現場に指紋が一致する確率は $0.001$ だ（P値）」からといって、</span>
+<span id="cb28-106"><a href="#cb28-106" aria-hidden="true" tabindex="-1"></a>「容疑者が無実である確率が $0.001$（$0.1\%$）である」と結論づけるのは数学的誤りです。</span>
+<span id="cb28-107"><a href="#cb28-107" aria-hidden="true" tabindex="-1"></a>P値は**「前提（$H_0$）のもとでのデータの珍しさ」**であり、**「前提そのものの確かさ」**ではありません。</span>
+<span id="cb28-108"><a href="#cb28-108" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb28-109"><a href="#cb28-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-110"><a href="#cb28-110" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb28-111"><a href="#cb28-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-112"><a href="#cb28-112" aria-hidden="true" tabindex="-1"></a><span class="fu">## 動的ビジュアライゼーション（gganimate による直感理解）</span></span>
+<span id="cb28-113"><a href="#cb28-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-114"><a href="#cb28-114" aria-hidden="true" tabindex="-1"></a>検定統計量（$z$ や $t$）が中心から離れるにつれて、P値がどのように収縮し、判定が「有意差なし」から「統計的有意（Reject $H_0$）」へ変わるかをアニメーションで体感してみましょう。</span>
+<span id="cb28-115"><a href="#cb28-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-116"><a href="#cb28-116" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**左側【帰無仮説の確率分布】**: 統計量 $z$ が $0 \to 3$ へと離れるにつれ、両側の赤い裾野面積（P値）が急速に狭まっていきます。</span>
+<span id="cb28-117"><a href="#cb28-117" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**右側【P値の減少曲線】**: 統計量 $z$ と P値 の関係を描いた曲線です。赤い点が 有意水準 $\alpha = 0.05$（点線）を下回った瞬間に「統計的有意（Bam!）」と判定が切り替わります。</span>
+<span id="cb28-118"><a href="#cb28-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-119"><a href="#cb28-119" aria-hidden="true" tabindex="-1"></a><span class="al">![【P値の動的メカニズム】統計量の変化と両側P値の収縮アニメーション](p_value.gif)</span></span>
+<span id="cb28-120"><a href="#cb28-120" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-121"><a href="#cb28-121" aria-hidden="true" tabindex="-1"></a><span class="fu">#### アニメーションからわかる決定的なポイント</span></span>
+<span id="cb28-122"><a href="#cb28-122" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**P値は「赤色の面積」そのもの**:</span>
+<span id="cb28-123"><a href="#cb28-123" aria-hidden="true" tabindex="-1"></a>   左側の正規分布で、観測値より外側にある赤い領域の合計が、右側プロットの縦軸（P値）と完全に一致しています。</span>
+<span id="cb28-124"><a href="#cb28-124" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**中心付近（$z \approx 0$）**:</span>
+<span id="cb28-125"><a href="#cb28-125" aria-hidden="true" tabindex="-1"></a>   データが平均近くにあるときは $P \approx 1.0$ であり、「偶然で普通に起こる範囲」です。</span>
+<span id="cb28-126"><a href="#cb28-126" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**境界線（$z \approx 1.96$）の突破**:</span>
+<span id="cb28-127"><a href="#cb28-127" aria-hidden="true" tabindex="-1"></a>   $z$ が $1.96$ を超えると赤い面積が $5\%$（$0.05$）未満となり、「偶然とは考えにくい」として帰無仮説を棄却します。</span>
+<span id="cb28-128"><a href="#cb28-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-129"><a href="#cb28-129" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb28-130"><a href="#cb28-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-131"><a href="#cb28-131" aria-hidden="true" tabindex="-1"></a><span class="fu">## 具体例 1：イカサマコインの検証（離散型：二項検定）</span></span>
+<span id="cb28-132"><a href="#cb28-132" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-133"><a href="#cb28-133" aria-hidden="true" tabindex="-1"></a>まずは身近なコイン投げで直感をつかみましょう。</span>
+<span id="cb28-134"><a href="#cb28-134" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-135"><a href="#cb28-135" aria-hidden="true" tabindex="-1"></a>友人が「このコインは表がよく出る特別なコインだ」と言い、**10回投げて8回表**が出ました。</span>
+<span id="cb28-136"><a href="#cb28-136" aria-hidden="true" tabindex="-1"></a>このコインは本当にイカサマ（表が出やすい）なのでしょうか？</span>
+<span id="cb28-137"><a href="#cb28-137" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-138"><a href="#cb28-138" aria-hidden="true" tabindex="-1"></a><span class="fu">### 1. 仮説の設定</span></span>
+<span id="cb28-139"><a href="#cb28-139" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**帰無仮説 $H_0$**: コインは公平である（表が出る確率 $p = 0.5$）</span>
+<span id="cb28-140"><a href="#cb28-140" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**対立仮説 $H_1$**: コインは表が出やすい（片側検定: $p &gt; 0.5$）</span>
+<span id="cb28-141"><a href="#cb28-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-142"><a href="#cb28-142" aria-hidden="true" tabindex="-1"></a><span class="fu">### 2. 公平なコインを10回投げたときの確率分布（Rコード）</span></span>
+<span id="cb28-143"><a href="#cb28-143" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-144"><a href="#cb28-144" aria-hidden="true" tabindex="-1"></a><span class="in">```{r coin-plot}</span></span>
+<span id="cb28-145"><a href="#cb28-145" aria-hidden="true" tabindex="-1"></a><span class="co"># 10回投げて表が出る回数 k (0〜10)</span></span>
+<span id="cb28-146"><a href="#cb28-146" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb28-147"><a href="#cb28-147" aria-hidden="true" tabindex="-1"></a>p_null <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
+<span id="cb28-148"><a href="#cb28-148" aria-hidden="true" tabindex="-1"></a>k_vals <span class="ot">&lt;-</span> <span class="dv">0</span><span class="sc">:</span>n</span>
+<span id="cb28-149"><a href="#cb28-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-150"><a href="#cb28-150" aria-hidden="true" tabindex="-1"></a><span class="co"># 各回数の確率を計算</span></span>
+<span id="cb28-151"><a href="#cb28-151" aria-hidden="true" tabindex="-1"></a>df_coin <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb28-152"><a href="#cb28-152" aria-hidden="true" tabindex="-1"></a>  <span class="at">k =</span> k_vals,</span>
+<span id="cb28-153"><a href="#cb28-153" aria-hidden="true" tabindex="-1"></a>  <span class="at">prob =</span> <span class="fu">dbinom</span>(k_vals, <span class="at">size =</span> n, <span class="at">prob =</span> p_null)</span>
+<span id="cb28-154"><a href="#cb28-154" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb28-155"><a href="#cb28-155" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb28-156"><a href="#cb28-156" aria-hidden="true" tabindex="-1"></a>    <span class="at">category =</span> <span class="fu">case_when</span>(</span>
+<span id="cb28-157"><a href="#cb28-157" aria-hidden="true" tabindex="-1"></a>      k <span class="sc">&gt;=</span> <span class="dv">8</span> <span class="sc">~</span> <span class="st">"観測値 (8回) 以上 [P値の領域]"</span>,</span>
+<span id="cb28-158"><a href="#cb28-158" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span>   <span class="sc">~</span> <span class="st">"帰無仮説で想定される通常の範囲"</span></span>
+<span id="cb28-159"><a href="#cb28-159" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb28-160"><a href="#cb28-160" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb28-161"><a href="#cb28-161" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-162"><a href="#cb28-162" aria-hidden="true" tabindex="-1"></a><span class="co"># プロット作成</span></span>
+<span id="cb28-163"><a href="#cb28-163" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df_coin, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">factor</span>(k), <span class="at">y =</span> prob, <span class="at">fill =</span> category)) <span class="sc">+</span></span>
+<span id="cb28-164"><a href="#cb28-164" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">width =</span> <span class="fl">0.7</span>, <span class="at">color =</span> <span class="st">"#002366"</span>, <span class="at">alpha =</span> <span class="fl">0.85</span>) <span class="sc">+</span></span>
+<span id="cb28-165"><a href="#cb28-165" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">sprintf</span>(<span class="st">"%.3f"</span>, prob)), <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">size =</span> <span class="fl">3.5</span>, <span class="at">family =</span> <span class="st">"Hiragino Sans"</span>) <span class="sc">+</span></span>
+<span id="cb28-166"><a href="#cb28-166" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(</span>
+<span id="cb28-167"><a href="#cb28-167" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(</span>
+<span id="cb28-168"><a href="#cb28-168" aria-hidden="true" tabindex="-1"></a>      <span class="st">"観測値 (8回) 以上 [P値の領域]"</span> <span class="ot">=</span> <span class="st">"#e74c3c"</span>,</span>
+<span id="cb28-169"><a href="#cb28-169" aria-hidden="true" tabindex="-1"></a>      <span class="st">"帰無仮説で想定される通常の範囲"</span> <span class="ot">=</span> <span class="st">"#3498db"</span></span>
+<span id="cb28-170"><a href="#cb28-170" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb28-171"><a href="#cb28-171" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb28-172"><a href="#cb28-172" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">percent_format</span>(<span class="at">accuracy =</span> <span class="dv">1</span>), <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.30</span>)) <span class="sc">+</span></span>
+<span id="cb28-173"><a href="#cb28-173" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb28-174"><a href="#cb28-174" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"公平なコイン（p = 0.5）を10回投げたときの表の回数分布"</span>,</span>
+<span id="cb28-175"><a href="#cb28-175" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"赤色の棒の合計が「8回以上表が出る確率（片側P値）」を表す"</span>,</span>
+<span id="cb28-176"><a href="#cb28-176" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"表が出た回数 (k)"</span>,</span>
+<span id="cb28-177"><a href="#cb28-177" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"発生確率"</span>,</span>
+<span id="cb28-178"><a href="#cb28-178" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">""</span></span>
+<span id="cb28-179"><a href="#cb28-179" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb28-180"><a href="#cb28-180" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb28-181"><a href="#cb28-181" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-182"><a href="#cb28-182" aria-hidden="true" tabindex="-1"></a><span class="fu">### 3. P値の計算</span></span>
+<span id="cb28-183"><a href="#cb28-183" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-184"><a href="#cb28-184" aria-hidden="true" tabindex="-1"></a>表が8回以上（8回、9回、10回）出る確率の合計を計算します。</span>
+<span id="cb28-185"><a href="#cb28-185" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-186"><a href="#cb28-186" aria-hidden="true" tabindex="-1"></a><span class="in">```{r coin-calc}</span></span>
+<span id="cb28-187"><a href="#cb28-187" aria-hidden="true" tabindex="-1"></a><span class="co"># 表が8回、9回、10回出る確率</span></span>
+<span id="cb28-188"><a href="#cb28-188" aria-hidden="true" tabindex="-1"></a>prob_8  <span class="ot">&lt;-</span> <span class="fu">dbinom</span>(<span class="dv">8</span>, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">prob =</span> <span class="fl">0.5</span>)</span>
+<span id="cb28-189"><a href="#cb28-189" aria-hidden="true" tabindex="-1"></a>prob_9  <span class="ot">&lt;-</span> <span class="fu">dbinom</span>(<span class="dv">9</span>, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">prob =</span> <span class="fl">0.5</span>)</span>
+<span id="cb28-190"><a href="#cb28-190" aria-hidden="true" tabindex="-1"></a>prob_10 <span class="ot">&lt;-</span> <span class="fu">dbinom</span>(<span class="dv">10</span>, <span class="at">size =</span> <span class="dv">10</span>, <span class="at">prob =</span> <span class="fl">0.5</span>)</span>
+<span id="cb28-191"><a href="#cb28-191" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-192"><a href="#cb28-192" aria-hidden="true" tabindex="-1"></a><span class="co"># 合計（片側P値）</span></span>
+<span id="cb28-193"><a href="#cb28-193" aria-hidden="true" tabindex="-1"></a>p_val_onesided <span class="ot">&lt;-</span> prob_8 <span class="sc">+</span> prob_9 <span class="sc">+</span> prob_10</span>
+<span id="cb28-194"><a href="#cb28-194" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-195"><a href="#cb28-195" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"P(X = 8)  = %.4f (約 %.2f%%)</span><span class="sc">\n</span><span class="st">"</span>, prob_8, prob_8 <span class="sc">*</span> <span class="dv">100</span>))</span>
+<span id="cb28-196"><a href="#cb28-196" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"P(X = 9)  = %.4f (約 %.2f%%)</span><span class="sc">\n</span><span class="st">"</span>, prob_9, prob_9 <span class="sc">*</span> <span class="dv">100</span>))</span>
+<span id="cb28-197"><a href="#cb28-197" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"P(X = 10) = %.4f (約 %.2f%%)</span><span class="sc">\n</span><span class="st">"</span>, prob_10, prob_10 <span class="sc">*</span> <span class="dv">100</span>))</span>
+<span id="cb28-198"><a href="#cb28-198" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"----------------------------------------</span><span class="sc">\n</span><span class="st">"</span>))</span>
+<span id="cb28-199"><a href="#cb28-199" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"片側 P値 (8回以上) = %.4f (約 %.2f%%)</span><span class="sc">\n</span><span class="st">"</span>, p_val_onesided, p_val_onesided <span class="sc">*</span> <span class="dv">100</span>))</span>
+<span id="cb28-200"><a href="#cb28-200" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-201"><a href="#cb28-201" aria-hidden="true" tabindex="-1"></a><span class="co"># binom.test() 関数による検定</span></span>
+<span id="cb28-202"><a href="#cb28-202" aria-hidden="true" tabindex="-1"></a>binom_res <span class="ot">&lt;-</span> <span class="fu">binom.test</span>(<span class="at">x =</span> <span class="dv">8</span>, <span class="at">n =</span> <span class="dv">10</span>, <span class="at">p =</span> <span class="fl">0.5</span>, <span class="at">alternative =</span> <span class="st">"greater"</span>)</span>
+<span id="cb28-203"><a href="#cb28-203" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"binom.test() の片側 P値: %.4f</span><span class="sc">\n</span><span class="st">"</span>, binom_res<span class="sc">$</span>p.value))</span>
+<span id="cb28-204"><a href="#cb28-204" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb28-205"><a href="#cb28-205" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-206"><a href="#cb28-206" aria-hidden="true" tabindex="-1"></a>::: {.callout-note}</span>
+<span id="cb28-207"><a href="#cb28-207" aria-hidden="true" tabindex="-1"></a><span class="fu">### 💡 この結果をどう解釈するか？</span></span>
+<span id="cb28-208"><a href="#cb28-208" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>公平なコインであっても、10回投げれば**約 5.47% の確率でたまたま8回以上表が出る**ことがあります。</span>
+<span id="cb28-209"><a href="#cb28-209" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>もし慣例的な基準（有意水準 $\alpha = 0.05 = 5\%$）を採用するならば、$0.0547 &gt; 0.05$ であるため、**「偶然でも起こりうる範囲内であり、イカサマとまでは断定できない」**という結論になります。</span>
+<span id="cb28-210"><a href="#cb28-210" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb28-211"><a href="#cb28-211" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-212"><a href="#cb28-212" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb28-213"><a href="#cb28-213" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-214"><a href="#cb28-214" aria-hidden="true" tabindex="-1"></a><span class="fu">## 具体例 2：新薬の臨床試験（連続型：2標本 t検定）</span></span>
+<span id="cb28-215"><a href="#cb28-215" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-216"><a href="#cb28-216" aria-hidden="true" tabindex="-1"></a>次に、実務で最も頻出する「2つのグループの平均値の差」を検証する **2標本 t検定（Student's t-test）** を見てみましょう。</span>
+<span id="cb28-217"><a href="#cb28-217" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-218"><a href="#cb28-218" aria-hidden="true" tabindex="-1"></a><span class="fu">### シナリオ</span></span>
+<span id="cb28-219"><a href="#cb28-219" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>新しい降圧薬（グループA: 30名）と プラセボ（偽薬、グループB: 30名）の血圧低下量を測定。</span>
+<span id="cb28-220"><a href="#cb28-220" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>グループAの平均低下量: $12.4 \text{ mmHg}$</span>
+<span id="cb28-221"><a href="#cb28-221" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>グループBの平均低下量: $8.1 \text{ mmHg}$</span>
+<span id="cb28-222"><a href="#cb28-222" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>見かけ上、$4.3 \text{ mmHg}$ の差があります。これは薬の真の効果でしょうか？それとも単なる患者の個体差（偶然）でしょうか？</span>
+<span id="cb28-223"><a href="#cb28-223" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-224"><a href="#cb28-224" aria-hidden="true" tabindex="-1"></a><span class="in">```{r ttest-sim}</span></span>
+<span id="cb28-225"><a href="#cb28-225" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb28-226"><a href="#cb28-226" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-227"><a href="#cb28-227" aria-hidden="true" tabindex="-1"></a><span class="co"># 模擬データの生成</span></span>
+<span id="cb28-228"><a href="#cb28-228" aria-hidden="true" tabindex="-1"></a>n_group <span class="ot">&lt;-</span> <span class="dv">30</span></span>
+<span id="cb28-229"><a href="#cb28-229" aria-hidden="true" tabindex="-1"></a>group_a <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n_group, <span class="at">mean =</span> <span class="fl">12.4</span>, <span class="at">sd =</span> <span class="fl">6.0</span>) <span class="co"># 新薬群</span></span>
+<span id="cb28-230"><a href="#cb28-230" aria-hidden="true" tabindex="-1"></a>group_b <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n_group, <span class="at">mean =</span> <span class="fl">8.1</span>,  <span class="at">sd =</span> <span class="fl">6.0</span>) <span class="co"># プラセボ群</span></span>
+<span id="cb28-231"><a href="#cb28-231" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-232"><a href="#cb28-232" aria-hidden="true" tabindex="-1"></a>df_patients <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb28-233"><a href="#cb28-233" aria-hidden="true" tabindex="-1"></a>  <span class="at">group =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"新薬群 (Drug A)"</span>, <span class="st">"プラセボ群 (Placebo B)"</span>), <span class="at">each =</span> n_group),</span>
+<span id="cb28-234"><a href="#cb28-234" aria-hidden="true" tabindex="-1"></a>  <span class="at">reduction =</span> <span class="fu">c</span>(group_a, group_b)</span>
+<span id="cb28-235"><a href="#cb28-235" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb28-236"><a href="#cb28-236" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-237"><a href="#cb28-237" aria-hidden="true" tabindex="-1"></a><span class="co"># 2群の要約統計量</span></span>
+<span id="cb28-238"><a href="#cb28-238" aria-hidden="true" tabindex="-1"></a>df_patients <span class="sc">%&gt;%</span></span>
+<span id="cb28-239"><a href="#cb28-239" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(group) <span class="sc">%&gt;%</span></span>
+<span id="cb28-240"><a href="#cb28-240" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb28-241"><a href="#cb28-241" aria-hidden="true" tabindex="-1"></a>    人数 <span class="ot">=</span> <span class="fu">n</span>(),</span>
+<span id="cb28-242"><a href="#cb28-242" aria-hidden="true" tabindex="-1"></a>    標本平均 <span class="ot">=</span> <span class="fu">mean</span>(reduction),</span>
+<span id="cb28-243"><a href="#cb28-243" aria-hidden="true" tabindex="-1"></a>    標本標準偏差 <span class="ot">=</span> <span class="fu">sd</span>(reduction)</span>
+<span id="cb28-244"><a href="#cb28-244" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb28-245"><a href="#cb28-245" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb28-246"><a href="#cb28-246" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-247"><a href="#cb28-247" aria-hidden="true" tabindex="-1"></a><span class="fu">### t検定の実行</span></span>
+<span id="cb28-248"><a href="#cb28-248" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-249"><a href="#cb28-249" aria-hidden="true" tabindex="-1"></a><span class="in">```{r ttest-run}</span></span>
+<span id="cb28-250"><a href="#cb28-250" aria-hidden="true" tabindex="-1"></a><span class="co"># Student の 2標本 t検定 (等分散を仮定)</span></span>
+<span id="cb28-251"><a href="#cb28-251" aria-hidden="true" tabindex="-1"></a>t_res <span class="ot">&lt;-</span> <span class="fu">t.test</span>(group_a, group_b, <span class="at">var.equal =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb28-252"><a href="#cb28-252" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(t_res)</span>
+<span id="cb28-253"><a href="#cb28-253" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-254"><a href="#cb28-254" aria-hidden="true" tabindex="-1"></a>obs_t <span class="ot">&lt;-</span> t_res<span class="sc">$</span>statistic <span class="co"># 観測された t 値</span></span>
+<span id="cb28-255"><a href="#cb28-255" aria-hidden="true" tabindex="-1"></a>df_val <span class="ot">&lt;-</span> t_res<span class="sc">$</span>parameter <span class="co"># 自由度 (30 + 30 - 2 = 58)</span></span>
+<span id="cb28-256"><a href="#cb28-256" aria-hidden="true" tabindex="-1"></a>p_value <span class="ot">&lt;-</span> t_res<span class="sc">$</span>p.value  <span class="co"># P値</span></span>
+<span id="cb28-257"><a href="#cb28-257" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb28-258"><a href="#cb28-258" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-259"><a href="#cb28-259" aria-hidden="true" tabindex="-1"></a><span class="fu">### t分布上で「P値」の領域を可視化する</span></span>
+<span id="cb28-260"><a href="#cb28-260" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-261"><a href="#cb28-261" aria-hidden="true" tabindex="-1"></a>t検定における P値 は、**「差がない（$\mu_A - \mu_B = 0$）としたときの t分布」**において、観測された t値 より外側の裾野の面積（両側検定なら左右両方）です。</span>
+<span id="cb28-262"><a href="#cb28-262" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-263"><a href="#cb28-263" aria-hidden="true" tabindex="-1"></a><span class="in">```{r t-distribution-plot}</span></span>
+<span id="cb28-264"><a href="#cb28-264" aria-hidden="true" tabindex="-1"></a><span class="co"># t分布の曲線データ作成</span></span>
+<span id="cb28-265"><a href="#cb28-265" aria-hidden="true" tabindex="-1"></a>x_vals <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="dv">4</span>, <span class="dv">4</span>, <span class="at">length.out =</span> <span class="dv">1000</span>)</span>
+<span id="cb28-266"><a href="#cb28-266" aria-hidden="true" tabindex="-1"></a>df_tdist <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb28-267"><a href="#cb28-267" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> x_vals,</span>
+<span id="cb28-268"><a href="#cb28-268" aria-hidden="true" tabindex="-1"></a>  <span class="at">density =</span> <span class="fu">dt</span>(x_vals, <span class="at">df =</span> df_val)</span>
+<span id="cb28-269"><a href="#cb28-269" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb28-270"><a href="#cb28-270" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-271"><a href="#cb28-271" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df_tdist, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> density)) <span class="sc">+</span></span>
+<span id="cb28-272"><a href="#cb28-272" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 全体の t 分布曲線</span></span>
+<span id="cb28-273"><a href="#cb28-273" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">"#002366"</span>, <span class="at">linewidth =</span> <span class="fl">1.2</span>) <span class="sc">+</span></span>
+<span id="cb28-274"><a href="#cb28-274" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-275"><a href="#cb28-275" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 右側の棄却・P値領域 (t &gt;= |obs_t|)</span></span>
+<span id="cb28-276"><a href="#cb28-276" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_area</span>(</span>
+<span id="cb28-277"><a href="#cb28-277" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">filter</span>(df_tdist, x <span class="sc">&gt;=</span> <span class="fu">abs</span>(obs_t)),</span>
+<span id="cb28-278"><a href="#cb28-278" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"#e74c3c"</span>, <span class="at">alpha =</span> <span class="fl">0.7</span></span>
+<span id="cb28-279"><a href="#cb28-279" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb28-280"><a href="#cb28-280" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 左側の棄却・P値領域 (t &lt;= -|obs_t|)</span></span>
+<span id="cb28-281"><a href="#cb28-281" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_area</span>(</span>
+<span id="cb28-282"><a href="#cb28-282" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">filter</span>(df_tdist, x <span class="sc">&lt;=</span> <span class="sc">-</span><span class="fu">abs</span>(obs_t)),</span>
+<span id="cb28-283"><a href="#cb28-283" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"#e74c3c"</span>, <span class="at">alpha =</span> <span class="fl">0.7</span></span>
+<span id="cb28-284"><a href="#cb28-284" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb28-285"><a href="#cb28-285" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-286"><a href="#cb28-286" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 観測された t 値の縦線</span></span>
+<span id="cb28-287"><a href="#cb28-287" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fu">abs</span>(obs_t), <span class="fu">abs</span>(obs_t)), <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"#e74c3c"</span>, <span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb28-288"><a href="#cb28-288" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-289"><a href="#cb28-289" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 注釈アノテーション</span></span>
+<span id="cb28-290"><a href="#cb28-290" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb28-291"><a href="#cb28-291" aria-hidden="true" tabindex="-1"></a>    <span class="st">"text"</span>, <span class="at">x =</span> <span class="fu">abs</span>(obs_t) <span class="sc">+</span> <span class="fl">0.4</span>, <span class="at">y =</span> <span class="fl">0.15</span>,</span>
+<span id="cb28-292"><a href="#cb28-292" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="fu">sprintf</span>(<span class="st">"観測された t値 = +%.2f</span><span class="sc">\n</span><span class="st">(右側の面積 = P/2)"</span>, obs_t),</span>
+<span id="cb28-293"><a href="#cb28-293" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"#e74c3c"</span>, <span class="at">fontface =</span> <span class="st">"bold"</span>, <span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">family =</span> <span class="st">"Hiragino Sans"</span></span>
+<span id="cb28-294"><a href="#cb28-294" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb28-295"><a href="#cb28-295" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb28-296"><a href="#cb28-296" aria-hidden="true" tabindex="-1"></a>    <span class="st">"text"</span>, <span class="at">x =</span> <span class="sc">-</span><span class="fu">abs</span>(obs_t) <span class="sc">-</span> <span class="fl">0.4</span>, <span class="at">y =</span> <span class="fl">0.15</span>,</span>
+<span id="cb28-297"><a href="#cb28-297" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="fu">sprintf</span>(<span class="st">"対称な t値 = -%.2f</span><span class="sc">\n</span><span class="st">(左側の面積 = P/2)"</span>, obs_t),</span>
+<span id="cb28-298"><a href="#cb28-298" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"#e74c3c"</span>, <span class="at">fontface =</span> <span class="st">"bold"</span>, <span class="at">hjust =</span> <span class="dv">1</span>, <span class="at">family =</span> <span class="st">"Hiragino Sans"</span></span>
+<span id="cb28-299"><a href="#cb28-299" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb28-300"><a href="#cb28-300" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb28-301"><a href="#cb28-301" aria-hidden="true" tabindex="-1"></a>    <span class="st">"label"</span>, <span class="at">x =</span> <span class="dv">0</span>, <span class="at">y =</span> <span class="fl">0.25</span>,</span>
+<span id="cb28-302"><a href="#cb28-302" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="fu">sprintf</span>(<span class="st">"両側の赤色面積の合計 (P値) = %.4f</span><span class="sc">\n</span><span class="st">(偶然これほど離れる確率: 約 %.2f%%)"</span>, p_value, p_value <span class="sc">*</span> <span class="dv">100</span>),</span>
+<span id="cb28-303"><a href="#cb28-303" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"#fdf6e3"</span>, <span class="at">color =</span> <span class="st">"#002366"</span>, <span class="at">fontface =</span> <span class="st">"bold"</span>, <span class="at">family =</span> <span class="st">"Hiragino Sans"</span></span>
+<span id="cb28-304"><a href="#cb28-304" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb28-305"><a href="#cb28-305" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb28-306"><a href="#cb28-306" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="fu">sprintf</span>(<span class="st">"帰無仮説のもとでの t分布 (自由度 df = %d) と P値の可視化"</span>, <span class="fu">as.integer</span>(df_val)),</span>
+<span id="cb28-307"><a href="#cb28-307" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"赤色に塗られた両側の裾野の面積の合計が、計算された P値 です"</span>,</span>
+<span id="cb28-308"><a href="#cb28-308" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"t 値 (平均値の差を標準誤差で割った指標)"</span>,</span>
+<span id="cb28-309"><a href="#cb28-309" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"確率密度"</span></span>
+<span id="cb28-310"><a href="#cb28-310" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb28-311"><a href="#cb28-311" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb28-312"><a href="#cb28-312" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-313"><a href="#cb28-313" aria-hidden="true" tabindex="-1"></a>このグラフから直感的に理解できます。</span>
+<span id="cb28-314"><a href="#cb28-314" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>山の中央（$t = 0$ 付近）は、「両グループに差がない世界」で普通に起きる結果です。</span>
+<span id="cb28-315"><a href="#cb28-315" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>観測された $t \approx <span class="in">`r round(obs_t, 2)`</span>$ は山の中央から大きく離れており、両端の赤い面積（P値）はわずか **約 `r round(p_value * 100, 2)`%** しかありません。</span>
+<span id="cb28-316"><a href="#cb28-316" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>したがって、「偶然でこの差が出た」と考えるのは非常に不自然であり、新薬には確かな効果があると判断（帰無仮説を棄却）します。</span>
+<span id="cb28-317"><a href="#cb28-317" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-318"><a href="#cb28-318" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb28-319"><a href="#cb28-319" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-320"><a href="#cb28-320" aria-hidden="true" tabindex="-1"></a><span class="fu">## 具体例 3：モンテカルロ・シミュレーションで体感する「差がない世界」</span></span>
+<span id="cb28-321"><a href="#cb28-321" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-322"><a href="#cb28-322" aria-hidden="true" tabindex="-1"></a>数式や t分布 の定義が抽象的に感じる方のために、**「差がない世界」をコンピュータの中で 10,000 回実際に創り出すシミュレーション**を行ってみましょう！</span>
+<span id="cb28-323"><a href="#cb28-323" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-324"><a href="#cb28-324" aria-hidden="true" tabindex="-1"></a><span class="fu">### シミュレーションの手順</span></span>
+<span id="cb28-325"><a href="#cb28-325" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**「完全に差がない世界」のデータ**：全員に同じ平均値（効果なし）の薬を与えたと仮定し、乱数を 10,000 回生成します。</span>
+<span id="cb28-326"><a href="#cb28-326" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>毎回、2グループの平均の差を計算して記録します。</span>
+<span id="cb28-327"><a href="#cb28-327" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>10,000 回中、手元で観測された差（例: $+3.5\text{ mmHg}$ 以上、または $-3.5\text{ mmHg}$ 以下）が何回発生するか数えます。</span>
+<span id="cb28-328"><a href="#cb28-328" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-329"><a href="#cb28-329" aria-hidden="true" tabindex="-1"></a><span class="in">```{r monte-carlo}</span></span>
+<span id="cb28-330"><a href="#cb28-330" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb28-331"><a href="#cb28-331" aria-hidden="true" tabindex="-1"></a>n_sims <span class="ot">&lt;-</span> <span class="dv">10000</span></span>
+<span id="cb28-332"><a href="#cb28-332" aria-hidden="true" tabindex="-1"></a>n_per_group <span class="ot">&lt;-</span> <span class="dv">30</span></span>
+<span id="cb28-333"><a href="#cb28-333" aria-hidden="true" tabindex="-1"></a>observed_diff <span class="ot">&lt;-</span> <span class="fl">3.5</span> <span class="co"># 手元で観測された平均の差 (mmHg)</span></span>
+<span id="cb28-334"><a href="#cb28-334" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-335"><a href="#cb28-335" aria-hidden="true" tabindex="-1"></a><span class="co"># 差がない世界 (平均 10, 標準偏差 6 で全員同じ)</span></span>
+<span id="cb28-336"><a href="#cb28-336" aria-hidden="true" tabindex="-1"></a>simulated_diffs <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n_sims)</span>
+<span id="cb28-337"><a href="#cb28-337" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-338"><a href="#cb28-338" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_sims) {</span>
+<span id="cb28-339"><a href="#cb28-339" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 差がない世界から 30名ずつランダム抽出</span></span>
+<span id="cb28-340"><a href="#cb28-340" aria-hidden="true" tabindex="-1"></a>  sample_1 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n_per_group, <span class="at">mean =</span> <span class="dv">10</span>, <span class="at">sd =</span> <span class="dv">6</span>)</span>
+<span id="cb28-341"><a href="#cb28-341" aria-hidden="true" tabindex="-1"></a>  sample_2 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n_per_group, <span class="at">mean =</span> <span class="dv">10</span>, <span class="at">sd =</span> <span class="dv">6</span>)</span>
+<span id="cb28-342"><a href="#cb28-342" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb28-343"><a href="#cb28-343" aria-hidden="true" tabindex="-1"></a>  <span class="co"># 2群の平均の差を記録</span></span>
+<span id="cb28-344"><a href="#cb28-344" aria-hidden="true" tabindex="-1"></a>  simulated_diffs[i] <span class="ot">&lt;-</span> <span class="fu">mean</span>(sample_1) <span class="sc">-</span> <span class="fu">mean</span>(sample_2)</span>
+<span id="cb28-345"><a href="#cb28-345" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb28-346"><a href="#cb28-346" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-347"><a href="#cb28-347" aria-hidden="true" tabindex="-1"></a><span class="co"># 観測された差 (|diff| &gt;= 3.5) 以上に極端だった回数をカウント</span></span>
+<span id="cb28-348"><a href="#cb28-348" aria-hidden="true" tabindex="-1"></a>extreme_count <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">abs</span>(simulated_diffs) <span class="sc">&gt;=</span> observed_diff)</span>
+<span id="cb28-349"><a href="#cb28-349" aria-hidden="true" tabindex="-1"></a>simulated_p_value <span class="ot">&lt;-</span> extreme_count <span class="sc">/</span> n_sims</span>
+<span id="cb28-350"><a href="#cb28-350" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-351"><a href="#cb28-351" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"シミュレーション総回数: %d 回</span><span class="sc">\n</span><span class="st">"</span>, n_sims))</span>
+<span id="cb28-352"><a href="#cb28-352" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"差がない世界で偶然 |差| &gt;= %.1f となった回数: %d 回</span><span class="sc">\n</span><span class="st">"</span>, observed_diff, extreme_count))</span>
+<span id="cb28-353"><a href="#cb28-353" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">"シミュレーションによる P値: %.4f (約 %.2f%%)</span><span class="sc">\n</span><span class="st">"</span>, simulated_p_value, simulated_p_value <span class="sc">*</span> <span class="dv">100</span>))</span>
+<span id="cb28-354"><a href="#cb28-354" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb28-355"><a href="#cb28-355" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-356"><a href="#cb28-356" aria-hidden="true" tabindex="-1"></a><span class="fu">### シミュレーション結果のヒストグラム</span></span>
+<span id="cb28-357"><a href="#cb28-357" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-358"><a href="#cb28-358" aria-hidden="true" tabindex="-1"></a><span class="in">```{r monte-carlo-plot}</span></span>
+<span id="cb28-359"><a href="#cb28-359" aria-hidden="true" tabindex="-1"></a>df_sim <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">diff =</span> simulated_diffs) <span class="sc">%&gt;%</span></span>
+<span id="cb28-360"><a href="#cb28-360" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">is_extreme =</span> <span class="fu">abs</span>(diff) <span class="sc">&gt;=</span> observed_diff)</span>
+<span id="cb28-361"><a href="#cb28-361" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-362"><a href="#cb28-362" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df_sim, <span class="fu">aes</span>(<span class="at">x =</span> diff, <span class="at">fill =</span> is_extreme)) <span class="sc">+</span></span>
+<span id="cb28-363"><a href="#cb28-363" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="fl">0.3</span>, <span class="at">color =</span> <span class="st">"#ffffff"</span>, <span class="at">alpha =</span> <span class="fl">0.85</span>) <span class="sc">+</span></span>
+<span id="cb28-364"><a href="#cb28-364" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">c</span>(<span class="sc">-</span>observed_diff, observed_diff), <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">color =</span> <span class="st">"#e74c3c"</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb28-365"><a href="#cb28-365" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(</span>
+<span id="cb28-366"><a href="#cb28-366" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"FALSE"</span> <span class="ot">=</span> <span class="st">"#3498db"</span>, <span class="st">"TRUE"</span> <span class="ot">=</span> <span class="st">"#e74c3c"</span>),</span>
+<span id="cb28-367"><a href="#cb28-367" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"偶然の範囲内の差"</span>, <span class="fu">sprintf</span>(<span class="st">"|差| &gt;= %.1f (極端な結果)"</span>, observed_diff))</span>
+<span id="cb28-368"><a href="#cb28-368" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb28-369"><a href="#cb28-369" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(</span>
+<span id="cb28-370"><a href="#cb28-370" aria-hidden="true" tabindex="-1"></a>    <span class="st">"label"</span>, <span class="at">x =</span> observed_diff <span class="sc">+</span> <span class="fl">0.5</span>, <span class="at">y =</span> <span class="dv">600</span>,</span>
+<span id="cb28-371"><a href="#cb28-371" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="fu">sprintf</span>(<span class="st">"観測された差 = +%.1f</span><span class="sc">\n</span><span class="st">この外側の割合が P値"</span>, observed_diff),</span>
+<span id="cb28-372"><a href="#cb28-372" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"#e74c3c"</span>, <span class="at">fontface =</span> <span class="st">"bold"</span>, <span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">family =</span> <span class="st">"Hiragino Sans"</span>, <span class="at">fill =</span> <span class="st">"#fdf6e3"</span></span>
+<span id="cb28-373"><a href="#cb28-373" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb28-374"><a href="#cb28-374" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb28-375"><a href="#cb28-375" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"「差がない世界」を10,000回シミュレーションしたときの平均値の差"</span>,</span>
+<span id="cb28-376"><a href="#cb28-376" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="fu">sprintf</span>(<span class="st">"赤色部分の割合 = %d / 10,000 = %.2f%% (これが P値 の正体！)"</span>, extreme_count, simulated_p_value <span class="sc">*</span> <span class="dv">100</span>),</span>
+<span id="cb28-377"><a href="#cb28-377" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"2群の平均値の差 (グループ1 - グループ2)"</span>,</span>
+<span id="cb28-378"><a href="#cb28-378" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"シミュレーションで発生した頻度 (回)"</span>,</span>
+<span id="cb28-379"><a href="#cb28-379" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">""</span></span>
+<span id="cb28-380"><a href="#cb28-380" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb28-381"><a href="#cb28-381" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb28-382"><a href="#cb28-382" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-383"><a href="#cb28-383" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip}</span>
+<span id="cb28-384"><a href="#cb28-384" aria-hidden="true" tabindex="-1"></a><span class="fu">### 🎯 これぞ P値 の本質！</span></span>
+<span id="cb28-385"><a href="#cb28-385" aria-hidden="true" tabindex="-1"></a>「P値」とは、難解な積分記号や分布表の向こう側にあるものではなく、**「差がない世界でサイコロを10,000回振ったとき、たまたまこれくらい極端な結果が出てしまう割合」**そのものです！</span>
+<span id="cb28-386"><a href="#cb28-386" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb28-387"><a href="#cb28-387" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-388"><a href="#cb28-388" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb28-389"><a href="#cb28-389" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-390"><a href="#cb28-390" aria-hidden="true" tabindex="-1"></a><span class="fu">## なぜ有意水準は「0.05」なのか？</span></span>
+<span id="cb28-391"><a href="#cb28-391" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-392"><a href="#cb28-392" aria-hidden="true" tabindex="-1"></a>歴史的に、近代統計学の父 **ロナルド・フィッシャー（Ronald Fisher）** が1925年の著書『研究者のための統計的方法』で「20回に1回（$5\% = 0.05$）起こる程度の珍しさを目安にしてはどうか」と例示したのが広まり、国際的な慣例となりました。</span>
+<span id="cb28-393"><a href="#cb28-393" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-394"><a href="#cb28-394" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**有意水準 $\alpha = 0.05$**: 「偶然で起こる確率が $5\%$ 未満なら、偶然とは考えにくく、効果があると判定しよう」</span>
+<span id="cb28-395"><a href="#cb28-395" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**第1種の過誤（Type I Error / 偽陽性）**: 「本当は何の差もないのに、たまたま $5\%$ のレアケースを引いて『効果あり』と誤判定してしまうリスク」がまさに $\alpha$ です。</span>
+<span id="cb28-396"><a href="#cb28-396" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-397"><a href="#cb28-397" aria-hidden="true" tabindex="-1"></a>::: {.callout-note}</span>
+<span id="cb28-398"><a href="#cb28-398" aria-hidden="true" tabindex="-1"></a><span class="fu">### 近年の統計学の動向：P値ハッキングへの警鐘</span></span>
+<span id="cb28-399"><a href="#cb28-399" aria-hidden="true" tabindex="-1"></a>アメリカ統計学会（ASA）は2016年に「P値に関する声明」を出し、**「$p &lt; 0.05$ かどうかという機械的な二者択一のみで研究の真偽を判断してはならない」**と強く警告しました。</span>
+<span id="cb28-400"><a href="#cb28-400" aria-hidden="true" tabindex="-1"></a>P値だけでなく、**効果量（Effect Size）**や**信頼区間（Confidence Interval）**を併せて報告することが強く推奨されています。</span>
+<span id="cb28-401"><a href="#cb28-401" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb28-402"><a href="#cb28-402" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-403"><a href="#cb28-403" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb28-404"><a href="#cb28-404" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-405"><a href="#cb28-405" aria-hidden="true" tabindex="-1"></a><span class="fu">## 理解度チェッククイズ（全3問）</span></span>
+<span id="cb28-406"><a href="#cb28-406" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-407"><a href="#cb28-407" aria-hidden="true" tabindex="-1"></a>理解を確実にするためのセルフチェックです。クリックして正解と解説を確認してください。</span>
+<span id="cb28-408"><a href="#cb28-408" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-409"><a href="#cb28-409" aria-hidden="true" tabindex="-1"></a>::: {.callout-caution collapse="true"}</span>
+<span id="cb28-410"><a href="#cb28-410" aria-hidden="true" tabindex="-1"></a><span class="fu">### ❓ 第1問：P値の定義</span></span>
+<span id="cb28-411"><a href="#cb28-411" aria-hidden="true" tabindex="-1"></a>新薬の臨床試験で「血圧降下効果あり、P値 = 0.03」という結果が得られました。この「0.03」の正しい意味は次のうちどれでしょう？</span>
+<span id="cb28-412"><a href="#cb28-412" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-413"><a href="#cb28-413" aria-hidden="true" tabindex="-1"></a>A. 新薬が効く確率が $97\%$ である。  </span>
+<span id="cb28-414"><a href="#cb28-414" aria-hidden="true" tabindex="-1"></a>B. 新薬に効果がない（偽薬と同じ）確率が $3\%$ である。  </span>
+<span id="cb28-415"><a href="#cb28-415" aria-hidden="true" tabindex="-1"></a>C. もし新薬に全く効果がないとしたら、今回のデータほど大きな差が偶然生じる確率が $3\%$ である。  </span>
+<span id="cb28-416"><a href="#cb28-416" aria-hidden="true" tabindex="-1"></a>D. 実験を100回繰り返したとき、3回は失敗することを意味する。  </span>
+<span id="cb28-417"><a href="#cb28-417" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-418"><a href="#cb28-418" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">details</span><span class="dt">&gt;</span></span>
+<span id="cb28-419"><a href="#cb28-419" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">summary</span><span class="dt">&gt;</span>👉 正解と解説を見る<span class="dt">&lt;/</span><span class="kw">summary</span><span class="dt">&gt;</span></span>
+<span id="cb28-420"><a href="#cb28-420" aria-hidden="true" tabindex="-1"></a>**正解: C**</span>
+<span id="cb28-421"><a href="#cb28-421" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-422"><a href="#cb28-422" aria-hidden="true" tabindex="-1"></a>**解説:**  </span>
+<span id="cb28-423"><a href="#cb28-423" aria-hidden="true" tabindex="-1"></a>P値は「帰無仮説（効果がない）が正しいと仮定したとき」に、観測データ以上の極端な結果が偶然生じる確率です。</span>
+<span id="cb28-424"><a href="#cb28-424" aria-hidden="true" tabindex="-1"></a>AやBは「仮説そのものが正しい確率」と混同しており、ベイズ統計学における事後確率でなければ語れません。</span>
+<span id="cb28-425"><a href="#cb28-425" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">details</span><span class="dt">&gt;</span></span>
+<span id="cb28-426"><a href="#cb28-426" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb28-427"><a href="#cb28-427" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-428"><a href="#cb28-428" aria-hidden="true" tabindex="-1"></a>::: {.callout-caution collapse="true"}</span>
+<span id="cb28-429"><a href="#cb28-429" aria-hidden="true" tabindex="-1"></a><span class="fu">### ❓ 第2問：サンプルサイズとP値</span></span>
+<span id="cb28-430"><a href="#cb28-430" aria-hidden="true" tabindex="-1"></a>あるウェブサイトのABテストで、ボタンの色を青から緑に変更したところ、購入率が $2.00\%$ から $2.01\%$ へわずか $0.01\%$ 上昇しました。しかし、アクセス数が1,000万人と膨大だったため、検定結果は $p = 0.0001$ となりました。どう解釈すべきでしょうか？</span>
+<span id="cb28-431"><a href="#cb28-431" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-432"><a href="#cb28-432" aria-hidden="true" tabindex="-1"></a>A. P値が極めて小さいので、ボタンの色を緑に変えると劇的な売上増加が見込める。  </span>
+<span id="cb28-433"><a href="#cb28-433" aria-hidden="true" tabindex="-1"></a>B. 統計的には「差がある（偶然ではない）」と確認できたが、効果の大きさ（$0.01\%$）が実務的に価値あるものかはビジネス上の判断が必要である。  </span>
+<span id="cb28-434"><a href="#cb28-434" aria-hidden="true" tabindex="-1"></a>C. P値が小さいのだから、売上への影響度も極めて大きいと断言できる。  </span>
+<span id="cb28-435"><a href="#cb28-435" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-436"><a href="#cb28-436" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">details</span><span class="dt">&gt;</span></span>
+<span id="cb28-437"><a href="#cb28-437" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">summary</span><span class="dt">&gt;</span>👉 正解と解説を見る<span class="dt">&lt;/</span><span class="kw">summary</span><span class="dt">&gt;</span></span>
+<span id="cb28-438"><a href="#cb28-438" aria-hidden="true" tabindex="-1"></a>**正解: B**</span>
+<span id="cb28-439"><a href="#cb28-439" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-440"><a href="#cb28-440" aria-hidden="true" tabindex="-1"></a>**解説:**  </span>
+<span id="cb28-441"><a href="#cb28-441" aria-hidden="true" tabindex="-1"></a>サンプルサイズ $N$ が非常に大きい場合、実質的にはどうでもいい微小な差であっても P値 は $0.0001$ など極小になります。「統計的に有意であること（Statistical Significance）」と「実質的に意味があること（Practical / Clinical Significance）」は全く別物です。</span>
+<span id="cb28-442"><a href="#cb28-442" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">details</span><span class="dt">&gt;</span></span>
+<span id="cb28-443"><a href="#cb28-443" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb28-444"><a href="#cb28-444" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-445"><a href="#cb28-445" aria-hidden="true" tabindex="-1"></a>::: {.callout-caution collapse="true"}</span>
+<span id="cb28-446"><a href="#cb28-446" aria-hidden="true" tabindex="-1"></a><span class="fu">### ❓ 第3問：p &gt; 0.05 だったときの結論</span></span>
+<span id="cb28-447"><a href="#cb28-447" aria-hidden="true" tabindex="-1"></a>新しい学習アプリの効果を検証したところ、$p = 0.18$ でした（有意水準 $\alpha = 0.05$）。このとき導くべき正しい結論はどれでしょう？</span>
+<span id="cb28-448"><a href="#cb28-448" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-449"><a href="#cb28-449" aria-hidden="true" tabindex="-1"></a>A. この学習アプリには効果が全くないことが科学的に証明された。  </span>
+<span id="cb28-450"><a href="#cb28-450" aria-hidden="true" tabindex="-1"></a>B. 従来の勉強法と学習アプリの効果は完全に同一である。  </span>
+<span id="cb28-451"><a href="#cb28-451" aria-hidden="true" tabindex="-1"></a>C. 今回の実験データからは、「アプリに効果がある」と主張するための十分な証拠が得られなかった（効果がないと断定することはできない）。  </span>
+<span id="cb28-452"><a href="#cb28-452" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-453"><a href="#cb28-453" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">details</span><span class="dt">&gt;</span></span>
+<span id="cb28-454"><a href="#cb28-454" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">summary</span><span class="dt">&gt;</span>👉 正解と解説を見る<span class="dt">&lt;/</span><span class="kw">summary</span><span class="dt">&gt;</span></span>
+<span id="cb28-455"><a href="#cb28-455" aria-hidden="true" tabindex="-1"></a>**正解: C**</span>
+<span id="cb28-456"><a href="#cb28-456" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-457"><a href="#cb28-457" aria-hidden="true" tabindex="-1"></a>**解説:**  </span>
+<span id="cb28-458"><a href="#cb28-458" aria-hidden="true" tabindex="-1"></a>帰無仮説が棄却できなかった場合（$p &gt; 0.05$）、「帰無仮説が正しい」と証明されたわけではありません。単に「サンプル数が足りなかった（検出力不足）」か「効果が小さかった」ために、偶然のバラツキと区別がつかなかっただけです。「証拠の不在は、不在の証拠にあらず（Absence of evidence is not evidence of absence）」という格言が有名です。</span>
+<span id="cb28-459"><a href="#cb28-459" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">details</span><span class="dt">&gt;</span></span>
+<span id="cb28-460"><a href="#cb28-460" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb28-461"><a href="#cb28-461" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-462"><a href="#cb28-462" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb28-463"><a href="#cb28-463" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-464"><a href="#cb28-464" aria-hidden="true" tabindex="-1"></a><span class="fu">## まとめ</span></span>
+<span id="cb28-465"><a href="#cb28-465" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-466"><a href="#cb28-466" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**P値の本質**:</span>
+<span id="cb28-467"><a href="#cb28-467" aria-hidden="true" tabindex="-1"></a>   「何の差もない世界（帰無仮説）」において、手元のデータ以上の極端な事象が偶然起きてしまう確率。</span>
+<span id="cb28-468"><a href="#cb28-468" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**直感イメージ**:</span>
+<span id="cb28-469"><a href="#cb28-469" aria-hidden="true" tabindex="-1"></a>   「偶然だと言い張るには、どれくらい苦しいか？」を示すバロメーター。P値が小さいほど「偶然とは考えにくい」ため、効果の存在を認める。</span>
+<span id="cb28-470"><a href="#cb28-470" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**忘れてはならない注意点**:</span>
+<span id="cb28-471"><a href="#cb28-471" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>P値は「仮説が正しい確率」ではない。</span>
+<span id="cb28-472"><a href="#cb28-472" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>P値は「効果の大きさ」ではない（サンプルサイズに左右される）。</span>
+<span id="cb28-473"><a href="#cb28-473" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>有意差が出なくても「差がないことが証明された」わけではない。</span>
+<span id="cb28-474"><a href="#cb28-474" aria-hidden="true" tabindex="-1"></a><span class="ss">   - </span>信頼区間や効果量とセットで評価することが現代統計学の鉄則！</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

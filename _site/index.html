@@ -178,11 +178,15 @@ window.Quarto = {
     <a class="dropdown-item" href="./topics/02_continuous_probability_zero/continuous_probability_zero_guide.html">
  <span class="dropdown-text">② 連続変数の確率ゼロ (P(X=x)=0)</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="./topics/04_p_value/p_value_guide.html">
+ <span class="dropdown-text">④ P値（p-value）の本質</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
     <a class="nav-link dropdown-toggle" href="#" id="nav-menu--1" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">📊 確率分布</span>
+ <span class="menu-text">📊 確率分布 &amp; モデル</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu--1">    
         <li>
@@ -262,7 +266,7 @@ window.Quarto = {
 <section id="収録教材一覧interactive-guides" class="level2" data-number="1">
 <h2 data-number="1" class="anchored" data-anchor-id="収録教材一覧interactive-guides"><span class="header-section-number">1</span> 📚 収録教材一覧（Interactive Guides）</h2>
 <div class="grid">
-<div class="g-col-12 g-col-md-4">
+<div class="g-col-12 g-col-md-6">
 <div class="portal-card">
 <p><img src="topics/01_probability_vs_likelihood/probability_vs_likelihood.gif" class="portal-card-img img-fluid"></p>
 <p><span class="portal-badge">Topic 01 ・ 基礎概念</span></p>
@@ -278,7 +282,7 @@ window.Quarto = {
 </section>
 </div>
 </div>
-<div class="g-col-12 g-col-md-4">
+<div class="g-col-12 g-col-md-6">
 <div class="portal-card">
 <p><img src="topics/02_continuous_probability_zero/continuous_probability_zero.gif" class="portal-card-img img-fluid"></p>
 <p><span class="portal-badge">Topic 02 ・ 基礎概念</span></p>
@@ -294,7 +298,7 @@ window.Quarto = {
 </section>
 </div>
 </div>
-<div class="g-col-12 g-col-md-4">
+<div class="g-col-12 g-col-md-6">
 <div class="portal-card">
 <p><img src="topics/03_poisson_distribution/poisson_animation.gif" class="portal-card-img img-fluid"></p>
 <p><span class="portal-badge">Topic 03 ・ 確率分布</span></p>
@@ -307,6 +311,22 @@ window.Quarto = {
 <li><strong>キーワード</strong>: ポアソン過程、無記憶性、期待値と分散の一致、稀な事象</li>
 </ul>
 <p><a href="topics/03_poisson_distribution/poisson_guide.html" class="btn-portal">📖 教材を開く (GitHub Pages)</a></p>
+</section>
+</div>
+</div>
+<div class="g-col-12 g-col-md-6">
+<div class="portal-card">
+<p><img src="topics/04_p_value/p_value.gif" class="portal-card-img img-fluid"></p>
+<p><span class="portal-badge">Topic 04 ・ 基礎概念 &amp; 検定</span></p>
+<section id="p値p-valueの本質" class="level3" data-number="1.4">
+<h3 data-number="1.4" class="anchored" data-anchor-id="p値p-valueの本質"><span class="header-section-number">1.4</span> P値（p-value）の本質</h3>
+<p><strong>p-values Clearly Explained</strong></p>
+<ul>
+<li><strong>StatQuest</strong>: <em>p-values: What they are and how to interpret them</em></li>
+<li><strong>核心</strong>: 「もし何の差もない世界だとしたら、これほど極端なデータが偶然出る確率はどれくらい奇跡的か？」。統計量の変化に伴いP値の裾野面積が急減しα=0.05を突破する動的アニメーションとシミュレーション。</li>
+<li><strong>キーワード</strong>: 帰無仮説、片側・両側検定、t検定、モンテカルロ法、効果量と検察官の誤謬</li>
+</ul>
+<p><a href="topics/04_p_value/p_value_guide.html" class="btn-portal">📖 教材を開く (GitHub Pages)</a></p>
 </section>
 </div>
 </div>
@@ -344,6 +364,12 @@ window.Quarto = {
 <td style="text-align: left;">🔗 <a href="https://chess-r-quarto.github.io/R-scripts/topics/03_poisson_distribution/poisson_guide.html"><strong>解説ドキュメント (HTML)</strong></a></td>
 <td style="text-align: left;"><a href="topics/03_poisson_distribution/poisson_animation.R">アニメーション R</a> / <a href="topics/03_poisson_distribution/poisson_animation.gif">GIF</a></td>
 </tr>
+<tr class="even">
+<td style="text-align: center;"><strong>04</strong></td>
+<td style="text-align: left;"><strong>P値（p-value）の本質と仮説検定</strong></td>
+<td style="text-align: left;">🔗 <a href="https://chess-r-quarto.github.io/R-scripts/topics/04_p_value/p_value_guide.html"><strong>解説ドキュメント (HTML)</strong></a></td>
+<td style="text-align: left;"><a href="topics/04_p_value/p_value_anim.R">アニメーション R</a> / <a href="topics/04_p_value/p_value.gif">GIF</a></td>
+</tr>
 </tbody>
 </table>
 <hr>
@@ -351,7 +377,7 @@ window.Quarto = {
 <section id="今後の追加予定カリキュラムstatquest-シリーズ" class="level2" data-number="3">
 <h2 data-number="3" class="anchored" data-anchor-id="今後の追加予定カリキュラムstatquest-シリーズ"><span class="header-section-number">3</span> 🔮 今後の追加予定カリキュラム（StatQuest シリーズ）</h2>
 <ul>
-<li>🔄 <strong>p値と仮説検定の真実</strong> (<em>p-values: What they are and how to interpret them</em>)</li>
+<li>🔄 <strong>単回帰分析と最小二乗法</strong> (<em>Linear Models and Least Squares</em>)</li>
 <li>🔄 <strong>中心極限定理の動的シミュレーション</strong> (<em>The Central Limit Theorem</em>)</li>
 <li>🔄 <strong>ロジスティック回帰とオッズ比</strong> (<em>Logistic Regression</em>)</li>
 <li>🔄 <strong>主成分分析 (PCA) の幾何学的直感</strong> (<em>Principal Component Analysis</em>)</li>
@@ -849,7 +875,7 @@ window.Quarto = {
 <span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>::: {.grid}</span>
 <span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>::: {.g-col-12 .g-col-md-4}</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>::: {.g-col-12 .g-col-md-6}</span>
 <span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>::: {.portal-card}</span>
 <span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="al">![](topics/01_probability_vs_likelihood/probability_vs_likelihood.gif)</span>{.portal-card-img}</span>
 <span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
@@ -866,7 +892,7 @@ window.Quarto = {
 <span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>::: {.g-col-12 .g-col-md-4}</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>::: {.g-col-12 .g-col-md-6}</span>
 <span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>::: {.portal-card}</span>
 <span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a><span class="al">![](topics/02_continuous_probability_zero/continuous_probability_zero.gif)</span>{.portal-card-img}</span>
 <span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a></span>
@@ -883,7 +909,7 @@ window.Quarto = {
 <span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>::: {.g-col-12 .g-col-md-4}</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>::: {.g-col-12 .g-col-md-6}</span>
 <span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>::: {.portal-card}</span>
 <span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a><span class="al">![](topics/03_poisson_distribution/poisson_animation.gif)</span>{.portal-card-img}</span>
 <span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a></span>
@@ -900,46 +926,64 @@ window.Quarto = {
 <span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>::: {.g-col-12 .g-col-md-6}</span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>::: {.portal-card}</span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a><span class="al">![](topics/04_p_value/p_value.gif)</span>{.portal-card-img}</span>
 <span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a><span class="fu">## 🌐 GitHub Pages クイックリンクリスト</span></span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">span</span><span class="ot"> class</span><span class="op">=</span><span class="st">"portal-badge"</span><span class="dt">&gt;</span>Topic 04 ・ 基礎概念 &amp; 検定<span class="dt">&lt;/</span><span class="kw">span</span><span class="dt">&gt;</span></span>
 <span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>各教材のレンダリング済み HTML ページへのダイレクトリンク一覧です：</span>
-<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> # <span class="pp">|</span> トピック <span class="pp">|</span> GitHub Pages オンラインリンク <span class="pp">|</span> 対応スクリプト / GIF <span class="pp">|</span></span>
-<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---:</span> <span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">|</span></span>
-<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **01** | **確率（Probability）vs 尤度（Likelihood）** | 🔗 [**解説ドキュメント (HTML)**](https://chess-r-quarto.github.io/R-scripts/topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html) <span class="pp">|</span> <span class="co">[</span><span class="ot">アニメーション R</span><span class="co">](topics/01_probability_vs_likelihood/probability_vs_likelihood_anim.R)</span> / <span class="co">[</span><span class="ot">GIF</span><span class="co">](topics/01_probability_vs_likelihood/probability_vs_likelihood.gif)</span> <span class="pp">|</span></span>
-<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **02** | **連続変数の確率ゼロ（$P(X=170)=0$）** | 🔗 [**解説ドキュメント (HTML)**](https://chess-r-quarto.github.io/R-scripts/topics/02_continuous_probability_zero/continuous_probability_zero_guide.html) <span class="pp">|</span> <span class="co">[</span><span class="ot">アニメーション R</span><span class="co">](topics/02_continuous_probability_zero/continuous_probability_zero_anim.R)</span> / <span class="co">[</span><span class="ot">GIF</span><span class="co">](topics/02_continuous_probability_zero/continuous_probability_zero.gif)</span> <span class="pp">|</span></span>
-<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **03** | **ポアソン分布と到着間隔（指数分布）** | 🔗 [**解説ドキュメント (HTML)**](https://chess-r-quarto.github.io/R-scripts/topics/03_poisson_distribution/poisson_guide.html) <span class="pp">|</span> <span class="co">[</span><span class="ot">アニメーション R</span><span class="co">](topics/03_poisson_distribution/poisson_animation.R)</span> / <span class="co">[</span><span class="ot">GIF</span><span class="co">](topics/03_poisson_distribution/poisson_animation.gif)</span> <span class="pp">|</span></span>
-<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a><span class="fu">## 🔮 今後の追加予定カリキュラム（StatQuest シリーズ）</span></span>
-<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>🔄 **p値と仮説検定の真実** (*p-values: What they are and how to interpret them*)</span>
-<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>🔄 **中心極限定理の動的シミュレーション** (*The Central Limit Theorem*)</span>
-<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>🔄 **ロジスティック回帰とオッズ比** (*Logistic Regression*)</span>
-<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>🔄 **主成分分析 (PCA) の幾何学的直感** (*Principal Component Analysis*)</span>
-<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>🔄 **ROC曲線とAUCの直感理解** (*ROC and AUC, Clearly Explained!*)</span>
-<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a>---</span>
-<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a><span class="fu">## 🛠️ ソースコードとローカル実行</span></span>
-<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a>すべての教材ソース（Quarto QMD）およびアニメーション生成スクリプト（R）は <span class="co">[</span><span class="ot">GitHub リポジトリ</span><span class="co">](https://github.com/chess-r-quarto/R-scripts)</span> で管理されています。</span>
-<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a><span class="in">```bash</span></span>
-<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a><span class="co"># リポジトリのクローン</span></span>
-<span id="cb2-105"><a href="#cb2-105" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/chess-r-quarto/R-scripts.git</span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a><span class="fu">### P値（p-value）の本質</span></span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>**p-values Clearly Explained**</span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**StatQuest**: *p-values: What they are and how to interpret them*</span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**核心**: 「もし何の差もない世界だとしたら、これほど極端なデータが偶然出る確率はどれくらい奇跡的か？」。統計量の変化に伴いP値の裾野面積が急減しα=0.05を突破する動的アニメーションとシミュレーション。</span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**キーワード**: 帰無仮説、片側・両側検定、t検定、モンテカルロ法、効果量と検察官の誤謬</span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">a</span><span class="ot"> href</span><span class="op">=</span><span class="st">"topics/04_p_value/p_value_guide.html"</span><span class="ot"> class</span><span class="op">=</span><span class="st">"btn-portal"</span><span class="dt">&gt;</span>📖 教材を開く (GitHub Pages)<span class="dt">&lt;/</span><span class="kw">a</span><span class="dt">&gt;</span></span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a><span class="fu">## 🌐 GitHub Pages クイックリンクリスト</span></span>
+<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a>各教材のレンダリング済み HTML ページへのダイレクトリンク一覧です：</span>
+<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> # <span class="pp">|</span> トピック <span class="pp">|</span> GitHub Pages オンラインリンク <span class="pp">|</span> 対応スクリプト / GIF <span class="pp">|</span></span>
+<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a><span class="pp">| :---:</span> <span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">| :---</span> <span class="pp">|</span></span>
+<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **01** | **確率（Probability）vs 尤度（Likelihood）** | 🔗 [**解説ドキュメント (HTML)**](https://chess-r-quarto.github.io/R-scripts/topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html) <span class="pp">|</span> <span class="co">[</span><span class="ot">アニメーション R</span><span class="co">](topics/01_probability_vs_likelihood/probability_vs_likelihood_anim.R)</span> / <span class="co">[</span><span class="ot">GIF</span><span class="co">](topics/01_probability_vs_likelihood/probability_vs_likelihood.gif)</span> <span class="pp">|</span></span>
+<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **02** | **連続変数の確率ゼロ（$P(X=170)=0$）** | 🔗 [**解説ドキュメント (HTML)**](https://chess-r-quarto.github.io/R-scripts/topics/02_continuous_probability_zero/continuous_probability_zero_guide.html) <span class="pp">|</span> <span class="co">[</span><span class="ot">アニメーション R</span><span class="co">](topics/02_continuous_probability_zero/continuous_probability_zero_anim.R)</span> / <span class="co">[</span><span class="ot">GIF</span><span class="co">](topics/02_continuous_probability_zero/continuous_probability_zero.gif)</span> <span class="pp">|</span></span>
+<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **03** | **ポアソン分布と到着間隔（指数分布）** | 🔗 [**解説ドキュメント (HTML)**](https://chess-r-quarto.github.io/R-scripts/topics/03_poisson_distribution/poisson_guide.html) <span class="pp">|</span> <span class="co">[</span><span class="ot">アニメーション R</span><span class="co">](topics/03_poisson_distribution/poisson_animation.R)</span> / <span class="co">[</span><span class="ot">GIF</span><span class="co">](topics/03_poisson_distribution/poisson_animation.gif)</span> <span class="pp">|</span></span>
+<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a><span class="pp">|</span> **04** | **P値（p-value）の本質と仮説検定** | 🔗 [**解説ドキュメント (HTML)**](https://chess-r-quarto.github.io/R-scripts/topics/04_p_value/p_value_guide.html) <span class="pp">|</span> <span class="co">[</span><span class="ot">アニメーション R</span><span class="co">](topics/04_p_value/p_value_anim.R)</span> / <span class="co">[</span><span class="ot">GIF</span><span class="co">](topics/04_p_value/p_value.gif)</span> <span class="pp">|</span></span>
+<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-105"><a href="#cb2-105" aria-hidden="true" tabindex="-1"></a>---</span>
 <span id="cb2-106"><a href="#cb2-106" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-107"><a href="#cb2-107" aria-hidden="true" tabindex="-1"></a><span class="co"># サイト全体のビルド</span></span>
-<span id="cb2-108"><a href="#cb2-108" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render</span>
-<span id="cb2-109"><a href="#cb2-109" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-110"><a href="#cb2-110" aria-hidden="true" tabindex="-1"></a><span class="co"># ローカルプレビューサーバーの起動</span></span>
-<span id="cb2-111"><a href="#cb2-111" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> preview</span>
-<span id="cb2-112"><a href="#cb2-112" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+<span id="cb2-107"><a href="#cb2-107" aria-hidden="true" tabindex="-1"></a><span class="fu">## 🔮 今後の追加予定カリキュラム（StatQuest シリーズ）</span></span>
+<span id="cb2-108"><a href="#cb2-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-109"><a href="#cb2-109" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>🔄 **単回帰分析と最小二乗法** (*Linear Models and Least Squares*)</span>
+<span id="cb2-110"><a href="#cb2-110" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>🔄 **中心極限定理の動的シミュレーション** (*The Central Limit Theorem*)</span>
+<span id="cb2-111"><a href="#cb2-111" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>🔄 **ロジスティック回帰とオッズ比** (*Logistic Regression*)</span>
+<span id="cb2-112"><a href="#cb2-112" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>🔄 **主成分分析 (PCA) の幾何学的直感** (*Principal Component Analysis*)</span>
+<span id="cb2-113"><a href="#cb2-113" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>🔄 **ROC曲線とAUCの直感理解** (*ROC and AUC, Clearly Explained!*)</span>
+<span id="cb2-114"><a href="#cb2-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-115"><a href="#cb2-115" aria-hidden="true" tabindex="-1"></a>---</span>
+<span id="cb2-116"><a href="#cb2-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-117"><a href="#cb2-117" aria-hidden="true" tabindex="-1"></a><span class="fu">## 🛠️ ソースコードとローカル実行</span></span>
+<span id="cb2-118"><a href="#cb2-118" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-119"><a href="#cb2-119" aria-hidden="true" tabindex="-1"></a>すべての教材ソース（Quarto QMD）およびアニメーション生成スクリプト（R）は <span class="co">[</span><span class="ot">GitHub リポジトリ</span><span class="co">](https://github.com/chess-r-quarto/R-scripts)</span> で管理されています。</span>
+<span id="cb2-120"><a href="#cb2-120" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-121"><a href="#cb2-121" aria-hidden="true" tabindex="-1"></a><span class="in">```bash</span></span>
+<span id="cb2-122"><a href="#cb2-122" aria-hidden="true" tabindex="-1"></a><span class="co"># リポジトリのクローン</span></span>
+<span id="cb2-123"><a href="#cb2-123" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/chess-r-quarto/R-scripts.git</span>
+<span id="cb2-124"><a href="#cb2-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-125"><a href="#cb2-125" aria-hidden="true" tabindex="-1"></a><span class="co"># サイト全体のビルド</span></span>
+<span id="cb2-126"><a href="#cb2-126" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> render</span>
+<span id="cb2-127"><a href="#cb2-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-128"><a href="#cb2-128" aria-hidden="true" tabindex="-1"></a><span class="co"># ローカルプレビューサーバーの起動</span></span>
+<span id="cb2-129"><a href="#cb2-129" aria-hidden="true" tabindex="-1"></a><span class="ex">quarto</span> preview</span>
+<span id="cb2-130"><a href="#cb2-130" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 

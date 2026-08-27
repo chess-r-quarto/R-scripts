@@ -18,7 +18,9 @@ website:
             href: topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.qmd
           - text: "② 連続変数の確率ゼロ (P(X=x)=0)"
             href: topics/02_continuous_probability_zero/continuous_probability_zero_guide.qmd
-      - text: "📊 確率分布"
+          - text: "④ P値（p-value）の本質"
+            href: topics/04_p_value/p_value_guide.qmd
+      - text: "📊 確率分布 & モデル"
         menu:
           - text: "③ ポアソン分布 & 指数分布"
             href: topics/03_poisson_distribution/poisson_guide.qmd

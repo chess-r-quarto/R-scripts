@@ -49,104 +49,6 @@
     "text": "6 発展：実務データへの応用\n現実のデータでは、厳密なポアソン過程の前提が崩れるケースがあります。その場合は以下の手法へと拡張します。\n\n時間帯による平均発生率の変化 \\(\\lambda(t)\\)\n\n例: 昼食後の 14:00〜15:00 に利用客が集中する\n➔ 非斉次ポアソン過程（Inhomogeneous Poisson Process）\n\n外部要因（気温・曜日・イベント）による影響\n\n➔ ポアソン回帰分析（GLM: 一般化線形モデル）: \\(\\log(\\lambda) = \\beta_0 + \\beta_1 X_1 + \\dots\\)\n\n事象が連鎖して発生する（過分散: 分散 &gt; 平均）\n\n感染症や口コミの拡散など\n➔ 負の二項分布（Negative Binomial Distribution）"
   },
   {
-    "objectID": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html",
-    "href": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html",
-    "title": "「確率（Probability）」と「尤度（Likelihood）」の決定的な違い",
-    "section": "",
-    "text": "統計学や機械学習を学び始めると、必ずぶつかる壁が「確率（Probability）」と「尤度（Likelihood：ゆうど）」の違いです。\n日常会話において、この2つの言葉はほぼ同じ意味（「確からしさ」や「可能性」）で使われます。しかし、統計学の世界では全く異なる数学的対象であり、視点（アプローチ）が真逆です。\n\n\n\n\n\n\nImportant🧭 核心となる一言要約\n\n\n\n\n確率（Probability）: 「前提（パラメータ \\(\\theta\\)）が分かっているとき、どんなデータ \\(x\\) が得られるか？」を語る指標（順問題 / 未来予測）\n尤度（Likelihood）: 「得られたデータ \\(x\\) が分かっているとき、どの前提（パラメータ \\(\\theta\\)）がもっともらしいか？」を語る指標（逆問題 / 原因推定）"
-  },
-  {
-    "objectID": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#はじめになぜ確率と尤度は混乱するのか",
-    "href": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#はじめになぜ確率と尤度は混乱するのか",
-    "title": "「確率（Probability）」と「尤度（Likelihood）」の決定的な違い",
-    "section": "",
-    "text": "統計学や機械学習を学び始めると、必ずぶつかる壁が「確率（Probability）」と「尤度（Likelihood：ゆうど）」の違いです。\n日常会話において、この2つの言葉はほぼ同じ意味（「確からしさ」や「可能性」）で使われます。しかし、統計学の世界では全く異なる数学的対象であり、視点（アプローチ）が真逆です。\n\n\n\n\n\n\nImportant🧭 核心となる一言要約\n\n\n\n\n確率（Probability）: 「前提（パラメータ \\(\\theta\\)）が分かっているとき、どんなデータ \\(x\\) が得られるか？」を語る指標（順問題 / 未来予測）\n尤度（Likelihood）: 「得られたデータ \\(x\\) が分かっているとき、どの前提（パラメータ \\(\\theta\\)）がもっともらしいか？」を語る指標（逆問題 / 原因推定）"
-  },
-  {
-    "objectID": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#決定的な違いの比較表",
-    "href": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#決定的な違いの比較表",
-    "title": "「確率（Probability）」と「尤度（Likelihood）」の決定的な違い",
-    "section": "2 決定的な違いの比較表",
-    "text": "2 決定的な違いの比較表\n両者の根本的な違いを一覧表で整理します。\n\n\n\n\n\n\n\n\n比較項目\n確率（Probability）\n尤度（Likelihood）\n\n\n\n\n数式表現\n\\(P(X = x \\mid \\theta)\\)\n\\(L(\\theta \\mid x) = P(X = x \\mid \\theta)\\)\n\n\n何が固定（既知）か？\nパラメータ \\(\\theta\\)（母数・コインの性質など）\n観測データ \\(x\\)（標本・実験結果）\n\n\n何が変数（動くもの）か？\nデータ \\(X\\)（起こりうるすべての事象）\nパラメータ \\(\\theta\\)（推定したい候補値）\n\n\n合計 / 積分の値\nすべての事象を足すと 必ず \\(1\\)（\\(100\\%\\)）\n全パラメータで積分しても \\(1\\) にはならない\n\n\nグラフの種類\n確率分布（横軸: データ \\(x\\)）\n尤度関数（横軸: パラメータ \\(\\theta\\)）\n\n\n時間のイメージ\n未来の予測（コインを投げる前）\n過去の解釈・原因推定（コインを投げた後）\n\n\n代表的な問い\n「歪みのないコイン（\\(p=0.5\\)）を10回投げたら、表が7回出る確率は？」\n「コインを10回投げたら表が7回出た。このコインの表が出る確率 \\(p\\) はいくつか？」\n\n\n\n\n\n\n\n\n\nNote⚠️ 尤度は「確率」ではない！\n\n\n\n数式上は \\(L(\\theta \\mid x) = P(X = x \\mid \\theta)\\) と同じ計算式を使いますが、「何を変数として見ているか」が異なります。 尤度 \\(L(\\theta \\mid x)\\) はパラメータ \\(\\theta\\) の関数であり、\\(\\int L(\\theta \\mid x) d\\theta = 1\\) にはなりません。したがって、「パラメータが \\(\\theta\\) である確率」とは呼べず、「尤もらしさ（Likelihood）」と呼びます。"
-  },
-  {
-    "objectID": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#動的ビジュアライゼーションgganimate-による直感理解",
-    "href": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#動的ビジュアライゼーションgganimate-による直感理解",
-    "title": "「確率（Probability）」と「尤度（Likelihood）」の決定的な違い",
-    "section": "3 動的ビジュアライゼーション（gganimate による直感理解）",
-    "text": "3 動的ビジュアライゼーション（gganimate による直感理解）\n両者の関係性を最も直感的に理解できるのが、「確率分布の棒の高さが、リアルタイムに尤度曲線を描いていく」アニメーションです。\n\n3.1 離散型モデル：コイン投げ（二項分布 \\(n=10, k=7\\)）\n「コインを10回投げたら表が7回出た（\\(k=7\\)）」という状況を考えます。\n\n左側【確率の視点】: コインの歪みパラメータ \\(p\\)（表が出る確率）を \\(0.05 \\to 0.95\\) へスキャンしたとき、確率分布全体の形が動きます。その中で「観測された \\(k=7\\)」の赤い棒の高さに注目してください。\n右側【尤度の視点】: 左側で変化する「\\(k=7\\) の棒の高さ」を拾い集め、横軸をパラメータ \\(p\\)、縦軸を尤度としてプロットしたものが右側の赤い曲線です。\n\n\n\n\n【徹底比較】確率（Probability）vs 尤度（Likelihood）のアニメーション\n\n\n\n3.1.1 アニメーションからわかる重要なポイント\n\n左の赤い棒の高さ ＝ 右の赤い点の高さ: どの瞬間（どの \\(p\\)）においても、左側の \\(P(X=7 \\mid p)\\) の値が、そのまま右側の尤度 \\(L(p \\mid X=7)\\) の値になっています。\n最尤推定量（MLE: Maximum Likelihood Estimator）: パラメータ \\(p = 0.70\\) の瞬間に、左側の \\(k=7\\) の棒が最も高くなり、右側の尤度関数の山頂（最大値 \\(\\approx 0.267\\)）に到達します。これが「最尤法（もっとも観測データを生じやすいパラメータを選ぶ手法）」です。\n合計値の違い:\n\n左側はどの瞬間も、青い棒＋赤い棒の合計は常に \\(1.0\\)（\\(100\\%\\)）です。\n右側の赤い曲線の下側の面積（積分値）は \\(\\frac{1}{11} \\approx 0.0909\\) であり、\\(1.0\\) にはなりません。\n\n\n\n\n\n\n3.2 連続型モデル：製品の重量測定（正規分布 \\(x = 12.0\\text{g}, \\sigma = 2.0\\)）\n連続値（身長、体重、測定値など）の場合、特定の一点が得られる確率は数学的に \\(0\\) になります。そのため、確率密度の「高さ（確率密度関数 \\(f(x)\\) の値）」を尤度として用います。\n\n左側【確率密度の視点】: 平均パラメータ \\(\\mu\\) が動くにつれて、正規分布の釣鐘型が左右に移動します。固定された観測点 \\(x = 12.0\\) における垂線の高さ（密度）が上下します。\n右側【尤度関数の視点】: その垂線の高さを \\(\\mu\\) に対してプロットしたものが右側の尤度曲線です。\n\n\n\n\n【連続分布版】確率密度（Probability Density）vs 尤度（Likelihood）のアニメーション"
-  },
-  {
-    "objectID": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#数式と理論計算rコードでの実践",
-    "href": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#数式と理論計算rコードでの実践",
-    "title": "「確率（Probability）」と「尤度（Likelihood）」の決定的な違い",
-    "section": "4 数式と理論計算（Rコードでの実践）",
-    "text": "4 数式と理論計算（Rコードでの実践）\n\n4.1 1. 二項分布における計算\nコインを \\(n = 10\\) 回投げて表が \\(k\\) 回出る確率質量関数（PMF）は以下で表されます。\n\\[P(X = k \\mid p) = \\binom{n}{k} p^k (1-p)^{n-k}\\]\n\n4.1.1 確率の計算（\\(p = 0.5\\) を固定）\n「公平なコイン（\\(p=0.5\\)）を10回投げて表が7回出る確率」： \\[P(X = 7 \\mid p = 0.5) = \\binom{10}{7} (0.5)^7 (0.5)^3 = 120 \\times \\frac{1}{1024} \\approx 0.1172\\]\n\n\nCode\n# 確率の計算 (p = 0.5 固定)\nprob_k7 &lt;- dbinom(7, size = 10, prob = 0.5)\ncat(sprintf(\"P(X = 7 | p = 0.5) = %.4f (約 %.2f%%)\\n\", prob_k7, prob_k7 * 100))\n\n\nP(X = 7 | p = 0.5) = 0.1172 (約 11.72%)\n\n\nCode\n# 確率の合計は 1 になるか？\nsum_probs &lt;- sum(dbinom(0:10, size = 10, prob = 0.5))\ncat(sprintf(\"k=0..10 の確率合計 = %.1f\\n\", sum_probs))\n\n\nk=0..10 の確率合計 = 1.0\n\n\n\n\n4.1.2 尤度の計算（\\(k = 7\\) を固定）\n「表が7回出たとき、コインのパラメータが \\(p = 0.5\\) や \\(p = 0.7\\) である尤度」： \\[L(p = 0.5 \\mid X = 7) = P(X = 7 \\mid p = 0.5) \\approx 0.1172\\] \\[L(p = 0.7 \\mid X = 7) = P(X = 7 \\mid p = 0.7) \\approx 0.2668\\]\n\n\nCode\n# 尤度の計算 (k = 7 固定)\nlik_p05 &lt;- dbinom(7, size = 10, prob = 0.5)\nlik_p07 &lt;- dbinom(7, size = 10, prob = 0.7)\n\ncat(sprintf(\"L(p = 0.5 | X = 7) = %.4f\\n\", lik_p05))\n\n\nL(p = 0.5 | X = 7) = 0.1172\n\n\nCode\ncat(sprintf(\"L(p = 0.7 | X = 7) = %.4f\\n\", lik_p07))\n\n\nL(p = 0.7 | X = 7) = 0.2668\n\n\nCode\ncat(sprintf(\"p=0.7 は p=0.5 に比べて約 %.2f 倍もっともらしい！\\n\", lik_p07 / lik_p05))\n\n\np=0.7 は p=0.5 に比べて約 2.28 倍もっともらしい！\n\n\nCode\n# 尤度関数を p ∈ [0, 1] で積分するとどうなるか？\nlik_integral &lt;- integrate(function(p) dbinom(7, size = 10, prob = p), lower = 0, upper = 1)\ncat(sprintf(\"尤度関数の積分値 = %.4f (≠ 1.0 なので確率ではない)\\n\", lik_integral$value))\n\n\n尤度関数の積分値 = 0.0909 (≠ 1.0 なので確率ではない)"
-  },
-  {
-    "objectID": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#最尤推定法mle-maximum-likelihood-estimation",
-    "href": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#最尤推定法mle-maximum-likelihood-estimation",
-    "title": "「確率（Probability）」と「尤度（Likelihood）」の決定的な違い",
-    "section": "5 最尤推定法（MLE: Maximum Likelihood Estimation）",
-    "text": "5 最尤推定法（MLE: Maximum Likelihood Estimation）\n\n5.1 なぜ「尤度」を最大化するのか？\n現実のデータ分析では、「真のパラメータ \\(\\theta\\)」は神様しか知りません。私たちが手元に持っているのは「観測されたデータ \\(x\\)」だけです。\nそこで、「手元のデータが得られる確率が最も高くなるようなパラメータを選べば、それが最も真相に近いだろう」と考えるのが最尤法（MLE）です。\n\\[\\hat{\\theta}_{\\text{MLE}} = \\arg\\max_{\\theta} L(\\theta \\mid x)\\]\n\n\n5.2 なぜ「対数尤度（Log-Likelihood）」をとるのか？\n独立な \\(n\\) 個のデータ \\(x_1, x_2, \\dots, x_n\\) が得られたとき、全体の尤度は各確率密度の積（掛け算）になります。\n\\[L(\\theta \\mid x_1, \\dots, x_n) = \\prod_{i=1}^n f(x_i \\mid \\theta)\\]\nこのままでは計算が非常に困難（掛け算の微分は複雑、コンピュータ上で \\(0\\) に近くなりすぎてアンダーフローする）なため、自然対数をとった対数尤度関数 \\(\\ell(\\theta)\\) を最大化します。\n\\[\\ell(\\theta) = \\ln L(\\theta \\mid x_1, \\dots, x_n) = \\sum_{i=1}^n \\ln f(x_i \\mid \\theta)\\]\n\n\n\n\n\n\nTip💡 対数をとっても最大値の位置は変わらない\n\n\n\n対数関数 \\(\\ln(y)\\) は単調増加関数（\\(y_1 &lt; y_2 \\iff \\ln y_1 &lt; \\ln y_2\\)）であるため、\\(L(\\theta)\\) を最大化する \\(\\theta\\) と、\\(\\ln L(\\theta)\\) を最大化する \\(\\theta\\) は完全に一致します。\n\n\n\n\n5.3 R による最尤推定の実装例\n\n\nCode\n# 観測データ: コインを10回投げて表が7回\nn &lt;- 10\nk &lt;- 7\n\n# 負の対数尤度関数 (optim は最小化を行うためマイナスをつける)\nneg_log_lik &lt;- function(p) {\n  if (p &lt;= 0 || p &gt;= 1) return(Inf)\n  -dbinom(k, size = n, prob = p, log = TRUE)\n}\n\n# 最適化を実行 (初期値 p = 0.5)\nopt_res &lt;- optim(par = 0.5, fn = neg_log_lik, method = \"L-BFGS-B\", lower = 0.001, upper = 0.999)\n\ncat(\"=== 最尤推定の結果 ===\\n\")\n\n\n=== 最尤推定の結果 ===\n\n\nCode\ncat(sprintf(\"推定されたパラメータ p̂_MLE : %.4f (理論値 k/n = %.1f)\\n\", opt_res$par, k / n))\n\n\n推定されたパラメータ p̂_MLE : 0.7000 (理論値 k/n = 0.7)\n\n\nCode\ncat(sprintf(\"最大対数尤度                 : %.4f\\n\", -opt_res$value))\n\n\n最大対数尤度                 : -1.3212"
-  },
-  {
-    "objectID": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#ベイズ統計における架け橋確率と尤度が出会う場所",
-    "href": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#ベイズ統計における架け橋確率と尤度が出会う場所",
-    "title": "「確率（Probability）」と「尤度（Likelihood）」の決定的な違い",
-    "section": "6 ベイズ統計における架け橋（確率と尤度が出会う場所）",
-    "text": "6 ベイズ統計における架け橋（確率と尤度が出会う場所）\n「尤度はパラメータの確率ではない」と述べましたが、「事前確率（事前知識）」と組み合わせることで、パラメータの確率（事後確率）に変換することができます。これがベイズの定理です。\n\\[\\underbrace{P(\\theta \\mid x)}_{\\text{事後確率（パラメータの確率）}} = \\frac{\\overbrace{P(x \\mid \\theta)}^{\\text{尤度 } L(\\theta \\mid x)} \\times \\overbrace{P(\\theta)}^{\\text{事前確率}}}{\\underbrace{P(x)}_{\\text{周辺尤度（正規化定数）}}}\\]\n\\[P(\\theta \\mid x) \\propto L(\\theta \\mid x) \\times P(\\theta)\\]\n\n\n\n\n\n\nNote🤝 統計学の2大学派における位置づけ\n\n\n\n\n頻度論（古典統計学）: パラメータ \\(\\theta\\) は「固定された1つの未知の真値」。\\(\\theta\\) の確率は考えず、尤度 \\(L(\\theta \\mid x)\\) を最大化（MLE）して点推定・区間推定を行う。\nベイズ統計学: パラメータ \\(\\theta\\) 自体も不確実性を持つ確率変数として扱う。尤度 \\(L(\\theta \\mid x)\\) に事前分布 \\(P(\\theta)\\) を掛けて正規化し、事後分布 \\(P(\\theta \\mid x)\\) を求める。"
-  },
-  {
-    "objectID": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#理解度チェッククイズ",
-    "href": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#理解度チェッククイズ",
-    "title": "「確率（Probability）」と「尤度（Likelihood）」の決定的な違い",
-    "section": "7 理解度チェッククイズ",
-    "text": "7 理解度チェッククイズ\n理解度を試すための3つのクイズです。クリックして正解と解説を確認してください。\n\n\n\n\n\n\nCaution❓ 第1問：「サイコロを1回振って 6 が出る確率」と「6 の目が出たときのサイコロがイカサマである尤度」の違いは？\n\n\n\n\n\n【解答】 - 確率: サイコロの性質（公平: \\(p=1/6\\)）を前提として、未来の結果「6の目」が出る可能性を語る（\\(= 1/6\\)）。 - 尤度: 現実に「6の目」が出たという結果をもとに、サイコロの性質（イカサマ度合い \\(p\\)）の尤もらしさを評価する。例えば「6が出やすいサイコロ（\\(p=0.5\\)）」の尤度は \\(0.5\\)、「公平なサイコロ（\\(p=1/6\\)）」の尤度は約 \\(0.167\\) となり、前者の方が尤度が高くなります。\n\n\n\n\n\n\n\n\n\nCaution❓ 第2問：尤度関数 \\(L(\\theta \\mid x)\\) の最大値が \\(1\\) を超えることはあるか？\n\n\n\n\n\n【解答】 あります（特に連続型確率変数の場合）。 離散型分布の場合、\\(L(\\theta \\mid x) = P(X=x \\mid \\theta) \\le 1\\) ですが、連続型分布（正規分布など）の場合、\\(L(\\theta \\mid x) = f(x \\mid \\theta)\\) は確率密度関数の値（高さ）であるため、分散 \\(\\sigma^2\\) が非常に小さい場合などは \\(1\\) を大きく超えることがあります（例えば \\(\\sigma = 0.1\\) のとき正規分布のピークの高さは約 \\(3.99\\)）。 これは、尤度が確率そのものではない決定的な証拠の1つです。\n\n\n\n\n\n\n\n\n\nCaution❓ 第3問：「尤度比（Likelihood Ratio）」とは何か？何に使えるか？\n\n\n\n\n\n【解答】 2つの異なるパラメータ仮説 \\(\\theta_0\\) と \\(\\theta_1\\) に対する尤度の比率 \\(\\frac{L(\\theta_1 \\mid x)}{L(\\theta_0 \\mid x)}\\) のことです。 「得られたデータのもとで、仮説1は仮説0の何倍尤もらしいか」を数値化でき、統計的仮説検定（尤度比検定）やモデル選択（AIC/BIC）、ベイズ更新のオッズ比などで中心的な役割を果たします。"
-  },
-  {
-    "objectID": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#まとめ",
-    "href": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#まとめ",
-    "title": "「確率（Probability）」と「尤度（Likelihood）」の決定的な違い",
-    "section": "8 まとめ",
-    "text": "8 まとめ\n\n確率（Probability）は、「パラメータ固定 \\(\\to\\) データの分布」を語る指標であり、足すと必ず \\(1\\) になる。\n尤度（Likelihood）は、「データ固定 \\(\\to\\) パラメータの尤もらしさ」を測る指標であり、パラメータの確率ではない。\n最尤法（MLE）は、手元の観測データの尤度（または対数尤度）を最大化するパラメータを探す王道の手法である。\nベイズ統計では、尤度に事前確率を掛け合わせることで、パラメータの事後確率へと昇華させる。"
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "StatQuest Visual Companion (R & gganimate)",
-    "section": "",
-    "text": "Note🎯 StatQuest 補助教材ポータルへようこそ！\n\n\n\n世界中で大絶賛されている統計学習チャンネル 「StatQuest with Josh Starmer」 の名講義をベースに、R 言語と gganimate による動的アニメーション・シミュレーションコードを組み合わせたインタラクティブ教材集です。各トピックの「教材を開く」ボタンから、GitHub Pages でレンダリングされたフルドキュメントを閲覧できます。"
-  },
-  {
-    "objectID": "index.html#収録教材一覧interactive-guides",
-    "href": "index.html#収録教材一覧interactive-guides",
-    "title": "StatQuest Visual Companion (R & gganimate)",
-    "section": "1 📚 収録教材一覧（Interactive Guides）",
-    "text": "1 📚 収録教材一覧（Interactive Guides）\n\n\n\n\nTopic 01 ・ 基礎概念\n\n1.1 確率 vs 尤度\nProbability vs Likelihood\n\nStatQuest: Probability vs Likelihood\n核心: 「前提からデータを語る（確率）」vs「データから前提を推定する（尤度）」。パラメータ変化に伴い確率分布の高さが尤度曲線を描く瞬間をアニメーション化。\nキーワード: 順問題・逆問題、最尤推定量 (MLE)、対数尤度、ベイズの定理\n\n📖 教材を開く (GitHub Pages)\n\n\n\n\n\n\nTopic 02 ・ 基礎概念\n\n1.2 連続変数の確率ゼロ\nWhy P(X = 170) = 0?\n\nStatQuest: Probability vs Probability Density\n核心: 「身長170cmの人は大勢いるのに、なぜ数学的には確率ゼロなのか？」。日常の有効数字（幅）と数学の極限（幅ゼロ）の違い、確率密度（高さ）と確率（面積）の関係を動的可視化。\nキーワード: 確率密度関数 (PDF)、極限 \\(\\Delta x \\to 0\\)、測度論、almost surely\n\n📖 教材を開く (GitHub Pages)\n\n\n\n\n\n\nTopic 03 ・ 確率分布\n\n1.3 ポアソン分布 & 指数分布\nPoisson & Exponential\n\nStatQuest: Poisson Distribution & Exponential Distribution\n核心: 「一定時間内の発生回数（ポアソン）」と「次の事象までの待ち時間（指数）」。表裏一体の関係にある2つの分布をシミュレーションとアニメーションで解説。\nキーワード: ポアソン過程、無記憶性、期待値と分散の一致、稀な事象\n\n📖 教材を開く (GitHub Pages)"
-  },
-  {
-    "objectID": "index.html#github-pages-クイックリンクリスト",
-    "href": "index.html#github-pages-クイックリンクリスト",
-    "title": "StatQuest Visual Companion (R & gganimate)",
-    "section": "2 🌐 GitHub Pages クイックリンクリスト",
-    "text": "2 🌐 GitHub Pages クイックリンクリスト\n各教材のレンダリング済み HTML ページへのダイレクトリンク一覧です：\n\n\n\n#\nトピック\nGitHub Pages オンラインリンク\n対応スクリプト / GIF\n\n\n\n\n01\n確率（Probability）vs 尤度（Likelihood）\n🔗 解説ドキュメント (HTML)\nアニメーション R / GIF\n\n\n02\n連続変数の確率ゼロ（\\(P(X=170)=0\\)）\n🔗 解説ドキュメント (HTML)\nアニメーション R / GIF\n\n\n03\nポアソン分布と到着間隔（指数分布）\n🔗 解説ドキュメント (HTML)\nアニメーション R / GIF"
-  },
-  {
-    "objectID": "index.html#今後の追加予定カリキュラムstatquest-シリーズ",
-    "href": "index.html#今後の追加予定カリキュラムstatquest-シリーズ",
-    "title": "StatQuest Visual Companion (R & gganimate)",
-    "section": "3 🔮 今後の追加予定カリキュラム（StatQuest シリーズ）",
-    "text": "3 🔮 今後の追加予定カリキュラム（StatQuest シリーズ）\n\n🔄 p値と仮説検定の真実 (p-values: What they are and how to interpret them)\n🔄 中心極限定理の動的シミュレーション (The Central Limit Theorem)\n🔄 ロジスティック回帰とオッズ比 (Logistic Regression)\n🔄 主成分分析 (PCA) の幾何学的直感 (Principal Component Analysis)\n🔄 ROC曲線とAUCの直感理解 (ROC and AUC, Clearly Explained!)"
-  },
-  {
-    "objectID": "index.html#ソースコードとローカル実行",
-    "href": "index.html#ソースコードとローカル実行",
-    "title": "StatQuest Visual Companion (R & gganimate)",
-    "section": "4 🛠️ ソースコードとローカル実行",
-    "text": "4 🛠️ ソースコードとローカル実行\nすべての教材ソース（Quarto QMD）およびアニメーション生成スクリプト（R）は GitHub リポジトリ で管理されています。\n# リポジトリのクローン\ngit clone https://github.com/chess-r-quarto/R-scripts.git\n\n# サイト全体のビルド\nquarto render\n\n# ローカルプレビューサーバーの起動\nquarto preview"
-  },
-  {
     "objectID": "topics/02_continuous_probability_zero/continuous_probability_zero_guide.html",
     "href": "topics/02_continuous_probability_zero/continuous_probability_zero_guide.html",
     "title": "「身長がピッタリ170cmである確率」はなぜ 0 なのか？",
@@ -215,5 +117,180 @@
     "title": "「身長がピッタリ170cmである確率」はなぜ 0 なのか？",
     "section": "9 まとめ",
     "text": "9 まとめ\n\n日常の「170cm」は測定精度の幅（\\(169.5 \\sim 170.5\\text{cm}\\)）を指しており、面積（確率 \\(\\approx 6.6\\%\\)）を持つ。\n数学の「170cm」は幅ゼロの1点（\\(170.000\\dots\\text{cm}\\)）を指しており、幅がゼロなので面積（確率）は必ず \\(0\\) になる。\n確率密度 \\(f(x)\\) は「高さ」であり、確率は常に微小幅を掛けた「面積（\\(\\int f(x) dx\\)）」として計算される。\n「確率がゼロ」は「起こり得ない」と同義ではない。連続空間では確率ゼロの事象が実際に発生する。"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "StatQuest Visual Companion (R & gganimate)",
+    "section": "",
+    "text": "Note🎯 StatQuest 補助教材ポータルへようこそ！\n\n\n\n世界中で大絶賛されている統計学習チャンネル 「StatQuest with Josh Starmer」 の名講義をベースに、R 言語と gganimate による動的アニメーション・シミュレーションコードを組み合わせたインタラクティブ教材集です。各トピックの「教材を開く」ボタンから、GitHub Pages でレンダリングされたフルドキュメントを閲覧できます。"
+  },
+  {
+    "objectID": "index.html#収録教材一覧interactive-guides",
+    "href": "index.html#収録教材一覧interactive-guides",
+    "title": "StatQuest Visual Companion (R & gganimate)",
+    "section": "1 📚 収録教材一覧（Interactive Guides）",
+    "text": "1 📚 収録教材一覧（Interactive Guides）\n\n\n\n\nTopic 01 ・ 基礎概念\n\n1.1 確率 vs 尤度\nProbability vs Likelihood\n\nStatQuest: Probability vs Likelihood\n核心: 「前提からデータを語る（確率）」vs「データから前提を推定する（尤度）」。パラメータ変化に伴い確率分布の高さが尤度曲線を描く瞬間をアニメーション化。\nキーワード: 順問題・逆問題、最尤推定量 (MLE)、対数尤度、ベイズの定理\n\n📖 教材を開く (GitHub Pages)\n\n\n\n\n\n\nTopic 02 ・ 基礎概念\n\n1.2 連続変数の確率ゼロ\nWhy P(X = 170) = 0?\n\nStatQuest: Probability vs Probability Density\n核心: 「身長170cmの人は大勢いるのに、なぜ数学的には確率ゼロなのか？」。日常の有効数字（幅）と数学の極限（幅ゼロ）の違い、確率密度（高さ）と確率（面積）の関係を動的可視化。\nキーワード: 確率密度関数 (PDF)、極限 \\(\\Delta x \\to 0\\)、測度論、almost surely\n\n📖 教材を開く (GitHub Pages)\n\n\n\n\n\n\nTopic 03 ・ 確率分布\n\n1.3 ポアソン分布 & 指数分布\nPoisson & Exponential\n\nStatQuest: Poisson Distribution & Exponential Distribution\n核心: 「一定時間内の発生回数（ポアソン）」と「次の事象までの待ち時間（指数）」。表裏一体の関係にある2つの分布をシミュレーションとアニメーションで解説。\nキーワード: ポアソン過程、無記憶性、期待値と分散の一致、稀な事象\n\n📖 教材を開く (GitHub Pages)\n\n\n\n\n\n\nTopic 04 ・ 基礎概念 & 検定\n\n1.4 P値（p-value）の本質\np-values Clearly Explained\n\nStatQuest: p-values: What they are and how to interpret them\n核心: 「もし何の差もない世界だとしたら、これほど極端なデータが偶然出る確率はどれくらい奇跡的か？」。統計量の変化に伴いP値の裾野面積が急減しα=0.05を突破する動的アニメーションとシミュレーション。\nキーワード: 帰無仮説、片側・両側検定、t検定、モンテカルロ法、効果量と検察官の誤謬\n\n📖 教材を開く (GitHub Pages)"
+  },
+  {
+    "objectID": "index.html#github-pages-クイックリンクリスト",
+    "href": "index.html#github-pages-クイックリンクリスト",
+    "title": "StatQuest Visual Companion (R & gganimate)",
+    "section": "2 🌐 GitHub Pages クイックリンクリスト",
+    "text": "2 🌐 GitHub Pages クイックリンクリスト\n各教材のレンダリング済み HTML ページへのダイレクトリンク一覧です：\n\n\n\n#\nトピック\nGitHub Pages オンラインリンク\n対応スクリプト / GIF\n\n\n\n\n01\n確率（Probability）vs 尤度（Likelihood）\n🔗 解説ドキュメント (HTML)\nアニメーション R / GIF\n\n\n02\n連続変数の確率ゼロ（\\(P(X=170)=0\\)）\n🔗 解説ドキュメント (HTML)\nアニメーション R / GIF\n\n\n03\nポアソン分布と到着間隔（指数分布）\n🔗 解説ドキュメント (HTML)\nアニメーション R / GIF\n\n\n04\nP値（p-value）の本質と仮説検定\n🔗 解説ドキュメント (HTML)\nアニメーション R / GIF"
+  },
+  {
+    "objectID": "index.html#今後の追加予定カリキュラムstatquest-シリーズ",
+    "href": "index.html#今後の追加予定カリキュラムstatquest-シリーズ",
+    "title": "StatQuest Visual Companion (R & gganimate)",
+    "section": "3 🔮 今後の追加予定カリキュラム（StatQuest シリーズ）",
+    "text": "3 🔮 今後の追加予定カリキュラム（StatQuest シリーズ）\n\n🔄 単回帰分析と最小二乗法 (Linear Models and Least Squares)\n🔄 中心極限定理の動的シミュレーション (The Central Limit Theorem)\n🔄 ロジスティック回帰とオッズ比 (Logistic Regression)\n🔄 主成分分析 (PCA) の幾何学的直感 (Principal Component Analysis)\n🔄 ROC曲線とAUCの直感理解 (ROC and AUC, Clearly Explained!)"
+  },
+  {
+    "objectID": "index.html#ソースコードとローカル実行",
+    "href": "index.html#ソースコードとローカル実行",
+    "title": "StatQuest Visual Companion (R & gganimate)",
+    "section": "4 🛠️ ソースコードとローカル実行",
+    "text": "4 🛠️ ソースコードとローカル実行\nすべての教材ソース（Quarto QMD）およびアニメーション生成スクリプト（R）は GitHub リポジトリ で管理されています。\n# リポジトリのクローン\ngit clone https://github.com/chess-r-quarto/R-scripts.git\n\n# サイト全体のビルド\nquarto render\n\n# ローカルプレビューサーバーの起動\nquarto preview"
+  },
+  {
+    "objectID": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html",
+    "href": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html",
+    "title": "「確率（Probability）」と「尤度（Likelihood）」の決定的な違い",
+    "section": "",
+    "text": "統計学や機械学習を学び始めると、必ずぶつかる壁が「確率（Probability）」と「尤度（Likelihood：ゆうど）」の違いです。\n日常会話において、この2つの言葉はほぼ同じ意味（「確からしさ」や「可能性」）で使われます。しかし、統計学の世界では全く異なる数学的対象であり、視点（アプローチ）が真逆です。\n\n\n\n\n\n\nImportant🧭 核心となる一言要約\n\n\n\n\n確率（Probability）: 「前提（パラメータ \\(\\theta\\)）が分かっているとき、どんなデータ \\(x\\) が得られるか？」を語る指標（順問題 / 未来予測）\n尤度（Likelihood）: 「得られたデータ \\(x\\) が分かっているとき、どの前提（パラメータ \\(\\theta\\)）がもっともらしいか？」を語る指標（逆問題 / 原因推定）"
+  },
+  {
+    "objectID": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#はじめになぜ確率と尤度は混乱するのか",
+    "href": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#はじめになぜ確率と尤度は混乱するのか",
+    "title": "「確率（Probability）」と「尤度（Likelihood）」の決定的な違い",
+    "section": "",
+    "text": "統計学や機械学習を学び始めると、必ずぶつかる壁が「確率（Probability）」と「尤度（Likelihood：ゆうど）」の違いです。\n日常会話において、この2つの言葉はほぼ同じ意味（「確からしさ」や「可能性」）で使われます。しかし、統計学の世界では全く異なる数学的対象であり、視点（アプローチ）が真逆です。\n\n\n\n\n\n\nImportant🧭 核心となる一言要約\n\n\n\n\n確率（Probability）: 「前提（パラメータ \\(\\theta\\)）が分かっているとき、どんなデータ \\(x\\) が得られるか？」を語る指標（順問題 / 未来予測）\n尤度（Likelihood）: 「得られたデータ \\(x\\) が分かっているとき、どの前提（パラメータ \\(\\theta\\)）がもっともらしいか？」を語る指標（逆問題 / 原因推定）"
+  },
+  {
+    "objectID": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#決定的な違いの比較表",
+    "href": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#決定的な違いの比較表",
+    "title": "「確率（Probability）」と「尤度（Likelihood）」の決定的な違い",
+    "section": "2 決定的な違いの比較表",
+    "text": "2 決定的な違いの比較表\n両者の根本的な違いを一覧表で整理します。\n\n\n\n\n\n\n\n\n比較項目\n確率（Probability）\n尤度（Likelihood）\n\n\n\n\n数式表現\n\\(P(X = x \\mid \\theta)\\)\n\\(L(\\theta \\mid x) = P(X = x \\mid \\theta)\\)\n\n\n何が固定（既知）か？\nパラメータ \\(\\theta\\)（母数・コインの性質など）\n観測データ \\(x\\)（標本・実験結果）\n\n\n何が変数（動くもの）か？\nデータ \\(X\\)（起こりうるすべての事象）\nパラメータ \\(\\theta\\)（推定したい候補値）\n\n\n合計 / 積分の値\nすべての事象を足すと 必ず \\(1\\)（\\(100\\%\\)）\n全パラメータで積分しても \\(1\\) にはならない\n\n\nグラフの種類\n確率分布（横軸: データ \\(x\\)）\n尤度関数（横軸: パラメータ \\(\\theta\\)）\n\n\n時間のイメージ\n未来の予測（コインを投げる前）\n過去の解釈・原因推定（コインを投げた後）\n\n\n代表的な問い\n「歪みのないコイン（\\(p=0.5\\)）を10回投げたら、表が7回出る確率は？」\n「コインを10回投げたら表が7回出た。このコインの表が出る確率 \\(p\\) はいくつか？」\n\n\n\n\n\n\n\n\n\nNote⚠️ 尤度は「確率」ではない！\n\n\n\n数式上は \\(L(\\theta \\mid x) = P(X = x \\mid \\theta)\\) と同じ計算式を使いますが、「何を変数として見ているか」が異なります。 尤度 \\(L(\\theta \\mid x)\\) はパラメータ \\(\\theta\\) の関数であり、\\(\\int L(\\theta \\mid x) d\\theta = 1\\) にはなりません。したがって、「パラメータが \\(\\theta\\) である確率」とは呼べず、「尤もらしさ（Likelihood）」と呼びます。"
+  },
+  {
+    "objectID": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#動的ビジュアライゼーションgganimate-による直感理解",
+    "href": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#動的ビジュアライゼーションgganimate-による直感理解",
+    "title": "「確率（Probability）」と「尤度（Likelihood）」の決定的な違い",
+    "section": "3 動的ビジュアライゼーション（gganimate による直感理解）",
+    "text": "3 動的ビジュアライゼーション（gganimate による直感理解）\n両者の関係性を最も直感的に理解できるのが、「確率分布の棒の高さが、リアルタイムに尤度曲線を描いていく」アニメーションです。\n\n3.1 離散型モデル：コイン投げ（二項分布 \\(n=10, k=7\\)）\n「コインを10回投げたら表が7回出た（\\(k=7\\)）」という状況を考えます。\n\n左側【確率の視点】: コインの歪みパラメータ \\(p\\)（表が出る確率）を \\(0.05 \\to 0.95\\) へスキャンしたとき、確率分布全体の形が動きます。その中で「観測された \\(k=7\\)」の赤い棒の高さに注目してください。\n右側【尤度の視点】: 左側で変化する「\\(k=7\\) の棒の高さ」を拾い集め、横軸をパラメータ \\(p\\)、縦軸を尤度としてプロットしたものが右側の赤い曲線です。\n\n\n\n\n【徹底比較】確率（Probability）vs 尤度（Likelihood）のアニメーション\n\n\n\n3.1.1 アニメーションからわかる重要なポイント\n\n左の赤い棒の高さ ＝ 右の赤い点の高さ: どの瞬間（どの \\(p\\)）においても、左側の \\(P(X=7 \\mid p)\\) の値が、そのまま右側の尤度 \\(L(p \\mid X=7)\\) の値になっています。\n最尤推定量（MLE: Maximum Likelihood Estimator）: パラメータ \\(p = 0.70\\) の瞬間に、左側の \\(k=7\\) の棒が最も高くなり、右側の尤度関数の山頂（最大値 \\(\\approx 0.267\\)）に到達します。これが「最尤法（もっとも観測データを生じやすいパラメータを選ぶ手法）」です。\n合計値の違い:\n\n左側はどの瞬間も、青い棒＋赤い棒の合計は常に \\(1.0\\)（\\(100\\%\\)）です。\n右側の赤い曲線の下側の面積（積分値）は \\(\\frac{1}{11} \\approx 0.0909\\) であり、\\(1.0\\) にはなりません。\n\n\n\n\n\n\n3.2 連続型モデル：製品の重量測定（正規分布 \\(x = 12.0\\text{g}, \\sigma = 2.0\\)）\n連続値（身長、体重、測定値など）の場合、特定の一点が得られる確率は数学的に \\(0\\) になります。そのため、確率密度の「高さ（確率密度関数 \\(f(x)\\) の値）」を尤度として用います。\n\n左側【確率密度の視点】: 平均パラメータ \\(\\mu\\) が動くにつれて、正規分布の釣鐘型が左右に移動します。固定された観測点 \\(x = 12.0\\) における垂線の高さ（密度）が上下します。\n右側【尤度関数の視点】: その垂線の高さを \\(\\mu\\) に対してプロットしたものが右側の尤度曲線です。\n\n\n\n\n【連続分布版】確率密度（Probability Density）vs 尤度（Likelihood）のアニメーション"
+  },
+  {
+    "objectID": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#数式と理論計算rコードでの実践",
+    "href": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#数式と理論計算rコードでの実践",
+    "title": "「確率（Probability）」と「尤度（Likelihood）」の決定的な違い",
+    "section": "4 数式と理論計算（Rコードでの実践）",
+    "text": "4 数式と理論計算（Rコードでの実践）\n\n4.1 1. 二項分布における計算\nコインを \\(n = 10\\) 回投げて表が \\(k\\) 回出る確率質量関数（PMF）は以下で表されます。\n\\[P(X = k \\mid p) = \\binom{n}{k} p^k (1-p)^{n-k}\\]\n\n4.1.1 確率の計算（\\(p = 0.5\\) を固定）\n「公平なコイン（\\(p=0.5\\)）を10回投げて表が7回出る確率」： \\[P(X = 7 \\mid p = 0.5) = \\binom{10}{7} (0.5)^7 (0.5)^3 = 120 \\times \\frac{1}{1024} \\approx 0.1172\\]\n\n\nCode\n# 確率の計算 (p = 0.5 固定)\nprob_k7 &lt;- dbinom(7, size = 10, prob = 0.5)\ncat(sprintf(\"P(X = 7 | p = 0.5) = %.4f (約 %.2f%%)\\n\", prob_k7, prob_k7 * 100))\n\n\nP(X = 7 | p = 0.5) = 0.1172 (約 11.72%)\n\n\nCode\n# 確率の合計は 1 になるか？\nsum_probs &lt;- sum(dbinom(0:10, size = 10, prob = 0.5))\ncat(sprintf(\"k=0..10 の確率合計 = %.1f\\n\", sum_probs))\n\n\nk=0..10 の確率合計 = 1.0\n\n\n\n\n4.1.2 尤度の計算（\\(k = 7\\) を固定）\n「表が7回出たとき、コインのパラメータが \\(p = 0.5\\) や \\(p = 0.7\\) である尤度」： \\[L(p = 0.5 \\mid X = 7) = P(X = 7 \\mid p = 0.5) \\approx 0.1172\\] \\[L(p = 0.7 \\mid X = 7) = P(X = 7 \\mid p = 0.7) \\approx 0.2668\\]\n\n\nCode\n# 尤度の計算 (k = 7 固定)\nlik_p05 &lt;- dbinom(7, size = 10, prob = 0.5)\nlik_p07 &lt;- dbinom(7, size = 10, prob = 0.7)\n\ncat(sprintf(\"L(p = 0.5 | X = 7) = %.4f\\n\", lik_p05))\n\n\nL(p = 0.5 | X = 7) = 0.1172\n\n\nCode\ncat(sprintf(\"L(p = 0.7 | X = 7) = %.4f\\n\", lik_p07))\n\n\nL(p = 0.7 | X = 7) = 0.2668\n\n\nCode\ncat(sprintf(\"p=0.7 は p=0.5 に比べて約 %.2f 倍もっともらしい！\\n\", lik_p07 / lik_p05))\n\n\np=0.7 は p=0.5 に比べて約 2.28 倍もっともらしい！\n\n\nCode\n# 尤度関数を p ∈ [0, 1] で積分するとどうなるか？\nlik_integral &lt;- integrate(function(p) dbinom(7, size = 10, prob = p), lower = 0, upper = 1)\ncat(sprintf(\"尤度関数の積分値 = %.4f (≠ 1.0 なので確率ではない)\\n\", lik_integral$value))\n\n\n尤度関数の積分値 = 0.0909 (≠ 1.0 なので確率ではない)"
+  },
+  {
+    "objectID": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#最尤推定法mle-maximum-likelihood-estimation",
+    "href": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#最尤推定法mle-maximum-likelihood-estimation",
+    "title": "「確率（Probability）」と「尤度（Likelihood）」の決定的な違い",
+    "section": "5 最尤推定法（MLE: Maximum Likelihood Estimation）",
+    "text": "5 最尤推定法（MLE: Maximum Likelihood Estimation）\n\n5.1 なぜ「尤度」を最大化するのか？\n現実のデータ分析では、「真のパラメータ \\(\\theta\\)」は神様しか知りません。私たちが手元に持っているのは「観測されたデータ \\(x\\)」だけです。\nそこで、「手元のデータが得られる確率が最も高くなるようなパラメータを選べば、それが最も真相に近いだろう」と考えるのが最尤法（MLE）です。\n\\[\\hat{\\theta}_{\\text{MLE}} = \\arg\\max_{\\theta} L(\\theta \\mid x)\\]\n\n\n5.2 なぜ「対数尤度（Log-Likelihood）」をとるのか？\n独立な \\(n\\) 個のデータ \\(x_1, x_2, \\dots, x_n\\) が得られたとき、全体の尤度は各確率密度の積（掛け算）になります。\n\\[L(\\theta \\mid x_1, \\dots, x_n) = \\prod_{i=1}^n f(x_i \\mid \\theta)\\]\nこのままでは計算が非常に困難（掛け算の微分は複雑、コンピュータ上で \\(0\\) に近くなりすぎてアンダーフローする）なため、自然対数をとった対数尤度関数 \\(\\ell(\\theta)\\) を最大化します。\n\\[\\ell(\\theta) = \\ln L(\\theta \\mid x_1, \\dots, x_n) = \\sum_{i=1}^n \\ln f(x_i \\mid \\theta)\\]\n\n\n\n\n\n\nTip💡 対数をとっても最大値の位置は変わらない\n\n\n\n対数関数 \\(\\ln(y)\\) は単調増加関数（\\(y_1 &lt; y_2 \\iff \\ln y_1 &lt; \\ln y_2\\)）であるため、\\(L(\\theta)\\) を最大化する \\(\\theta\\) と、\\(\\ln L(\\theta)\\) を最大化する \\(\\theta\\) は完全に一致します。\n\n\n\n\n5.3 R による最尤推定の実装例\n\n\nCode\n# 観測データ: コインを10回投げて表が7回\nn &lt;- 10\nk &lt;- 7\n\n# 負の対数尤度関数 (optim は最小化を行うためマイナスをつける)\nneg_log_lik &lt;- function(p) {\n  if (p &lt;= 0 || p &gt;= 1) return(Inf)\n  -dbinom(k, size = n, prob = p, log = TRUE)\n}\n\n# 最適化を実行 (初期値 p = 0.5)\nopt_res &lt;- optim(par = 0.5, fn = neg_log_lik, method = \"L-BFGS-B\", lower = 0.001, upper = 0.999)\n\ncat(\"=== 最尤推定の結果 ===\\n\")\n\n\n=== 最尤推定の結果 ===\n\n\nCode\ncat(sprintf(\"推定されたパラメータ p̂_MLE : %.4f (理論値 k/n = %.1f)\\n\", opt_res$par, k / n))\n\n\n推定されたパラメータ p̂_MLE : 0.7000 (理論値 k/n = 0.7)\n\n\nCode\ncat(sprintf(\"最大対数尤度                 : %.4f\\n\", -opt_res$value))\n\n\n最大対数尤度                 : -1.3212"
+  },
+  {
+    "objectID": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#ベイズ統計における架け橋確率と尤度が出会う場所",
+    "href": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#ベイズ統計における架け橋確率と尤度が出会う場所",
+    "title": "「確率（Probability）」と「尤度（Likelihood）」の決定的な違い",
+    "section": "6 ベイズ統計における架け橋（確率と尤度が出会う場所）",
+    "text": "6 ベイズ統計における架け橋（確率と尤度が出会う場所）\n「尤度はパラメータの確率ではない」と述べましたが、「事前確率（事前知識）」と組み合わせることで、パラメータの確率（事後確率）に変換することができます。これがベイズの定理です。\n\\[\\underbrace{P(\\theta \\mid x)}_{\\text{事後確率（パラメータの確率）}} = \\frac{\\overbrace{P(x \\mid \\theta)}^{\\text{尤度 } L(\\theta \\mid x)} \\times \\overbrace{P(\\theta)}^{\\text{事前確率}}}{\\underbrace{P(x)}_{\\text{周辺尤度（正規化定数）}}}\\]\n\\[P(\\theta \\mid x) \\propto L(\\theta \\mid x) \\times P(\\theta)\\]\n\n\n\n\n\n\nNote🤝 統計学の2大学派における位置づけ\n\n\n\n\n頻度論（古典統計学）: パラメータ \\(\\theta\\) は「固定された1つの未知の真値」。\\(\\theta\\) の確率は考えず、尤度 \\(L(\\theta \\mid x)\\) を最大化（MLE）して点推定・区間推定を行う。\nベイズ統計学: パラメータ \\(\\theta\\) 自体も不確実性を持つ確率変数として扱う。尤度 \\(L(\\theta \\mid x)\\) に事前分布 \\(P(\\theta)\\) を掛けて正規化し、事後分布 \\(P(\\theta \\mid x)\\) を求める。"
+  },
+  {
+    "objectID": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#理解度チェッククイズ",
+    "href": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#理解度チェッククイズ",
+    "title": "「確率（Probability）」と「尤度（Likelihood）」の決定的な違い",
+    "section": "7 理解度チェッククイズ",
+    "text": "7 理解度チェッククイズ\n理解度を試すための3つのクイズです。クリックして正解と解説を確認してください。\n\n\n\n\n\n\nCaution❓ 第1問：「サイコロを1回振って 6 が出る確率」と「6 の目が出たときのサイコロがイカサマである尤度」の違いは？\n\n\n\n\n\n【解答】 - 確率: サイコロの性質（公平: \\(p=1/6\\)）を前提として、未来の結果「6の目」が出る可能性を語る（\\(= 1/6\\)）。 - 尤度: 現実に「6の目」が出たという結果をもとに、サイコロの性質（イカサマ度合い \\(p\\)）の尤もらしさを評価する。例えば「6が出やすいサイコロ（\\(p=0.5\\)）」の尤度は \\(0.5\\)、「公平なサイコロ（\\(p=1/6\\)）」の尤度は約 \\(0.167\\) となり、前者の方が尤度が高くなります。\n\n\n\n\n\n\n\n\n\nCaution❓ 第2問：尤度関数 \\(L(\\theta \\mid x)\\) の最大値が \\(1\\) を超えることはあるか？\n\n\n\n\n\n【解答】 あります（特に連続型確率変数の場合）。 離散型分布の場合、\\(L(\\theta \\mid x) = P(X=x \\mid \\theta) \\le 1\\) ですが、連続型分布（正規分布など）の場合、\\(L(\\theta \\mid x) = f(x \\mid \\theta)\\) は確率密度関数の値（高さ）であるため、分散 \\(\\sigma^2\\) が非常に小さい場合などは \\(1\\) を大きく超えることがあります（例えば \\(\\sigma = 0.1\\) のとき正規分布のピークの高さは約 \\(3.99\\)）。 これは、尤度が確率そのものではない決定的な証拠の1つです。\n\n\n\n\n\n\n\n\n\nCaution❓ 第3問：「尤度比（Likelihood Ratio）」とは何か？何に使えるか？\n\n\n\n\n\n【解答】 2つの異なるパラメータ仮説 \\(\\theta_0\\) と \\(\\theta_1\\) に対する尤度の比率 \\(\\frac{L(\\theta_1 \\mid x)}{L(\\theta_0 \\mid x)}\\) のことです。 「得られたデータのもとで、仮説1は仮説0の何倍尤もらしいか」を数値化でき、統計的仮説検定（尤度比検定）やモデル選択（AIC/BIC）、ベイズ更新のオッズ比などで中心的な役割を果たします。"
+  },
+  {
+    "objectID": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#まとめ",
+    "href": "topics/01_probability_vs_likelihood/probability_vs_likelihood_guide.html#まとめ",
+    "title": "「確率（Probability）」と「尤度（Likelihood）」の決定的な違い",
+    "section": "8 まとめ",
+    "text": "8 まとめ\n\n確率（Probability）は、「パラメータ固定 \\(\\to\\) データの分布」を語る指標であり、足すと必ず \\(1\\) になる。\n尤度（Likelihood）は、「データ固定 \\(\\to\\) パラメータの尤もらしさ」を測る指標であり、パラメータの確率ではない。\n最尤法（MLE）は、手元の観測データの尤度（または対数尤度）を最大化するパラメータを探す王道の手法である。\nベイズ統計では、尤度に事前確率を掛け合わせることで、パラメータの事後確率へと昇華させる。"
+  },
+  {
+    "objectID": "topics/04_p_value/p_value_guide.html",
+    "href": "topics/04_p_value/p_value_guide.html",
+    "title": "「P値（p-value）」の本質を直感的に理解する",
+    "section": "",
+    "text": "統計学やデータ分析を学び始めて、誰もが一度は混乱するのが「P値（p-value）」です。\n論文や実務の分析レポートでは「\\(p &lt; 0.05\\) だから統計的に有意である」という決まり文句が飛び交いますが、「では、P値とは何ですか？」と問われると、多くの人が口ごもってしまいます。\n\n\n\n\n\n\nImportant🧭 核心となる一言要約（Bam!）\n\n\n\nP値とは、「もし仮に何の差も効果もない（すべてが単なる偶然である）世界」において、手元のデータ（またはそれ以上に極端なデータ）が偶然得られてしまう確率のことです。\n\\[\\text{P値} = P(\\text{観測データ、またはそれ以上に極端なデータ} \\mid \\text{帰無仮説 } H_0 \\text{ が真})\\]\n\n\n日常の感覚で言えば、「偶然だと言い張るには、どれくらい無理があるか？（どれくらい奇跡的な珍事か？）」をパーセンテージで表した指標と言えます。"
+  },
+  {
+    "objectID": "topics/04_p_value/p_value_guide.html#はじめになぜp値は統計学最大の難所なのか",
+    "href": "topics/04_p_value/p_value_guide.html#はじめになぜp値は統計学最大の難所なのか",
+    "title": "「P値（p-value）」の本質を直感的に理解する",
+    "section": "",
+    "text": "統計学やデータ分析を学び始めて、誰もが一度は混乱するのが「P値（p-value）」です。\n論文や実務の分析レポートでは「\\(p &lt; 0.05\\) だから統計的に有意である」という決まり文句が飛び交いますが、「では、P値とは何ですか？」と問われると、多くの人が口ごもってしまいます。\n\n\n\n\n\n\nImportant🧭 核心となる一言要約（Bam!）\n\n\n\nP値とは、「もし仮に何の差も効果もない（すべてが単なる偶然である）世界」において、手元のデータ（またはそれ以上に極端なデータ）が偶然得られてしまう確率のことです。\n\\[\\text{P値} = P(\\text{観測データ、またはそれ以上に極端なデータ} \\mid \\text{帰無仮説 } H_0 \\text{ が真})\\]\n\n\n日常の感覚で言えば、「偶然だと言い張るには、どれくらい無理があるか？（どれくらい奇跡的な珍事か？）」をパーセンテージで表した指標と言えます。"
+  },
+  {
+    "objectID": "topics/04_p_value/p_value_guide.html#p値を理解する3つのステップ",
+    "href": "topics/04_p_value/p_value_guide.html#p値を理解する3つのステップ",
+    "title": "「P値（p-value）」の本質を直感的に理解する",
+    "section": "2 P値を理解する「3つのステップ」",
+    "text": "2 P値を理解する「3つのステップ」\nStatQuestの解説でおなじみの思考ステップで、P値の導出プロセスを整理しましょう。\n【ステップ 1】「差がない世界（帰無仮説）」を仮定する\n               ↓\n【ステップ 2】その世界で、手元のデータが出る確率分布を考える\n               ↓\n【ステップ 3】手元のデータ、および「それ以上に極端な領域」の面積（確率）を合算する  ==&gt; これが P値！\n\n2.1 1. 帰無仮説（Null Hypothesis: \\(H_0\\)）\n「何も起きていない」「新薬も偽薬も効果は同じ」「コインは歪んでいない（\\(p=0.5\\)）」という退屈な世界の仮定です。\n\n\n2.2 2. 「手元のデータ」をその世界にプロットする\n帰無仮説が正しいとしたら、どんなデータが普通で、どんなデータが珍しいのかを確率分布（正規分布、t分布、二項分布など）で描きます。\n\n\n2.3 3. 「それ以上に極端（as extreme or more extreme）」を足す\nなぜ「観測データそのものの確率」ではなく「それ以上極端なもの」を足すのでしょうか？ 連続型データでは一点の確率は常にゼロ（\\(P(X=x)=0\\)）ですし、離散型でも「より疑わしい証拠」を含めて裾野全体の面積を測らないと、客観的な判定基準にならないためです。"
+  },
+  {
+    "objectID": "topics/04_p_value/p_value_guide.html#決定的な比較表よくある誤解-vs-統計学の真実",
+    "href": "topics/04_p_value/p_value_guide.html#決定的な比較表よくある誤解-vs-統計学の真実",
+    "title": "「P値（p-value）」の本質を直感的に理解する",
+    "section": "3 決定的な比較表：よくある誤解 vs 統計学の真実",
+    "text": "3 決定的な比較表：よくある誤解 vs 統計学の真実\nP値には、専門家ですら陥りやすい代表的な「3大誤解」があります。\n\n\n\n\n\n\n\n\nよくある誤解（❌）\n統計学の真実（⭕）\n理由・解説\n\n\n\n\n誤解 1: 「P値は、仮説が正しい確率である」\nP値は、帰無仮説が正しいと仮定したもとでデータが得られる確率である\n\\(P(H_0 \\mid \\text{データ})\\) ではなく、\\(P(\\text{データ} \\mid H_0)\\) です（条件付き確率の前後が逆）。\n\n\n誤解 2: 「P値が小さいほど、効果が大きい」\nP値は効果の大きさ（Effect Size）ではない\nサンプルサイズ \\(N\\) が数万〜数百万と極端に大きい場合、ごくわずかな無意味な差でも P値 は \\(0.0001\\) 以下になります。\n\n\n誤解 3: 「\\(p &gt; 0.05\\) だから、差がないことが証明された」\n「差がない」と断定する証拠が不十分なだけ（無罪推定）\n「犯人である証拠が見つからなかった」からといって「無実が完全に証明された」わけではないのと同じです。\n\n\n\n\n\n\n\n\n\nWarning⚠️ 条件付き確率の取り違え（検察官の誤謬）\n\n\n\n「容疑者が無実（帰無仮説）なら、犯行現場に指紋が一致する確率は \\(0.001\\) だ（P値）」からといって、 「容疑者が無実である確率が \\(0.001\\)（\\(0.1\\%\\)）である」と結論づけるのは数学的誤りです。 P値は「前提（\\(H_0\\)）のもとでのデータの珍しさ」であり、「前提そのものの確かさ」ではありません。"
+  },
+  {
+    "objectID": "topics/04_p_value/p_value_guide.html#動的ビジュアライゼーションgganimate-による直感理解",
+    "href": "topics/04_p_value/p_value_guide.html#動的ビジュアライゼーションgganimate-による直感理解",
+    "title": "「P値（p-value）」の本質を直感的に理解する",
+    "section": "4 動的ビジュアライゼーション（gganimate による直感理解）",
+    "text": "4 動的ビジュアライゼーション（gganimate による直感理解）\n検定統計量（\\(z\\) や \\(t\\)）が中心から離れるにつれて、P値がどのように収縮し、判定が「有意差なし」から「統計的有意（Reject \\(H_0\\)）」へ変わるかをアニメーションで体感してみましょう。\n\n左側【帰無仮説の確率分布】: 統計量 \\(z\\) が \\(0 \\to 3\\) へと離れるにつれ、両側の赤い裾野面積（P値）が急速に狭まっていきます。\n右側【P値の減少曲線】: 統計量 \\(z\\) と P値 の関係を描いた曲線です。赤い点が 有意水準 \\(\\alpha = 0.05\\)（点線）を下回った瞬間に「統計的有意（Bam!）」と判定が切り替わります。\n\n\n\n\n【P値の動的メカニズム】統計量の変化と両側P値の収縮アニメーション\n\n\n\n4.0.1 アニメーションからわかる決定的なポイント\n\nP値は「赤色の面積」そのもの: 左側の正規分布で、観測値より外側にある赤い領域の合計が、右側プロットの縦軸（P値）と完全に一致しています。\n中心付近（\\(z \\approx 0\\)）: データが平均近くにあるときは \\(P \\approx 1.0\\) であり、「偶然で普通に起こる範囲」です。\n境界線（\\(z \\approx 1.96\\)）の突破: \\(z\\) が \\(1.96\\) を超えると赤い面積が \\(5\\%\\)（\\(0.05\\)）未満となり、「偶然とは考えにくい」として帰無仮説を棄却します。"
+  },
+  {
+    "objectID": "topics/04_p_value/p_value_guide.html#具体例-1イカサマコインの検証離散型二項検定",
+    "href": "topics/04_p_value/p_value_guide.html#具体例-1イカサマコインの検証離散型二項検定",
+    "title": "「P値（p-value）」の本質を直感的に理解する",
+    "section": "5 具体例 1：イカサマコインの検証（離散型：二項検定）",
+    "text": "5 具体例 1：イカサマコインの検証（離散型：二項検定）\nまずは身近なコイン投げで直感をつかみましょう。\n友人が「このコインは表がよく出る特別なコインだ」と言い、10回投げて8回表が出ました。 このコインは本当にイカサマ（表が出やすい）なのでしょうか？\n\n5.1 1. 仮説の設定\n\n帰無仮説 \\(H_0\\): コインは公平である（表が出る確率 \\(p = 0.5\\)）\n対立仮説 \\(H_1\\): コインは表が出やすい（片側検定: \\(p &gt; 0.5\\)）\n\n\n\n5.2 2. 公平なコインを10回投げたときの確率分布（Rコード）\n\n\nCode\n# 10回投げて表が出る回数 k (0〜10)\nn &lt;- 10\np_null &lt;- 0.5\nk_vals &lt;- 0:n\n\n# 各回数の確率を計算\ndf_coin &lt;- data.frame(\n  k = k_vals,\n  prob = dbinom(k_vals, size = n, prob = p_null)\n) %&gt;%\n  mutate(\n    category = case_when(\n      k &gt;= 8 ~ \"観測値 (8回) 以上 [P値の領域]\",\n      TRUE   ~ \"帰無仮説で想定される通常の範囲\"\n    )\n  )\n\n# プロット作成\nggplot(df_coin, aes(x = factor(k), y = prob, fill = category)) +\n  geom_col(width = 0.7, color = \"#002366\", alpha = 0.85) +\n  geom_text(aes(label = sprintf(\"%.3f\", prob)), vjust = -0.5, size = 3.5, family = \"Hiragino Sans\") +\n  scale_fill_manual(\n    values = c(\n      \"観測値 (8回) 以上 [P値の領域]\" = \"#e74c3c\",\n      \"帰無仮説で想定される通常の範囲\" = \"#3498db\"\n    )\n  ) +\n  scale_y_continuous(labels = scales::percent_format(accuracy = 1), limits = c(0, 0.30)) +\n  labs(\n    title = \"公平なコイン（p = 0.5）を10回投げたときの表の回数分布\",\n    subtitle = \"赤色の棒の合計が「8回以上表が出る確率（片側P値）」を表す\",\n    x = \"表が出た回数 (k)\",\n    y = \"発生確率\",\n    fill = \"\"\n  )\n\n\n\n\n\n\n\n\n\n\n\n5.3 3. P値の計算\n表が8回以上（8回、9回、10回）出る確率の合計を計算します。\n\n\nCode\n# 表が8回、9回、10回出る確率\nprob_8  &lt;- dbinom(8, size = 10, prob = 0.5)\nprob_9  &lt;- dbinom(9, size = 10, prob = 0.5)\nprob_10 &lt;- dbinom(10, size = 10, prob = 0.5)\n\n# 合計（片側P値）\np_val_onesided &lt;- prob_8 + prob_9 + prob_10\n\ncat(sprintf(\"P(X = 8)  = %.4f (約 %.2f%%)\\n\", prob_8, prob_8 * 100))\n\n\nP(X = 8)  = 0.0439 (約 4.39%)\n\n\nCode\ncat(sprintf(\"P(X = 9)  = %.4f (約 %.2f%%)\\n\", prob_9, prob_9 * 100))\n\n\nP(X = 9)  = 0.0098 (約 0.98%)\n\n\nCode\ncat(sprintf(\"P(X = 10) = %.4f (約 %.2f%%)\\n\", prob_10, prob_10 * 100))\n\n\nP(X = 10) = 0.0010 (約 0.10%)\n\n\nCode\ncat(sprintf(\"----------------------------------------\\n\"))\n\n\n----------------------------------------\n\n\nCode\ncat(sprintf(\"片側 P値 (8回以上) = %.4f (約 %.2f%%)\\n\", p_val_onesided, p_val_onesided * 100))\n\n\n片側 P値 (8回以上) = 0.0547 (約 5.47%)\n\n\nCode\n# binom.test() 関数による検定\nbinom_res &lt;- binom.test(x = 8, n = 10, p = 0.5, alternative = \"greater\")\ncat(sprintf(\"binom.test() の片側 P値: %.4f\\n\", binom_res$p.value))\n\n\nbinom.test() の片側 P値: 0.0547\n\n\n\n\n\n\n\n\nNote💡 この結果をどう解釈するか？\n\n\n\n\n公平なコインであっても、10回投げれば約 5.47% の確率でたまたま8回以上表が出ることがあります。\nもし慣例的な基準（有意水準 \\(\\alpha = 0.05 = 5\\%\\)）を採用するならば、\\(0.0547 &gt; 0.05\\) であるため、「偶然でも起こりうる範囲内であり、イカサマとまでは断定できない」という結論になります。"
+  },
+  {
+    "objectID": "topics/04_p_value/p_value_guide.html#具体例-2新薬の臨床試験連続型2標本-t検定",
+    "href": "topics/04_p_value/p_value_guide.html#具体例-2新薬の臨床試験連続型2標本-t検定",
+    "title": "「P値（p-value）」の本質を直感的に理解する",
+    "section": "6 具体例 2：新薬の臨床試験（連続型：2標本 t検定）",
+    "text": "6 具体例 2：新薬の臨床試験（連続型：2標本 t検定）\n次に、実務で最も頻出する「2つのグループの平均値の差」を検証する 2標本 t検定（Student’s t-test） を見てみましょう。\n\n6.1 シナリオ\n\n新しい降圧薬（グループA: 30名）と プラセボ（偽薬、グループB: 30名）の血圧低下量を測定。\nグループAの平均低下量: \\(12.4 \\text{ mmHg}\\)\nグループBの平均低下量: \\(8.1 \\text{ mmHg}\\)\n見かけ上、\\(4.3 \\text{ mmHg}\\) の差があります。これは薬の真の効果でしょうか？それとも単なる患者の個体差（偶然）でしょうか？\n\n\n\nCode\nset.seed(123)\n\n# 模擬データの生成\nn_group &lt;- 30\ngroup_a &lt;- rnorm(n_group, mean = 12.4, sd = 6.0) # 新薬群\ngroup_b &lt;- rnorm(n_group, mean = 8.1,  sd = 6.0) # プラセボ群\n\ndf_patients &lt;- data.frame(\n  group = rep(c(\"新薬群 (Drug A)\", \"プラセボ群 (Placebo B)\"), each = n_group),\n  reduction = c(group_a, group_b)\n)\n\n# 2群の要約統計量\ndf_patients %&gt;%\n  group_by(group) %&gt;%\n  summarise(\n    人数 = n(),\n    標本平均 = mean(reduction),\n    標本標準偏差 = sd(reduction)\n  )\n\n\n# A tibble: 2 × 4\n  group                   人数 標本平均 標本標準偏差\n  &lt;chr&gt;                  &lt;int&gt;    &lt;dbl&gt;        &lt;dbl&gt;\n1 プラセボ群 (Placebo B)    30     9.17         5.01\n2 新薬群 (Drug A)           30    12.1          5.89\n\n\n\n\n6.2 t検定の実行\n\n\nCode\n# Student の 2標本 t検定 (等分散を仮定)\nt_res &lt;- t.test(group_a, group_b, var.equal = TRUE)\nprint(t_res)\n\n\n\n    Two Sample t-test\n\ndata:  group_a and group_b\nt = 2.0884, df = 58, p-value = 0.04117\nalternative hypothesis: true difference in means is not equal to 0\n95 percent confidence interval:\n 0.1222781 5.7724168\nsample estimates:\nmean of x mean of y \n 12.11738   9.17003 \n\n\nCode\nobs_t &lt;- t_res$statistic # 観測された t 値\ndf_val &lt;- t_res$parameter # 自由度 (30 + 30 - 2 = 58)\np_value &lt;- t_res$p.value  # P値\n\n\n\n\n6.3 t分布上で「P値」の領域を可視化する\nt検定における P値 は、「差がない（\\(\\mu_A - \\mu_B = 0\\)）としたときの t分布」において、観測された t値 より外側の裾野の面積（両側検定なら左右両方）です。\n\n\nCode\n# t分布の曲線データ作成\nx_vals &lt;- seq(-4, 4, length.out = 1000)\ndf_tdist &lt;- data.frame(\n  x = x_vals,\n  density = dt(x_vals, df = df_val)\n)\n\nggplot(df_tdist, aes(x = x, y = density)) +\n  # 全体の t 分布曲線\n  geom_line(color = \"#002366\", linewidth = 1.2) +\n  \n  # 右側の棄却・P値領域 (t &gt;= |obs_t|)\n  geom_area(\n    data = filter(df_tdist, x &gt;= abs(obs_t)),\n    fill = \"#e74c3c\", alpha = 0.7\n  ) +\n  # 左側の棄却・P値領域 (t &lt;= -|obs_t|)\n  geom_area(\n    data = filter(df_tdist, x &lt;= -abs(obs_t)),\n    fill = \"#e74c3c\", alpha = 0.7\n  ) +\n  \n  # 観測された t 値の縦線\n  geom_vline(xintercept = c(-abs(obs_t), abs(obs_t)), linetype = \"dashed\", color = \"#e74c3c\", linewidth = 0.8) +\n  \n  # 注釈アノテーション\n  annotate(\n    \"text\", x = abs(obs_t) + 0.4, y = 0.15,\n    label = sprintf(\"観測された t値 = +%.2f\\n(右側の面積 = P/2)\", obs_t),\n    color = \"#e74c3c\", fontface = \"bold\", hjust = 0, family = \"Hiragino Sans\"\n  ) +\n  annotate(\n    \"text\", x = -abs(obs_t) - 0.4, y = 0.15,\n    label = sprintf(\"対称な t値 = -%.2f\\n(左側の面積 = P/2)\", obs_t),\n    color = \"#e74c3c\", fontface = \"bold\", hjust = 1, family = \"Hiragino Sans\"\n  ) +\n  annotate(\n    \"label\", x = 0, y = 0.25,\n    label = sprintf(\"両側の赤色面積の合計 (P値) = %.4f\\n(偶然これほど離れる確率: 約 %.2f%%)\", p_value, p_value * 100),\n    fill = \"#fdf6e3\", color = \"#002366\", fontface = \"bold\", family = \"Hiragino Sans\"\n  ) +\n  labs(\n    title = sprintf(\"帰無仮説のもとでの t分布 (自由度 df = %d) と P値の可視化\", as.integer(df_val)),\n    subtitle = \"赤色に塗られた両側の裾野の面積の合計が、計算された P値 です\",\n    x = \"t 値 (平均値の差を標準誤差で割った指標)\",\n    y = \"確率密度\"\n  )\n\n\n\n\n\n\n\n\n\nこのグラフから直感的に理解できます。 - 山の中央（\\(t = 0\\) 付近）は、「両グループに差がない世界」で普通に起きる結果です。 - 観測された \\(t \\approx 2.09\\) は山の中央から大きく離れており、両端の赤い面積（P値）はわずか 約 4.12% しかありません。 - したがって、「偶然でこの差が出た」と考えるのは非常に不自然であり、新薬には確かな効果があると判断（帰無仮説を棄却）します。"
+  },
+  {
+    "objectID": "topics/04_p_value/p_value_guide.html#具体例-3モンテカルロシミュレーションで体感する差がない世界",
+    "href": "topics/04_p_value/p_value_guide.html#具体例-3モンテカルロシミュレーションで体感する差がない世界",
+    "title": "「P値（p-value）」の本質を直感的に理解する",
+    "section": "7 具体例 3：モンテカルロ・シミュレーションで体感する「差がない世界」",
+    "text": "7 具体例 3：モンテカルロ・シミュレーションで体感する「差がない世界」\n数式や t分布 の定義が抽象的に感じる方のために、「差がない世界」をコンピュータの中で 10,000 回実際に創り出すシミュレーションを行ってみましょう！\n\n7.1 シミュレーションの手順\n\n「完全に差がない世界」のデータ：全員に同じ平均値（効果なし）の薬を与えたと仮定し、乱数を 10,000 回生成します。\n毎回、2グループの平均の差を計算して記録します。\n10,000 回中、手元で観測された差（例: \\(+3.5\\text{ mmHg}\\) 以上、または \\(-3.5\\text{ mmHg}\\) 以下）が何回発生するか数えます。\n\n\n\nCode\nset.seed(42)\nn_sims &lt;- 10000\nn_per_group &lt;- 30\nobserved_diff &lt;- 3.5 # 手元で観測された平均の差 (mmHg)\n\n# 差がない世界 (平均 10, 標準偏差 6 で全員同じ)\nsimulated_diffs &lt;- numeric(n_sims)\n\nfor (i in 1:n_sims) {\n  # 差がない世界から 30名ずつランダム抽出\n  sample_1 &lt;- rnorm(n_per_group, mean = 10, sd = 6)\n  sample_2 &lt;- rnorm(n_per_group, mean = 10, sd = 6)\n  \n  # 2群の平均の差を記録\n  simulated_diffs[i] &lt;- mean(sample_1) - mean(sample_2)\n}\n\n# 観測された差 (|diff| &gt;= 3.5) 以上に極端だった回数をカウント\nextreme_count &lt;- sum(abs(simulated_diffs) &gt;= observed_diff)\nsimulated_p_value &lt;- extreme_count / n_sims\n\ncat(sprintf(\"シミュレーション総回数: %d 回\\n\", n_sims))\n\n\nシミュレーション総回数: 10000 回\n\n\nCode\ncat(sprintf(\"差がない世界で偶然 |差| &gt;= %.1f となった回数: %d 回\\n\", observed_diff, extreme_count))\n\n\n差がない世界で偶然 |差| &gt;= 3.5 となった回数: 244 回\n\n\nCode\ncat(sprintf(\"シミュレーションによる P値: %.4f (約 %.2f%%)\\n\", simulated_p_value, simulated_p_value * 100))\n\n\nシミュレーションによる P値: 0.0244 (約 2.44%)\n\n\n\n\n7.2 シミュレーション結果のヒストグラム\n\n\nCode\ndf_sim &lt;- data.frame(diff = simulated_diffs) %&gt;%\n  mutate(is_extreme = abs(diff) &gt;= observed_diff)\n\nggplot(df_sim, aes(x = diff, fill = is_extreme)) +\n  geom_histogram(binwidth = 0.3, color = \"#ffffff\", alpha = 0.85) +\n  geom_vline(xintercept = c(-observed_diff, observed_diff), linetype = \"dashed\", color = \"#e74c3c\", linewidth = 1) +\n  scale_fill_manual(\n    values = c(\"FALSE\" = \"#3498db\", \"TRUE\" = \"#e74c3c\"),\n    labels = c(\"偶然の範囲内の差\", sprintf(\"|差| &gt;= %.1f (極端な結果)\", observed_diff))\n  ) +\n  annotate(\n    \"label\", x = observed_diff + 0.5, y = 600,\n    label = sprintf(\"観測された差 = +%.1f\\nこの外側の割合が P値\", observed_diff),\n    color = \"#e74c3c\", fontface = \"bold\", hjust = 0, family = \"Hiragino Sans\", fill = \"#fdf6e3\"\n  ) +\n  labs(\n    title = \"「差がない世界」を10,000回シミュレーションしたときの平均値の差\",\n    subtitle = sprintf(\"赤色部分の割合 = %d / 10,000 = %.2f%% (これが P値 の正体！)\", extreme_count, simulated_p_value * 100),\n    x = \"2群の平均値の差 (グループ1 - グループ2)\",\n    y = \"シミュレーションで発生した頻度 (回)\",\n    fill = \"\"\n  )\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nTip🎯 これぞ P値 の本質！\n\n\n\n「P値」とは、難解な積分記号や分布表の向こう側にあるものではなく、「差がない世界でサイコロを10,000回振ったとき、たまたまこれくらい極端な結果が出てしまう割合」そのものです！"
+  },
+  {
+    "objectID": "topics/04_p_value/p_value_guide.html#なぜ有意水準は0.05なのか",
+    "href": "topics/04_p_value/p_value_guide.html#なぜ有意水準は0.05なのか",
+    "title": "「P値（p-value）」の本質を直感的に理解する",
+    "section": "8 なぜ有意水準は「0.05」なのか？",
+    "text": "8 なぜ有意水準は「0.05」なのか？\n歴史的に、近代統計学の父 ロナルド・フィッシャー（Ronald Fisher） が1925年の著書『研究者のための統計的方法』で「20回に1回（\\(5\\% = 0.05\\)）起こる程度の珍しさを目安にしてはどうか」と例示したのが広まり、国際的な慣例となりました。\n\n有意水準 \\(\\alpha = 0.05\\): 「偶然で起こる確率が \\(5\\%\\) 未満なら、偶然とは考えにくく、効果があると判定しよう」\n第1種の過誤（Type I Error / 偽陽性）: 「本当は何の差もないのに、たまたま \\(5\\%\\) のレアケースを引いて『効果あり』と誤判定してしまうリスク」がまさに \\(\\alpha\\) です。\n\n\n\n\n\n\n\nNote近年の統計学の動向：P値ハッキングへの警鐘\n\n\n\nアメリカ統計学会（ASA）は2016年に「P値に関する声明」を出し、「\\(p &lt; 0.05\\) かどうかという機械的な二者択一のみで研究の真偽を判断してはならない」と強く警告しました。 P値だけでなく、効果量（Effect Size）や信頼区間（Confidence Interval）を併せて報告することが強く推奨されています。"
+  },
+  {
+    "objectID": "topics/04_p_value/p_value_guide.html#理解度チェッククイズ全3問",
+    "href": "topics/04_p_value/p_value_guide.html#理解度チェッククイズ全3問",
+    "title": "「P値（p-value）」の本質を直感的に理解する",
+    "section": "9 理解度チェッククイズ（全3問）",
+    "text": "9 理解度チェッククイズ（全3問）\n理解を確実にするためのセルフチェックです。クリックして正解と解説を確認してください。\n\n\n\n\n\n\nCaution❓ 第1問：P値の定義\n\n\n\n\n\n新薬の臨床試験で「血圧降下効果あり、P値 = 0.03」という結果が得られました。この「0.03」の正しい意味は次のうちどれでしょう？\nA. 新薬が効く確率が \\(97\\%\\) である。\nB. 新薬に効果がない（偽薬と同じ）確率が \\(3\\%\\) である。\nC. もし新薬に全く効果がないとしたら、今回のデータほど大きな差が偶然生じる確率が \\(3\\%\\) である。\nD. 実験を100回繰り返したとき、3回は失敗することを意味する。\n\n\n👉 正解と解説を見る\n\n正解: C\n解説:\nP値は「帰無仮説（効果がない）が正しいと仮定したとき」に、観測データ以上の極端な結果が偶然生じる確率です。 AやBは「仮説そのものが正しい確率」と混同しており、ベイズ統計学における事後確率でなければ語れません。\n\n\n\n\n\n\n\n\n\n\nCaution❓ 第2問：サンプルサイズとP値\n\n\n\n\n\nあるウェブサイトのABテストで、ボタンの色を青から緑に変更したところ、購入率が \\(2.00\\%\\) から \\(2.01\\%\\) へわずか \\(0.01\\%\\) 上昇しました。しかし、アクセス数が1,000万人と膨大だったため、検定結果は \\(p = 0.0001\\) となりました。どう解釈すべきでしょうか？\nA. P値が極めて小さいので、ボタンの色を緑に変えると劇的な売上増加が見込める。\nB. 統計的には「差がある（偶然ではない）」と確認できたが、効果の大きさ（\\(0.01\\%\\)）が実務的に価値あるものかはビジネス上の判断が必要である。\nC. P値が小さいのだから、売上への影響度も極めて大きいと断言できる。\n\n\n👉 正解と解説を見る\n\n正解: B\n解説:\nサンプルサイズ \\(N\\) が非常に大きい場合、実質的にはどうでもいい微小な差であっても P値 は \\(0.0001\\) など極小になります。「統計的に有意であること（Statistical Significance）」と「実質的に意味があること（Practical / Clinical Significance）」は全く別物です。\n\n\n\n\n\n\n\n\n\n\nCaution❓ 第3問：p &gt; 0.05 だったときの結論\n\n\n\n\n\n新しい学習アプリの効果を検証したところ、\\(p = 0.18\\) でした（有意水準 \\(\\alpha = 0.05\\)）。このとき導くべき正しい結論はどれでしょう？\nA. この学習アプリには効果が全くないことが科学的に証明された。\nB. 従来の勉強法と学習アプリの効果は完全に同一である。\nC. 今回の実験データからは、「アプリに効果がある」と主張するための十分な証拠が得られなかった（効果がないと断定することはできない）。\n\n\n👉 正解と解説を見る\n\n正解: C\n解説:\n帰無仮説が棄却できなかった場合（\\(p &gt; 0.05\\)）、「帰無仮説が正しい」と証明されたわけではありません。単に「サンプル数が足りなかった（検出力不足）」か「効果が小さかった」ために、偶然のバラツキと区別がつかなかっただけです。「証拠の不在は、不在の証拠にあらず（Absence of evidence is not evidence of absence）」という格言が有名です。"
+  },
+  {
+    "objectID": "topics/04_p_value/p_value_guide.html#まとめ",
+    "href": "topics/04_p_value/p_value_guide.html#まとめ",
+    "title": "「P値（p-value）」の本質を直感的に理解する",
+    "section": "10 まとめ",
+    "text": "10 まとめ\n\nP値の本質: 「何の差もない世界（帰無仮説）」において、手元のデータ以上の極端な事象が偶然起きてしまう確率。\n直感イメージ: 「偶然だと言い張るには、どれくらい苦しいか？」を示すバロメーター。P値が小さいほど「偶然とは考えにくい」ため、効果の存在を認める。\n忘れてはならない注意点:\n\nP値は「仮説が正しい確率」ではない。\nP値は「効果の大きさ」ではない（サンプルサイズに左右される）。\n有意差が出なくても「差がないことが証明された」わけではない。\n信頼区間や効果量とセットで評価することが現代統計学の鉄則！"
   }
 ]
