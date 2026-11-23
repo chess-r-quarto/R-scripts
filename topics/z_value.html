@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>標準正規分布から偏差値への変換ビジュアライザー</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Noto Sans JP -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+        }
+        /* スライダーのカスタマイズ */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+            cursor: pointer;
+        }
+        input[type="range"]::-webkit-slider-runnable-track {
+            height: 8px;
+            border-radius: 9999px;
+            background: #e2e8f0;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 9999px;
+            background: #e11d48;
+            border: 3px solid #ffffff;
+            box-shadow: 0 2px 6px rgba(225, 29, 72, 0.4);
+            margin-top: -7px;
+            transition: transform 0.15s ease;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+        input[type="range"]::-moz-range-track {
+            height: 8px;
+            border-radius: 9999px;
+            background: #e2e8f0;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 22px;
+            height: 22px;
+            border-radius: 9999px;
+            background: #e11d48;
+            border: 3px solid #ffffff;
+            box-shadow: 0 2px 6px rgba(225, 29, 72, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen py-6 px-3 sm:px-6 lg:px-8">
+
+    <div class="max-w-5xl mx-auto space-y-5">
+
+        <!-- ヘッダー -->
+        <header class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold tracking-wide mb-2">
+                    <span>STATISTICS VISUALIZER</span>
+                </div>
+                <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+                    標準正規分布 → 偏差値 変換ビジュアライザー
+                </h1>
+                <p class="text-sm text-slate-500 mt-1">
+                    元の点数から <span class="font-semibold text-indigo-600">zスコア</span> になり、<span class="font-semibold text-emerald-600">10倍して50を足す（偏差値）</span> 過程をグラフで体感できます。
+                </p>
+            </div>
+            <!-- 連続アニメーション再生ボタン -->
+            <button id="playAllBtn" type="button" class="shrink-0 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-sm shadow-md shadow-indigo-200 transition cursor-pointer">
+                <svg id="playIcon" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                <span id="playBtnText">連続アニメーション再生</span>
+            </button>
+        </header>
+
+        <!-- ステップ切り替えパネル -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-5 space-y-4">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
+                <button type="button" data-step="0" class="step-btn text-left p-3.5 rounded-xl border-2 transition cursor-pointer">
+                    <div class="text-[11px] font-bold uppercase tracking-wider opacity-75">STEP 0</div>
+                    <div class="font-bold text-sm mt-0.5">元のテスト</div>
+                    <div class="text-xs opacity-80 mt-1">平均 40 / SD 8</div>
+                </button>
+                <button type="button" data-step="1" class="step-btn text-left p-3.5 rounded-xl border-2 transition cursor-pointer">
+                    <div class="text-[11px] font-bold uppercase tracking-wider opacity-75">STEP 1</div>
+                    <div class="font-bold text-sm mt-0.5">標準正規分布 (z)</div>
+                    <div class="text-xs opacity-80 mt-1">平均 0 / SD 1</div>
+                </button>
+                <button type="button" data-step="2" class="step-btn text-left p-3.5 rounded-xl border-2 transition cursor-pointer">
+                    <div class="text-[11px] font-bold uppercase tracking-wider opacity-75">STEP 2</div>
+                    <div class="font-bold text-sm mt-0.5">SDを10に揃える</div>
+                    <div class="text-xs opacity-80 mt-1">横に10倍 (平均0 / SD10)</div>
+                </button>
+                <button type="button" data-step="3" class="step-btn text-left p-3.5 rounded-xl border-2 transition cursor-pointer">
+                    <div class="text-[11px] font-bold uppercase tracking-wider opacity-75">STEP 3</div>
+                    <div class="font-bold text-sm mt-0.5">平均を50へ移動</div>
+                    <div class="text-xs opacity-80 mt-1">偏差値 (平均50 / SD10)</div>
+                </button>
+            </div>
+
+            <!-- 現在のステップの数式と解説 -->
+            <div id="stepInfoBox" class="rounded-xl bg-slate-50 border border-slate-200 p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                <div class="space-y-1">
+                    <div class="flex items-center gap-2">
+                        <span id="stepBadge" class="px-2.5 py-0.5 rounded-md text-xs font-bold bg-indigo-100 text-indigo-700">STEP 1</span>
+                        <h2 id="stepTitle" class="font-bold text-slate-900 text-sm sm:text-base">標準正規分布（zスコア）</h2>
+                    </div>
+                    <p id="stepDesc" class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                        平均を引いて標準偏差で割ることで、どんなテストも「平均0・標準偏差1」の共通モノサシに揃います。
+                    </p>
+                </div>
+                <div id="stepFormula" class="shrink-0 px-4 py-2.5 rounded-lg bg-white border border-slate-200 font-mono text-sm sm:text-base font-bold text-indigo-700 text-center shadow-xs">
+                    z = (x - 40) / 8
+                </div>
+            </div>
+        </section>
+
+        <!-- メイングラフエリア -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6 space-y-4">
+            <!-- 凡例と表示オプション -->
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-medium text-slate-600">
+                    <span class="inline-flex items-center gap-1.5">
+                        <span id="legendCurveColor" class="w-3 h-3 rounded-full bg-indigo-600"></span>
+                        現在の分布曲線
+                    </span>
+                    <span class="inline-flex items-center gap-1.5">
+                        <span class="w-3 h-3 rounded-sm bg-rose-500/30 border border-rose-600"></span>
+                        上位%の面積（変換しても不変）
+                    </span>
+                    <span class="inline-flex items-center gap-1.5">
+                        <span class="w-4 border-t-2 border-dashed border-slate-400"></span>
+                        基準：標準正規分布 (0, 1)
+                    </span>
+                </div>
+
+                <!-- 表示モード切り替え（σゾーン＆高さスケール） -->
+                <div class="flex flex-wrap items-center gap-3">
+                    <label class="inline-flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer select-none">
+                        <input id="showSigmaZones" type="checkbox" checked class="w-4 h-4 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500 cursor-pointer">
+                        <span class="inline-flex items-center gap-1">
+                            <span id="legendZone1" class="w-2.5 h-2.5 rounded-xs bg-indigo-500/30 border border-indigo-400/50 inline-block"></span>
+                            ±1σ(68%)
+                        </span>
+                        <span class="inline-flex items-center gap-1">
+                            <span id="legendZone2" class="w-2.5 h-2.5 rounded-xs bg-indigo-500/15 border border-indigo-300/50 inline-block"></span>
+                            ±2σ(95%)
+                        </span>
+                    </label>
+
+                    <!-- 縦軸（高さ）表示モード切り替え -->
+                    <div class="inline-flex rounded-lg bg-slate-100 p-0.5 border border-slate-200 text-[11px] font-bold" role="group" aria-label="グラフの高さ表示モード">
+                        <button id="scaleAdjustedBtn" type="button" class="px-2.5 py-1 rounded-md bg-white text-slate-800 shadow-xs transition cursor-pointer" aria-pressed="true">
+                            見やすさ補正
+                        </button>
+                        <button id="scaleStrictBtn" type="button" class="px-2.5 py-1 rounded-md text-slate-500 hover:text-slate-800 transition cursor-pointer" aria-pressed="false">
+                            面積一定(厳密)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- レスポンシブCanvasコンテナ -->
+            <div id="canvasContainer" class="relative w-full h-[320px] sm:h-[400px] bg-slate-50/70 rounded-xl border border-slate-200 overflow-hidden touch-none">
+                <canvas id="distCanvas" role="img" aria-label="正規分布と偏差値変換のグラフ" class="block w-full h-full cursor-ew-resize">
+                    このブラウザはCanvas要素に対応していません。標準正規分布（平均0、標準偏差1）を横に10倍して右に50移動すると、平均50、標準偏差10の偏差値になります。
+                </canvas>
+            </div>
+
+            <!-- インタラクティブ操作バー（立ち位置スライダー＆プリセット） -->
+            <div class="bg-slate-50 rounded-xl border border-slate-200 p-4 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <label for="zSlider" class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-rose-600 inline-block"></span>
+                        赤い点（立ち位置）を動かしてみる
+                    </label>
+                    <div class="flex flex-wrap gap-1.5">
+                        <button type="button" data-z="0" class="preset-btn px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-white border border-slate-200 hover:border-rose-400 hover:text-rose-600 transition cursor-pointer">
+                            平均 (z=0)
+                        </button>
+                        <button type="button" data-z="0.75" class="preset-btn px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-white border border-slate-200 hover:border-rose-400 hover:text-rose-600 transition cursor-pointer">
+                            例1: 46点 (z=+0.75)
+                        </button>
+                        <button type="button" data-z="1.0" class="preset-btn px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-white border border-slate-200 hover:border-rose-400 hover:text-rose-600 transition cursor-pointer">
+                            例2: +1σ (z=+1.0 / 偏差値60)
+                        </button>
+                        <button type="button" data-z="2.0" class="preset-btn px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-white border border-slate-200 hover:border-rose-400 hover:text-rose-600 transition cursor-pointer">
+                            例3: +2σ (z=+2.0 / 偏差値70)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <span class="text-xs font-mono font-semibold text-slate-500 w-10 text-right">-3.0σ</span>
+                    <input id="zSlider" type="range" min="-3" max="3" step="0.05" value="1.0" aria-label="立ち位置（zスコア）のスライダー" aria-valuetext="zスコア +1.00、偏差値 60.0、上位 15.9%" class="w-full">
+                    <span class="text-xs font-mono font-semibold text-slate-500 w-10">+3.0σ</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 数値比較カード（どこに動かしても上位％が不変であることを強調） -->
+        <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+                <div class="text-xs font-bold text-slate-500">元のテストの点数</div>
+                <div id="cardRaw" class="text-2xl sm:text-3xl font-extrabold text-slate-800 mt-1 font-mono">48.0点</div>
+                <div class="text-[11px] text-slate-400 mt-1">平均40 / 標準偏差8 の場合</div>
+            </div>
+            <div class="bg-white rounded-2xl shadow-sm border border-indigo-200 p-4 bg-indigo-50/30">
+                <div class="text-xs font-bold text-indigo-600">zスコア（標準化得点）</div>
+                <div id="cardZ" class="text-2xl sm:text-3xl font-extrabold text-indigo-700 mt-1 font-mono">+1.00</div>
+                <div class="text-[11px] text-indigo-400 mt-1">平均0 / 標準偏差1</div>
+            </div>
+            <div class="bg-white rounded-2xl shadow-sm border border-emerald-200 p-4 bg-emerald-50/30">
+                <div class="text-xs font-bold text-emerald-600">日本の偏差値 (50 + 10z)</div>
+                <div id="cardT" class="text-2xl sm:text-3xl font-extrabold text-emerald-700 mt-1 font-mono">60.0</div>
+                <div class="text-[11px] text-emerald-500 mt-1">平均50 / 標準偏差10</div>
+            </div>
+            <div class="bg-white rounded-2xl shadow-sm border border-rose-200 p-4 bg-rose-50/30">
+                <div class="text-xs font-bold text-rose-600">全体での位置（常に不変！）</div>
+                <div id="cardTop" class="text-2xl sm:text-3xl font-extrabold text-rose-600 mt-1 font-mono">上位 15.9%</div>
+                <div id="cardPercentile" class="text-[11px] text-rose-400 mt-1">下から 84.1 パーセンタイル</div>
+            </div>
+        </section>
+
+        <!-- 解説フッター -->
+        <footer class="bg-slate-800 text-slate-200 rounded-2xl p-5 text-xs sm:text-sm leading-relaxed space-y-2">
+            <p class="font-bold text-white">💡 グラフからわかる本質</p>
+            <p class="text-slate-300">
+                STEP 0 → STEP 1 → STEP 2 → STEP 3 とグラフが縮んだり、横に10倍伸びたり、右に50スライドしても、赤い線より右側の塗りつぶし面積（<span class="text-rose-300 font-bold">上位何%にいるか</span>）は1ミリも変わりません。右上の「面積一定(厳密)」に切り替えると、横に10倍伸ばしたときに全体の面積(=1)を保つため山の高さが1/10に低くなる様子も確認できます。
+            </p>
+            <p class="text-[11px] sm:text-xs text-slate-400 pt-1 border-t border-slate-700/80">
+                ※上位%や±1σ(68%)・±2σ(95%)の数値は、データが<strong>正規分布に従うと仮定した場合</strong>の理論値です。実際のテスト結果は分布が歪むことも多く、極端に偏ったデータでは偏差値が0未満や100を超える場合もあります。
+            </p>
+        </footer>
+
+    </div>
+
+    <script>
+        (function () {
+            'use strict';
+
+            // ==========================================
+            // ステップ定義（平均・標準偏差・説明テキスト・X軸ラベル）
+            // ==========================================
+            const STEPS = [
+                {
+                    id: 0,
+                    badge: 'STEP 0',
+                    title: '元のテストの分布（平均40点・SD 8の例）',
+                    desc: '平均40点・標準偏差8点のテスト分布です。このままでは平均や散らばりが異なる他のテストと公平に比べられません。',
+                    formula: '元の点数 = x  (平均 40, SD 8)',
+                    xAxisLabel: 'テストの得点 x（点）',
+                    mean: 40,
+                    sd: 8,
+                    theme: 'slate'
+                },
+                {
+                    id: 1,
+                    badge: 'STEP 1',
+                    title: '標準正規分布（zスコアへの変換）',
+                    desc: '平均(40)を引いて中心を0に合わせ、標準偏差(8)で割って幅を1に圧縮します。世界共通のモノサシ（平均0・標準偏差1）の完成です。',
+                    formula: 'z = (x - 40) / 8',
+                    xAxisLabel: 'zスコア（平均からの距離を標準偏差の個数で表示）',
+                    mean: 0,
+                    sd: 1,
+                    theme: 'indigo'
+                },
+                {
+                    id: 2,
+                    badge: 'STEP 2',
+                    title: '散らばり（SD）だけを10に揃える',
+                    desc: 'まず「標準偏差（幅）」だけを10に揃えるため、平均(0)の位置は変えずにグラフを横に10倍引き伸ばします。',
+                    formula: '値 = 10 × z  (平均 0, SD 10)',
+                    xAxisLabel: '10 × z（標準偏差を10に拡大）',
+                    mean: 0,
+                    sd: 10,
+                    theme: 'indigo'
+                },
+                {
+                    id: 3,
+                    badge: 'STEP 3',
+                    title: '中心（平均）だけを50へ移動 ＝ 偏差値の完成！',
+                    desc: '最後に「平均」だけを右に+50平行移動します。形や幅は変えずに位置だけ動かすことで、平均50・標準偏差10の「偏差値」が完成します。',
+                    formula: '偏差値 = 50 + 10z',
+                    xAxisLabel: '偏差値（50 + 10z）',
+                    mean: 50,
+                    sd: 10,
+                    theme: 'emerald'
+                }
+            ];
+
+            // ==========================================
+            // DOM 要素の取得
+            // ==========================================
+            const canvas = document.getElementById('distCanvas');
+            const canvasContainer = document.getElementById('canvasContainer');
+            const ctx = canvas.getContext('2d');
+
+            const stepBtns = document.querySelectorAll('.step-btn');
+            const presetBtns = document.querySelectorAll('.preset-btn');
+            const playAllBtn = document.getElementById('playAllBtn');
+            const playBtnText = document.getElementById('playBtnText');
+            const zSlider = document.getElementById('zSlider');
+            const showSigmaZonesCheckbox = document.getElementById('showSigmaZones');
+            const scaleAdjustedBtn = document.getElementById('scaleAdjustedBtn');
+            const scaleStrictBtn = document.getElementById('scaleStrictBtn');
+
+            const stepBadge = document.getElementById('stepBadge');
+            const stepTitle = document.getElementById('stepTitle');
+            const stepDesc = document.getElementById('stepDesc');
+            const stepFormula = document.getElementById('stepFormula');
+            const legendCurveColor = document.getElementById('legendCurveColor');
+            const legendZone1 = document.getElementById('legendZone1');
+            const legendZone2 = document.getElementById('legendZone2');
+
+            const cardRaw = document.getElementById('cardRaw');
+            const cardZ = document.getElementById('cardZ');
+            const cardT = document.getElementById('cardT');
+            const cardTop = document.getElementById('cardTop');
+            const cardPercentile = document.getElementById('cardPercentile');
+
+            // ==========================================
+            // アプリ状態管理
+            // ==========================================
+            let currentStep = 1; // 初期状態はSTEP 1（標準正規分布）
+            let userZ = 1.0;     // 初期の立ち位置は z = +1.0（偏差値60）
+            let showZones = true;
+            let heightScaleMode = 'adjusted'; // 'adjusted'（見やすさ補正） | 'strict'（面積一定）
+            let isPlayingSequence = false;
+            let sequenceCancelToken = 0;
+            let isDraggingCanvas = false;
+
+            // OSの「視差効果を減らす (prefers-reduced-motion)」設定を監視
+            const motionQuery = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+            let prefersReducedMotion = motionQuery ? motionQuery.matches : false;
+            if (motionQuery && motionQuery.addEventListener) {
+                motionQuery.addEventListener('change', (e) => {
+                    prefersReducedMotion = e.matches;
+                });
+            }
+
+            // アニメーション補間用ステート
+            const animState = {
+                mean: STEPS[currentStep].mean,
+                sd: STEPS[currentStep].sd,
+                fromMean: STEPS[currentStep].mean,
+                fromSd: STEPS[currentStep].sd,
+                toMean: STEPS[currentStep].mean,
+                toSd: STEPS[currentStep].sd,
+                startTime: 0,
+                duration: 850,
+                rafId: null
+            };
+
+            // アニメーション中または連続再生中かどうかを判定（ドラッグ誤爆防止用）
+            function isAnimating() {
+                return isPlayingSequence || animState.rafId !== null;
+            }
+
+            function updateCanvasCursor() {
+                canvas.style.cursor = isAnimating() ? 'not-allowed' : 'ew-resize';
+            }
+
+            // ワールドX軸範囲（全ステップが一望できる固定スケール）
+            const WORLD_MIN_X = -35;
+            const WORLD_MAX_X = 85;
+            const WORLD_SPAN_X = WORLD_MAX_X - WORLD_MIN_X;
+
+            // ==========================================
+            // 数学・統計ヘルパー関数
+            // ==========================================
+            // 正規分布の確率密度関数 (PDF)
+            function normalPDF(x, mean, sd) {
+                const safeSd = Math.max(sd, 0.01);
+                const exponent = -0.5 * Math.pow((x - mean) / safeSd, 2);
+                return Math.exp(exponent) / (safeSd * Math.sqrt(2 * Math.PI));
+            }
+
+            // 誤差関数 erf(x) の高精度近似（Abramowitz & Stegun 7.1.26）
+            function erf(x) {
+                const sign = x >= 0 ? 1 : -1;
+                const ax = Math.abs(x);
+                const a1 = 0.254829592;
+                const a2 = -0.284496736;
+                const a3 = 1.421413741;
+                const a4 = -1.453152027;
+                const a5 = 1.061405429;
+                const p = 0.3275911;
+                const t = 1.0 / (1.0 + p * ax);
+                const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-ax * ax);
+                return sign * y;
+            }
+
+            // 標準正規分布の累積分布関数 Φ(z)（下側確率）
+            function normalCDF(z) {
+                return 0.5 * (1 + erf(z / Math.SQRT2));
+            }
+
+            // 滑らかなイージング関数（EaseInOutCubic）
+            function easeInOutCubic(t) {
+                return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+            }
+
+            // 角丸矩形描画ヘルパー（全ブラウザ互換）
+            function drawRoundedRect(context, x, y, w, h, r) {
+                context.beginPath();
+                context.moveTo(x + r, y);
+                context.lineTo(x + w - r, y);
+                context.quadraticCurveTo(x + w, y, x + w, y + r);
+                context.lineTo(x + w, y + h - r);
+                context.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+                context.lineTo(x + r, y + h);
+                context.quadraticCurveTo(x, y + h, x, y + h - r);
+                context.lineTo(x, y + r);
+                context.quadraticCurveTo(x, y, x + r, y);
+                context.closePath();
+            }
+
+            // ==========================================
+            // UI更新とアニメーション制御
+            // ==========================================
+            function updateScaleToggleUI() {
+                const isAdjusted = heightScaleMode === 'adjusted';
+                scaleAdjustedBtn.setAttribute('aria-pressed', String(isAdjusted));
+                scaleStrictBtn.setAttribute('aria-pressed', String(!isAdjusted));
+
+                if (isAdjusted) {
+                    scaleAdjustedBtn.className = 'px-2.5 py-1 rounded-md bg-white text-slate-800 shadow-xs transition cursor-pointer';
+                    scaleStrictBtn.className = 'px-2.5 py-1 rounded-md text-slate-500 hover:text-slate-800 transition cursor-pointer';
+                } else {
+                    scaleAdjustedBtn.className = 'px-2.5 py-1 rounded-md text-slate-500 hover:text-slate-800 transition cursor-pointer';
+                    scaleStrictBtn.className = 'px-2.5 py-1 rounded-md bg-white text-slate-800 shadow-xs transition cursor-pointer';
+                }
+            }
+
+            function updateUI() {
+                const step = STEPS[currentStep];
+
+                // ステップボタンのスタイル更新
+                stepBtns.forEach(btn => {
+                    const id = parseInt(btn.dataset.step, 10);
+                    const isActive = id === currentStep;
+                    btn.className = 'step-btn text-left p-3.5 rounded-xl border-2 transition cursor-pointer ';
+
+                    if (isActive) {
+                        if (id === 3) {
+                            btn.className += 'bg-emerald-50 border-emerald-500 text-emerald-900 shadow-sm';
+                        } else if (id === 0) {
+                            btn.className += 'bg-slate-100 border-slate-600 text-slate-900 shadow-sm';
+                        } else {
+                            btn.className += 'bg-indigo-50 border-indigo-600 text-indigo-900 shadow-sm';
+                        }
+                    } else {
+                        btn.className += 'bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50';
+                    }
+                });
+
+                // ステップ詳細テキスト＆凡例スウォッチ色更新
+                stepBadge.textContent = step.badge;
+                stepTitle.textContent = step.title;
+                stepDesc.textContent = step.desc;
+                stepFormula.textContent = step.formula;
+
+                if (currentStep === 3) {
+                    stepBadge.className = 'px-2.5 py-0.5 rounded-md text-xs font-bold bg-emerald-100 text-emerald-700';
+                    stepFormula.className = 'shrink-0 px-4 py-2.5 rounded-lg bg-white border border-emerald-200 font-mono text-sm sm:text-base font-bold text-emerald-700 text-center shadow-xs';
+                    legendCurveColor.className = 'w-3 h-3 rounded-full bg-emerald-600';
+                    legendZone1.className = 'w-2.5 h-2.5 rounded-xs bg-emerald-500/30 border border-emerald-500/50 inline-block';
+                    legendZone2.className = 'w-2.5 h-2.5 rounded-xs bg-emerald-500/15 border border-emerald-400/50 inline-block';
+                } else if (currentStep === 0) {
+                    stepBadge.className = 'px-2.5 py-0.5 rounded-md text-xs font-bold bg-slate-200 text-slate-700';
+                    stepFormula.className = 'shrink-0 px-4 py-2.5 rounded-lg bg-white border border-slate-300 font-mono text-sm sm:text-base font-bold text-slate-800 text-center shadow-xs';
+                    legendCurveColor.className = 'w-3 h-3 rounded-full bg-slate-700';
+                    legendZone1.className = 'w-2.5 h-2.5 rounded-xs bg-slate-500/30 border border-slate-500/50 inline-block';
+                    legendZone2.className = 'w-2.5 h-2.5 rounded-xs bg-slate-500/15 border border-slate-400/50 inline-block';
+                } else {
+                    stepBadge.className = 'px-2.5 py-0.5 rounded-md text-xs font-bold bg-indigo-100 text-indigo-700';
+                    stepFormula.className = 'shrink-0 px-4 py-2.5 rounded-lg bg-white border border-indigo-200 font-mono text-sm sm:text-base font-bold text-indigo-700 text-center shadow-xs';
+                    legendCurveColor.className = 'w-3 h-3 rounded-full bg-indigo-600';
+                    legendZone1.className = 'w-2.5 h-2.5 rounded-xs bg-indigo-500/30 border border-indigo-400/50 inline-block';
+                    legendZone2.className = 'w-2.5 h-2.5 rounded-xs bg-indigo-500/15 border border-indigo-300/50 inline-block';
+                }
+
+                // プリセットボタンのハイライト
+                presetBtns.forEach(btn => {
+                    const pz = parseFloat(btn.dataset.z);
+                    if (Math.abs(pz - userZ) < 0.01) {
+                        btn.classList.add('border-rose-500', 'bg-rose-50', 'text-rose-700');
+                        btn.classList.remove('bg-white', 'border-slate-200');
+                    } else {
+                        btn.classList.remove('border-rose-500', 'bg-rose-50', 'text-rose-700');
+                        btn.classList.add('bg-white', 'border-slate-200');
+                    }
+                });
+
+                // 下部の4つの数値カードを更新
+                const rawScore = 40 + userZ * 8;
+                const tScore = 50 + userZ * 10;
+                const cdf = normalCDF(userZ);
+                const topPercent = Math.max(0.01, (1 - cdf) * 100);
+                const percentile = Math.min(99.99, cdf * 100);
+                const zFormatted = `${userZ > 0 ? '+' : ''}${userZ.toFixed(2)}`;
+                const topFormatted = `${topPercent < 0.1 ? topPercent.toFixed(2) : topPercent.toFixed(1)}%`;
+
+                cardRaw.textContent = `${rawScore.toFixed(1)}点`;
+                cardZ.textContent = zFormatted;
+                cardT.textContent = `${tScore.toFixed(1)}`;
+                cardTop.textContent = `上位 ${topFormatted}`;
+                cardPercentile.textContent = `下から ${percentile.toFixed(1)} パーセンタイル`;
+
+                // アクセシビリティ属性の動的更新
+                zSlider.setAttribute('aria-valuetext', `zスコア ${zFormatted}、偏差値 ${tScore.toFixed(1)}、上位 ${topFormatted}`);
+                canvas.setAttribute(
+                    'aria-label',
+                    `${step.badge} ${step.title} のグラフ。平均${step.mean}、標準偏差${step.sd}。現在の立ち位置はzスコア ${zFormatted}、偏差値 ${tScore.toFixed(1)}、上位 ${topFormatted}。`
+                );
+
+                updateScaleToggleUI();
+                updateCanvasCursor();
+            }
+
+            // ステップ変更＋滑らかな補間アニメーション開始
+            function setStep(newStep, immediate = false) {
+                currentStep = newStep;
+                const target = STEPS[newStep];
+
+                if (animState.rafId !== null) {
+                    cancelAnimationFrame(animState.rafId);
+                    animState.rafId = null;
+                }
+
+                // reduced-motion設定時はアニメーションをスキップして即座に切り替え
+                if (immediate || prefersReducedMotion) {
+                    animState.mean = target.mean;
+                    animState.sd = target.sd;
+                    updateUI();
+                    drawCanvas();
+                    return;
+                }
+
+                animState.fromMean = animState.mean;
+                animState.fromSd = animState.sd;
+                animState.toMean = target.mean;
+                animState.toSd = target.sd;
+                animState.startTime = performance.now();
+
+                isDraggingCanvas = false;
+                updateUI();
+
+                function tick(now) {
+                    const elapsed = now - animState.startTime;
+                    const progress = Math.min(elapsed / animState.duration, 1);
+                    const eased = easeInOutCubic(progress);
+
+                    animState.mean = animState.fromMean + (animState.toMean - animState.fromMean) * eased;
+                    animState.sd = animState.fromSd + (animState.toSd - animState.fromSd) * eased;
+
+                    drawCanvas();
+
+                    if (progress < 1) {
+                        animState.rafId = requestAnimationFrame(tick);
+                    } else {
+                        animState.mean = animState.toMean;
+                        animState.sd = animState.toSd;
+                        animState.rafId = null;
+                        updateCanvasCursor();
+                        drawCanvas();
+                    }
+                }
+
+                animState.rafId = requestAnimationFrame(tick);
+                updateCanvasCursor();
+            }
+
+            // 再生ボタンのUI状態を元に戻す共通処理
+            function resetPlayButtonUI() {
+                isPlayingSequence = false;
+                playBtnText.textContent = '連続アニメーション再生';
+                playAllBtn.classList.remove('bg-rose-600', 'hover:bg-rose-700');
+                playAllBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+                updateCanvasCursor();
+            }
+
+            // 連続アニメーション再生（STEP 0 -> 1 -> 2 -> 3）
+            async function playSequence() {
+                if (isPlayingSequence) {
+                    stopSequence();
+                    return;
+                }
+
+                isPlayingSequence = true;
+                isDraggingCanvas = false;
+                const myToken = ++sequenceCancelToken;
+                playBtnText.textContent = '再生中...（クリックで停止）';
+                playAllBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+                playAllBtn.classList.add('bg-rose-600', 'hover:bg-rose-700');
+                updateCanvasCursor();
+
+                const sequence = currentStep === 0 ? [1, 2, 3] : [0, 1, 2, 3];
+                const stepDelay = prefersReducedMotion ? 1100 : 1450;
+
+                try {
+                    for (let i = 0; i < sequence.length; i++) {
+                        if (myToken !== sequenceCancelToken) return;
+                        setStep(sequence[i]);
+                        await new Promise(resolve => setTimeout(resolve, stepDelay));
+                    }
+                } finally {
+                    // 正常完了・途中中断・例外のどの経路でも現在のトークンであれば確実にUIをリセット
+                    if (myToken === sequenceCancelToken) {
+                        resetPlayButtonUI();
+                    }
+                }
+            }
+
+            function stopSequence() {
+                sequenceCancelToken++;
+                resetPlayButtonUI();
+            }
+
+            // ==========================================
+            // Canvas サイズ調整とグラフ描画
+            // ==========================================
+            function getPlotGeometry() {
+                const rect = canvasContainer.getBoundingClientRect();
+                const width = Math.max(rect.width, 1);
+                const height = Math.max(rect.height, 1);
+                const padLeft = 40;   // Y軸ラベル「確率密度」用の余白
+                const padRight = 24;
+                const padTop = 54;
+                const padBottom = 52; // X軸目盛り＋X軸ラベル用の余白
+                return {
+                    width,
+                    height,
+                    padLeft,
+                    padRight,
+                    padTop,
+                    padBottom,
+                    plotW: Math.max(width - padLeft - padRight, 1),
+                    plotH: Math.max(height - padTop - padBottom, 1)
+                };
+            }
+
+            function resizeCanvas() {
+                try {
+                    const { width, height } = getPlotGeometry();
+                    const dpr = window.devicePixelRatio || 1;
+
+                    canvas.width = Math.round(width * dpr);
+                    canvas.height = Math.round(height * dpr);
+                    canvas.style.width = `${width}px`;
+                    canvas.style.height = `${height}px`;
+
+                    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                    drawCanvas();
+                } catch (err) {
+                    console.error('Canvasリサイズエラー:', err);
+                }
+            }
+
+            function drawCanvas() {
+                try {
+                    const { width, height, padLeft, padRight, padTop, plotW, plotH } = getPlotGeometry();
+                    ctx.clearRect(0, 0, width, height);
+
+                    const baseY = padTop + plotH;
+                    const toCanvasX = (wx) => padLeft + ((wx - WORLD_MIN_X) / WORLD_SPAN_X) * plotW;
+
+                    // 縦軸スケーリング：面積一定(厳密) vs 見やすさ補正
+                    const refPeakSD1 = normalPDF(0, 0, 1);
+                    const currentPeakPDF = normalPDF(animState.mean, animState.mean, animState.sd);
+                    const visualHeightFactor = Math.pow(1 / Math.max(animState.sd, 0.5), 0.25);
+
+                    const toCanvasY = (pdfVal) => {
+                        if (heightScaleMode === 'strict') {
+                            // 常に SD=1 のピークを基準に描画（横10倍なら高さ1/10になり面積=1を厳密維持）
+                            const normalized = pdfVal / refPeakSD1;
+                            return baseY - (normalized * plotH * 0.86);
+                        } else {
+                            // 見やすさ重視の自動高さ補正
+                            const normalized = (pdfVal / currentPeakPDF) * visualHeightFactor;
+                            return baseY - (normalized * plotH * 0.84);
+                        }
+                    };
+
+                    // 1. 背景の縦グリッドとX軸目盛り (-30 〜 +80)
+                    ctx.strokeStyle = '#e2e8f0';
+                    ctx.lineWidth = 1;
+                    ctx.textAlign = 'center';
+
+                    for (let x = -30; x <= 80; x += 10) {
+                        const cx = toCanvasX(x);
+                        ctx.beginPath();
+                        ctx.moveTo(cx, padTop);
+                        ctx.lineTo(cx, baseY);
+                        ctx.stroke();
+
+                        if (x === 0) {
+                            ctx.fillStyle = '#4f46e5';
+                            ctx.font = 'bold 12px Inter, sans-serif';
+                        } else if (x === 50) {
+                            ctx.fillStyle = '#059669';
+                            ctx.font = 'bold 12px Inter, sans-serif';
+                        } else if (x === 40 && currentStep === 0) {
+                            ctx.fillStyle = '#334155';
+                            ctx.font = 'bold 12px Inter, sans-serif';
+                        } else {
+                            ctx.fillStyle = '#94a3b8';
+                            ctx.font = '11px Inter, sans-serif';
+                        }
+                        ctx.fillText(String(x), cx, baseY + 18);
+                    }
+
+                    // X軸のベースラインとY軸ライン
+                    ctx.strokeStyle = '#94a3b8';
+                    ctx.lineWidth = 1.5;
+                    ctx.beginPath();
+                    ctx.moveTo(padLeft, padTop);
+                    ctx.lineTo(padLeft, baseY);
+                    ctx.lineTo(padLeft + plotW, baseY);
+                    ctx.stroke();
+
+                    // 軸ラベル（Y軸：確率密度、X軸：現在のステップに応じた単位）
+                    ctx.save();
+                    ctx.translate(15, padTop + plotH / 2);
+                    ctx.rotate(-Math.PI / 2);
+                    ctx.fillStyle = '#64748b';
+                    ctx.font = '600 11px Inter, Noto Sans JP, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(heightScaleMode === 'strict' ? '確率密度（面積=1）' : '確率密度（高さ補正）', 0, 0);
+                    ctx.restore();
+
+                    ctx.fillStyle = '#475569';
+                    ctx.font = 'bold 11px Inter, Noto Sans JP, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(STEPS[currentStep].xAxisLabel, padLeft + plotW / 2, baseY + 38);
+
+                    // 右上の高さモード注記バッジ
+                    const noteText = heightScaleMode === 'strict'
+                        ? '厳密表示：面積は常に1（横10倍で高さ1/10）'
+                        : '※見やすさのため曲線の高さを自動補正中';
+                    ctx.font = '600 10px Inter, Noto Sans JP, sans-serif';
+                    const noteW = ctx.measureText(noteText).width + 14;
+                    const noteX = width - padRight - noteW;
+                    const noteY = 10;
+                    ctx.fillStyle = heightScaleMode === 'strict' ? 'rgba(236, 253, 245, 0.92)' : 'rgba(241, 245, 249, 0.92)';
+                    drawRoundedRect(ctx, noteX, noteY, noteW, 20, 5);
+                    ctx.fill();
+                    ctx.strokeStyle = heightScaleMode === 'strict' ? '#a7f3d0' : '#cbd5e1';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                    ctx.fillStyle = heightScaleMode === 'strict' ? '#047857' : '#64748b';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(noteText, noteX + noteW / 2, noteY + 13.5);
+
+                    // 2. 比較用の「標準正規分布 (平均0, SD1)」ゴースト点線（STEP 1以外のときに表示）
+                    if (Math.abs(animState.mean) > 0.05 || Math.abs(animState.sd - 1) > 0.05) {
+                        ctx.save();
+                        ctx.strokeStyle = '#cbd5e1';
+                        ctx.setLineDash([4, 4]);
+                        ctx.lineWidth = 1.5;
+                        ctx.beginPath();
+                        const refSamples = 360;
+                        for (let i = 0; i <= refSamples; i++) {
+                            const wx = WORLD_MIN_X + (i / refSamples) * WORLD_SPAN_X;
+                            const yVal = normalPDF(wx, 0, 1);
+                            const cy = baseY - ((yVal / refPeakSD1) * plotH * (heightScaleMode === 'strict' ? 0.86 : 0.84));
+                            if (i === 0) ctx.moveTo(toCanvasX(wx), cy);
+                            else ctx.lineTo(toCanvasX(wx), cy);
+                        }
+                        ctx.stroke();
+                        ctx.restore();
+                    }
+
+                    // ステップに応じたテーマカラー設定
+                    const strokeMain = currentStep === 3 ? '#059669' : (currentStep === 0 ? '#334155' : '#4f46e5');
+                    const fillZone2 = currentStep === 3 ? 'rgba(16, 185, 129, 0.12)' : (currentStep === 0 ? 'rgba(71, 85, 105, 0.09)' : 'rgba(99, 102, 241, 0.10)');
+                    const fillZone1 = currentStep === 3 ? 'rgba(16, 185, 129, 0.24)' : (currentStep === 0 ? 'rgba(71, 85, 105, 0.20)' : 'rgba(99, 102, 241, 0.22)');
+
+                    // 3. ±2σ (95.4%) と ±1σ (68.3%) のエリア塗りつぶし
+                    if (showZones) {
+                        fillAreaUnderCurve(animState.mean - 2 * animState.sd, animState.mean + 2 * animState.sd, fillZone2, toCanvasX, toCanvasY, baseY);
+                        fillAreaUnderCurve(animState.mean - 1 * animState.sd, animState.mean + 1 * animState.sd, fillZone1, toCanvasX, toCanvasY, baseY);
+                    }
+
+                    // 4. 【核心機能】赤い点より右側の「上位%」エリアを半透明ローズで塗りつぶし
+                    const userWorldX = animState.mean + userZ * animState.sd;
+                    const tailEndWX = Math.min(WORLD_MAX_X, Math.max(userWorldX, animState.mean + 4.5 * animState.sd));
+                    if (tailEndWX > userWorldX) {
+                        fillAreaUnderCurve(userWorldX, tailEndWX, 'rgba(225, 29, 72, 0.26)', toCanvasX, toCanvasY, baseY);
+                    }
+
+                    // 5. メインの正規分布曲線（SD=1の鋭い山も滑らかに描くため高密度サンプリング）
+                    ctx.strokeStyle = strokeMain;
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    const samples = 500;
+                    for (let i = 0; i <= samples; i++) {
+                        const wx = WORLD_MIN_X + (i / samples) * WORLD_SPAN_X;
+                        const pdf = normalPDF(wx, animState.mean, animState.sd);
+                        const cy = toCanvasY(pdf);
+                        if (i === 0) ctx.moveTo(toCanvasX(wx), cy);
+                        else ctx.lineTo(toCanvasX(wx), cy);
+                    }
+                    ctx.stroke();
+
+                    // 6. 平均（センター）のガイドラインとラベル
+                    const meanX = toCanvasX(animState.mean);
+                    ctx.save();
+                    ctx.strokeStyle = '#64748b';
+                    ctx.setLineDash([3, 3]);
+                    ctx.lineWidth = 1.2;
+                    ctx.beginPath();
+                    ctx.moveTo(meanX, padTop - 4);
+                    ctx.lineTo(meanX, baseY);
+                    ctx.stroke();
+                    ctx.restore();
+
+                    ctx.fillStyle = '#334155';
+                    ctx.font = 'bold 11px Inter, Noto Sans JP, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`平均: ${animState.mean.toFixed(1)}`, meanX, padTop - 10);
+
+                    // 7. 標準偏差 (+1σ) の幅を示す矢印（厳密モードで低すぎる時はベースライン直上を避けて見やすく）
+                    const oneSdX = toCanvasX(animState.mean + animState.sd);
+                    const peakCanvasY = toCanvasY(currentPeakPDF);
+                    const arrowY = Math.max(baseY - 22, peakCanvasY + 14);
+                    if (oneSdX - meanX > 22 && baseY - peakCanvasY > 36) {
+                        ctx.strokeStyle = '#475569';
+                        ctx.lineWidth = 1.5;
+                        ctx.beginPath();
+                        ctx.moveTo(meanX, arrowY);
+                        ctx.lineTo(oneSdX, arrowY);
+                        ctx.stroke();
+
+                        ctx.beginPath();
+                        ctx.moveTo(oneSdX - 5, arrowY - 3.5);
+                        ctx.lineTo(oneSdX, arrowY);
+                        ctx.lineTo(oneSdX - 5, arrowY + 3.5);
+                        ctx.stroke();
+
+                        ctx.fillStyle = '#334155';
+                        ctx.font = 'bold 10px Inter, sans-serif';
+                        ctx.fillText(`+1σ (${animState.sd.toFixed(1)})`, (meanX + oneSdX) / 2, arrowY - 6);
+                    }
+
+                    // 8. ユーザーの立ち位置 (userZ) マーカー・上位%ラベル・数値バッジ
+                    const userCanvasX = toCanvasX(userWorldX);
+                    const userPdf = normalPDF(userWorldX, animState.mean, animState.sd);
+                    const userCanvasY = toCanvasY(userPdf);
+
+                    // 赤い垂直ガイド線
+                    ctx.strokeStyle = '#e11d48';
+                    ctx.lineWidth = 2.2;
+                    ctx.beginPath();
+                    ctx.moveTo(userCanvasX, userCanvasY);
+                    ctx.lineTo(userCanvasX, baseY);
+                    ctx.stroke();
+
+                    // 上位%エリアのインラインラベル
+                    const topPercent = Math.max(0.01, (1 - normalCDF(userZ)) * 100);
+                    const topLabelText = `上位 ${topPercent < 0.1 ? topPercent.toFixed(2) : topPercent.toFixed(1)}%`;
+                    ctx.font = 'bold 11px Inter, Noto Sans JP, sans-serif';
+                    const topLabelW = ctx.measureText(topLabelText).width + 12;
+                    const topLabelH = 20;
+                    // 赤線の右側に配置し、右端からはみ出さないようにクランプ
+                    const idealLabelX = userCanvasX + Math.max(8, Math.min(animState.sd * 1.4, 24));
+                    const clampedTopX = Math.min(Math.max(idealLabelX, padLeft + 4), width - padRight - topLabelW);
+                    const clampedTopY = Math.min(baseY - 26, Math.max(userCanvasY + 12, padTop + 34));
+
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
+                    drawRoundedRect(ctx, clampedTopX, clampedTopY, topLabelW, topLabelH, 5);
+                    ctx.fill();
+                    ctx.strokeStyle = 'rgba(225, 29, 72, 0.45)';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+
+                    ctx.fillStyle = '#be123c';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(topLabelText, clampedTopX + topLabelW / 2, clampedTopY + 14);
+
+                    // 赤い丸ポイント
+                    ctx.fillStyle = '#e11d48';
+                    ctx.beginPath();
+                    ctx.arc(userCanvasX, userCanvasY, 6.5, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+
+                    // バッジテキスト（STEP 1のzスコアは小数第2位まで表示）
+                    let badgeText;
+                    if (animState.sd < 2) {
+                        badgeText = `z = ${userWorldX > 0 ? '+' : ''}${userWorldX.toFixed(2)}`;
+                    } else if (currentStep === 3 && Math.abs(animState.mean - 50) < 0.5) {
+                        badgeText = `偏差値 ${userWorldX.toFixed(1)}`;
+                    } else if (currentStep === 0 && Math.abs(animState.mean - 40) < 0.5) {
+                        badgeText = `${userWorldX.toFixed(1)}点`;
+                    } else {
+                        badgeText = `${userWorldX.toFixed(1)}`;
+                    }
+
+                    ctx.font = 'bold 12px Inter, Noto Sans JP, sans-serif';
+                    const textW = ctx.measureText(badgeText).width;
+                    const badgeW = textW + 16;
+                    const badgeH = 24;
+                    const badgeX = Math.min(Math.max(userCanvasX - badgeW / 2, padLeft), width - padRight - badgeW);
+                    const badgeY = Math.max(userCanvasY - 34, padTop + 4);
+
+                    ctx.fillStyle = '#e11d48';
+                    drawRoundedRect(ctx, badgeX, badgeY, badgeW, badgeH, 6);
+                    ctx.fill();
+
+                    ctx.fillStyle = '#ffffff';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(badgeText, badgeX + badgeW / 2, badgeY + 16);
+                } catch (err) {
+                    console.error('Canvas描画エラー:', err);
+                }
+            }
+
+            // 曲線下の特定区間を塗りつぶす補助関数
+            function fillAreaUnderCurve(startWX, endWX, fillStyle, toCanvasX, toCanvasY, baseY) {
+                ctx.fillStyle = fillStyle;
+                ctx.beginPath();
+                ctx.moveTo(toCanvasX(startWX), baseY);
+                const steps = 120;
+                for (let i = 0; i <= steps; i++) {
+                    const wx = startWX + (i / steps) * (endWX - startWX);
+                    const pdf = normalPDF(wx, animState.mean, animState.sd);
+                    ctx.lineTo(toCanvasX(wx), toCanvasY(pdf));
+                }
+                ctx.lineTo(toCanvasX(endWX), baseY);
+                ctx.closePath();
+                ctx.fill();
+            }
+
+            // Canvas上のドラッグ/タップ座標から userZ を更新する
+            function updateUserZFromClientX(clientX) {
+                if (isAnimating()) return; // アニメーション中の逆算による値飛びを防止
+                const rect = canvas.getBoundingClientRect();
+                const { padLeft, plotW } = getPlotGeometry();
+                const localX = clientX - rect.left;
+                const worldX = WORLD_MIN_X + ((localX - padLeft) / plotW) * WORLD_SPAN_X;
+                const rawZ = (worldX - animState.mean) / Math.max(animState.sd, 0.5);
+                // -3.0〜+3.0 の範囲にクランプし 0.05 刻みに丸める
+                const clampedZ = Math.max(-3, Math.min(3, Math.round(rawZ * 20) / 20));
+                userZ = clampedZ;
+                zSlider.value = userZ;
+                updateUI();
+                drawCanvas();
+            }
+
+            // ==========================================
+            // イベントリスナー登録
+            // ==========================================
+            stepBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (isPlayingSequence) stopSequence();
+                    const stepId = parseInt(btn.dataset.step, 10);
+                    setStep(stepId);
+                });
+            });
+
+            zSlider.addEventListener('input', (e) => {
+                userZ = parseFloat(e.target.value);
+                updateUI();
+                drawCanvas();
+            });
+
+            presetBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    userZ = parseFloat(btn.dataset.z);
+                    zSlider.value = userZ;
+                    updateUI();
+                    drawCanvas();
+                });
+            });
+
+            showSigmaZonesCheckbox.addEventListener('change', (e) => {
+                showZones = e.target.checked;
+                drawCanvas();
+            });
+
+            scaleAdjustedBtn.addEventListener('click', () => {
+                if (heightScaleMode === 'adjusted') return;
+                heightScaleMode = 'adjusted';
+                updateScaleToggleUI();
+                drawCanvas();
+            });
+
+            scaleStrictBtn.addEventListener('click', () => {
+                if (heightScaleMode === 'strict') return;
+                heightScaleMode = 'strict';
+                updateScaleToggleUI();
+                drawCanvas();
+            });
+
+            playAllBtn.addEventListener('click', playSequence);
+
+            // マウスによるCanvas直接ドラッグ対応（アニメーション中は無効化）
+            canvas.addEventListener('mousedown', (e) => {
+                if (isAnimating()) return;
+                isDraggingCanvas = true;
+                updateUserZFromClientX(e.clientX);
+            });
+            window.addEventListener('mousemove', (e) => {
+                if (!isDraggingCanvas || isAnimating()) return;
+                updateUserZFromClientX(e.clientX);
+            });
+            window.addEventListener('mouseup', () => {
+                isDraggingCanvas = false;
+            });
+
+            // タッチによるCanvas直接ドラッグ対応（スクロール競合防止のため passive: false で制御）
+            canvas.addEventListener('touchstart', (e) => {
+                if (isAnimating() || e.touches.length === 0) return;
+                isDraggingCanvas = true;
+                updateUserZFromClientX(e.touches[0].clientX);
+            }, { passive: true });
+            canvas.addEventListener('touchmove', (e) => {
+                if (!isDraggingCanvas || isAnimating() || e.touches.length === 0) return;
+                e.preventDefault();
+                updateUserZFromClientX(e.touches[0].clientX);
+            }, { passive: false });
+            window.addEventListener('touchend', () => {
+                isDraggingCanvas = false;
+            });
+
+            window.addEventListener('resize', resizeCanvas);
+
+            if (typeof ResizeObserver !== 'undefined') {
+                const ro = new ResizeObserver(() => resizeCanvas());
+                ro.observe(canvasContainer);
+            }
+
+            // 初期起動
+            function init() {
+                updateUI();
+                resizeCanvas();
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+        })();
+    </script>
+</body>
+</html>
